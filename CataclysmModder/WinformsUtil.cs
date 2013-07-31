@@ -228,6 +228,32 @@ namespace CataclysmModder
             }
         }
 
+        /// <summary>
+        /// Set up the default...defaults, for controls.
+        /// </summary>
+        public static void TagsSetDefaults(Control controls)
+        {
+            foreach (Control c in controls.Controls)
+            {
+                if (c.Tag is JsonFormTag)
+                {
+                    JsonFormTag tag = (JsonFormTag)c.Tag;
+
+                    if (tag.def == null)
+                    {
+                        if (c is NumericUpDown)
+                            tag.def = 0;
+                        else if (c is CheckedListBox)
+                            tag.def = new string[0];
+                        else if (c is CheckBox)
+                            tag.def = false;
+                        else
+                            tag.def = "";
+                    }
+                }
+            }
+        }
+
         public static void ControlsLoadItem(Control control, object item)
         {
             ControlsResetValues(control);

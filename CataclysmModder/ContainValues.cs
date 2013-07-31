@@ -15,6 +15,7 @@ namespace CataclysmModder
                 1);
 
             WinformsUtil.ControlsAttachHooks(Controls[0]);
+            WinformsUtil.TagsSetDefaults(Controls[0]);
         }
     }
 }

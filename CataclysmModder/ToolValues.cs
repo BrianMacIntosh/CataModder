@@ -32,6 +32,7 @@ namespace CataclysmModder
                 "The number of charges this tool consumes for each use.");
 
             WinformsUtil.ControlsAttachHooks(Controls[0]);
+            WinformsUtil.TagsSetDefaults(Controls[0]);
         }
     }
 }

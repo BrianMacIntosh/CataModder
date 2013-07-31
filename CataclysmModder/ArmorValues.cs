@@ -43,6 +43,7 @@ namespace CataclysmModder
                 false);
 
             WinformsUtil.ControlsAttachHooks(Controls[0]);
+            WinformsUtil.TagsSetDefaults(Controls[0]);
         }
     }
 }

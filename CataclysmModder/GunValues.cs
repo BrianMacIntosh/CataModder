@@ -40,6 +40,7 @@ namespace CataclysmModder
                 "Time it takes to reload the weapon.");
 
             WinformsUtil.ControlsAttachHooks(Controls[0]);
+            WinformsUtil.TagsSetDefaults(Controls[0]);
 
             Form1.Instance.ReloadLists += LoadGunSkills;
         }

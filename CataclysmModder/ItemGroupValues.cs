@@ -51,6 +51,7 @@ namespace CataclysmModder
                 "A unique string identifier for this item group,");
 
             WinformsUtil.ControlsAttachHooks(Controls[0]);
+            WinformsUtil.TagsSetDefaults(Controls[0]);
 
             itemsListBox.DataSource = items;
             itemsListBox.DisplayMember = "Display";

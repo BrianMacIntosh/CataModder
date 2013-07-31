@@ -221,7 +221,27 @@ namespace CataclysmModder
 
         private void newItemButton_Click(object sender, EventArgs e)
         {
-            Storage.OpenItems.Add(new ItemDataWrapper());
+            ItemDataWrapper newitem = new ItemDataWrapper();
+            Storage.OpenItems.Add(newitem);
+
+            //Fill in default values
+            foreach (Control c in Controls)
+            {
+                if (c.Visible && (c.Tag is ItemExtensionFormTag
+                    || c == GenericItemControl
+                    || c == ItemGroupControl))
+                {
+                    foreach (Control d in c.Controls[0].Controls)
+                    {
+                        if (d.Tag is JsonFormTag && ((JsonFormTag)d.Tag).mandatory
+                            && !newitem.data.ContainsKey(((JsonFormTag)d.Tag).key))
+                        {
+                            newitem.data[((JsonFormTag)d.Tag).key] = ((JsonFormTag)d.Tag).def;
+                        }
+                    }
+                }
+            }
+
             Storage.FileChanged();
         }
 
