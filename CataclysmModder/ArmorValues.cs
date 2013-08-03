@@ -28,7 +28,7 @@ namespace CataclysmModder
                 "material_thickness",
                 "");
             enviProtectNumeric.Tag = new JsonFormTag(
-                "environmental_protection",
+                "enviromental_protection",
                 "The amount of environmental protection this armor provides when worn.");
             warmthNumeric.Tag = new JsonFormTag(
                 "warmth",

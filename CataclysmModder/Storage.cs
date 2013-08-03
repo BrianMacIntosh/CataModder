@@ -107,8 +107,12 @@ namespace CataclysmModder
         /// <summary>
         /// For items, JSON data on the selected item.
         /// </summary>
-        public static object CurrentItemData { get { return currentItemData; } }
-        private static Dictionary<string, object> currentItemData;
+        public static Dictionary<string, object> CurrentItemData
+        {
+            get { return currentItemData; }
+            set { currentItemData = value; }
+        }
+        public static Dictionary<string, object> currentItemData;
 
         public static bool FilesLoaded { get { return !string.IsNullOrEmpty(workspacePath); } }
         public static bool ItemsLoaded { get { return !string.IsNullOrEmpty(currentFileName); } }
@@ -255,6 +259,12 @@ namespace CataclysmModder
             }
         }
 
+        public static void SetCurrentItem(Dictionary<string, object> item)
+        {
+            currentItemData = item;
+            openItems[currentItemIndex].data = currentItemData;
+        }
+
         public static void SaveCurrentFile()
         {
             string ffilename = Path.GetFileName(currentFileName);
@@ -285,9 +295,14 @@ namespace CataclysmModder
         /// <summary>
         /// For items, apply a new value to the current item.
         /// </summary>
-        public static void ItemApplyValue(string key, object value)
+        public static void ItemApplyValue(string key, object value, bool mandatory)
         {
-            if (!currentItemData.ContainsKey(key) || value != currentItemData[key])
+            if (!mandatory && value.Equals(""))
+            {
+                if (currentItemData.ContainsKey(key))
+                    currentItemData.Remove(key);
+            }
+            else if (!currentItemData.ContainsKey(key) || value != currentItemData[key])
             {
                 currentItemData[key] = value;
                 unsavedChanges = true;

@@ -38,6 +38,7 @@ namespace CataclysmModder
             mainPanelLocation = new Point(150, 20);
 
             GenericItemControl = new GenericItemValues();
+            GenericItemControl.Tag = new DataFormTag();
             GenericItemControl.Location = mainPanelLocation;
             GenericItemControl.Visible = false;
             Controls.Add(GenericItemControl);
@@ -87,6 +88,7 @@ namespace CataclysmModder
             HideItemExtensions();
 
             ItemGroupControl = new ItemGroupValues();
+            ItemGroupControl.Tag = new DataFormTag();
             ItemGroupControl.Location = mainPanelLocation;
             ItemGroupControl.Visible = false;
             Controls.Add(ItemGroupControl);
@@ -227,9 +229,7 @@ namespace CataclysmModder
             //Fill in default values
             foreach (Control c in Controls)
             {
-                if (c.Visible && (c.Tag is ItemExtensionFormTag
-                    || c == GenericItemControl
-                    || c == ItemGroupControl))
+                if (c.Visible && c.Tag is DataFormTag)
                 {
                     foreach (Control d in c.Controls[0].Controls)
                     {
@@ -285,10 +285,41 @@ namespace CataclysmModder
         {
 
         }
+
+        private void searchBox_TextChanged(object sender, EventArgs e)
+        {
+            SearchSelect(searchBox.Text, false);
+        }
+
+        private void searchBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\n' || e.KeyChar == '\r')
+                SearchSelect(searchBox.Text, true);
+        }
+
+        private void SearchSelect(string search, bool fromcurrent)
+        {
+            //Look for an item that matches and select it
+            for (int c = (fromcurrent ? entriesListBox.SelectedIndex+1 : 0); c < Storage.OpenItems.Count; c++)
+            {
+                if (Storage.OpenItems[c].Display.Contains(search)
+                    || (Storage.OpenItems[c].data.ContainsKey("name")
+                    && ((string)Storage.OpenItems[c].data["name"]).Contains(search)))
+                {
+                    entriesListBox.SelectedIndex = c;
+                    break;
+                }
+            }
+        }
     }
 
 
-    public class ItemExtensionFormTag
+    public class DataFormTag
+    {
+
+    }
+
+    public class ItemExtensionFormTag : DataFormTag
     {
         public string itemType;
 

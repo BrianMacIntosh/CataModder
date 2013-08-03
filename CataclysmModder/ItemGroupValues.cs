@@ -147,7 +147,7 @@ namespace CataclysmModder
                 iobj[c] = ig.data;
                 c++;
             }
-            Storage.ItemApplyValue("items", iobj);
+            Storage.ItemApplyValue("items", iobj, true);
         }
 
         private void idTextBox_TextChanged(object sender, EventArgs e)

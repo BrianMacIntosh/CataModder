@@ -53,6 +53,8 @@
             this.newItemButton = new System.Windows.Forms.Button();
             this.deleteButton = new System.Windows.Forms.Button();
             this.duplicateButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.searchBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -206,7 +208,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 63);
+            this.label2.Location = new System.Drawing.Point(7, 103);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(42, 13);
             this.label2.TabIndex = 7;
@@ -233,9 +235,9 @@
             // entriesListBox
             // 
             this.entriesListBox.FormattingEnabled = true;
-            this.entriesListBox.Location = new System.Drawing.Point(10, 79);
+            this.entriesListBox.Location = new System.Drawing.Point(10, 119);
             this.entriesListBox.Name = "entriesListBox";
-            this.entriesListBox.Size = new System.Drawing.Size(142, 394);
+            this.entriesListBox.Size = new System.Drawing.Size(140, 355);
             this.entriesListBox.TabIndex = 4;
             this.entriesListBox.SelectedIndexChanged += new System.EventHandler(this.entriesListBox_SelectedIndexChanged);
             // 
@@ -269,11 +271,31 @@
             this.duplicateButton.UseVisualStyleBackColor = true;
             this.duplicateButton.Click += new System.EventHandler(this.duplicateButton_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 63);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(86, 13);
+            this.label3.TabIndex = 11;
+            this.label3.Text = "Search This File:";
+            // 
+            // searchBox
+            // 
+            this.searchBox.Location = new System.Drawing.Point(10, 80);
+            this.searchBox.Name = "searchBox";
+            this.searchBox.Size = new System.Drawing.Size(140, 20);
+            this.searchBox.TabIndex = 12;
+            this.searchBox.TextChanged += new System.EventHandler(this.searchBox_TextChanged);
+            this.searchBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.searchBox_KeyPress);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 562);
+            this.Controls.Add(this.searchBox);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.duplicateButton);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.newItemButton);
@@ -324,6 +346,8 @@
         private System.Windows.Forms.ToolStripStatusLabel helpTextStatusLabel;
         private System.Windows.Forms.ToolStripMenuItem saveFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveItemToolStripMenuItem;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox searchBox;
     }
 }
 

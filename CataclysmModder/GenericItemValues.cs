@@ -162,6 +162,27 @@ namespace CataclysmModder
                     WinformsUtil.ControlsLoadItem(c.Controls[0], Storage.CurrentItemData);
                 }
             }
+
+            //Remove now-invalid keys and fill defaults for missing ones
+            Dictionary<string, object> newData = new Dictionary<string, object>();
+            foreach (Control c in Form1.Instance.Controls)
+            {
+                if (c.Tag is DataFormTag && c.Visible)
+                {
+                    foreach (Control d in c.Controls[0].Controls)
+                    {
+                        if (d.Tag is JsonFormTag)
+                        {
+                            string key = ((JsonFormTag)d.Tag).key;
+                            if (Storage.CurrentItemData.ContainsKey(key))
+                                newData[key] = Storage.CurrentItemData[key];
+                            else if (((JsonFormTag)d.Tag).mandatory)
+                                newData[key] = ((JsonFormTag)d.Tag).def;
+                        }
+                    }
+                }
+            }
+            Storage.SetCurrentItem(newData);
         }
 
         private void flagsCheckedListBox_selectedIndexChanged(object sender, EventArgs e)

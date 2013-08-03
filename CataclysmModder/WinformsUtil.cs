@@ -149,11 +149,11 @@ namespace CataclysmModder
         /// <summary>
         /// Final call, sends value application to storage backend
         /// </summary>
-        public static void ApplyValue(string key, object value)
+        public static void ApplyValue(string key, object value, bool mandatory)
         {
             if (Resetting > 0) return;
 
-            Storage.ItemApplyValue(key, value);
+            Storage.ItemApplyValue(key, value, mandatory);
         }
 
         public static void ApplyTags(string key, CheckedListBox box, ItemCheckEventArgs e)
@@ -175,19 +175,19 @@ namespace CataclysmModder
             }
             if (e.NewValue == CheckState.Checked)
                 vals[d] = box.Items[e.Index];
-            ApplyValue(key, vals);
+            ApplyValue(key, vals, true);
         }
 
         public static void NumericValueChanged(object sender, EventArgs e)
         {
             NumericUpDown num = (NumericUpDown)sender;
-            ApplyValue(((JsonFormTag)num.Tag).key, (int)num.Value);
+            ApplyValue(((JsonFormTag)num.Tag).key, (int)num.Value, ((JsonFormTag)num.Tag).mandatory);
         }
 
         public static void TextValueChanged(object sender, EventArgs e)
         {
             Control num = (Control)sender;
-            ApplyValue(((JsonFormTag)num.Tag).key, num.Text);
+            ApplyValue(((JsonFormTag)num.Tag).key, num.Text, ((JsonFormTag)num.Tag).mandatory);
         }
 
         public static void ChecksValueChanged(object sender, EventArgs e)
@@ -199,7 +199,7 @@ namespace CataclysmModder
         public static void CheckValueChanged(object sender, EventArgs e)
         {
             CheckBox num = (CheckBox)sender;
-            ApplyValue(((JsonFormTag)num.Tag).key, num.Checked);
+            ApplyValue(((JsonFormTag)num.Tag).key, num.Checked, ((JsonFormTag)num.Tag).mandatory);
         }
 
         public static void DisplayHelp(object sender, EventArgs e)
