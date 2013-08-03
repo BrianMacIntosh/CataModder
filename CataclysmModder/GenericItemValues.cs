@@ -150,6 +150,9 @@ namespace CataclysmModder
 
         private void typeComboBox_TextChanged(object sender, EventArgs e)
         {
+            //HACK:
+            if (WinformsUtil.Resetting > 0 && typeComboBox.Text.Equals("")) return;
+
             //Swap out extra boxes
             Form1.Instance.HideItemExtensions();
             foreach (Control c in Form1.Instance.Controls)

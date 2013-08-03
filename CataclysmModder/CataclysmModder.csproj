@@ -49,6 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="About.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="About.Designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
+    </Compile>
     <Compile Include="AmmoValues.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -120,6 +126,9 @@
       <DependentUpon>ToolValues.cs</DependentUpon>
     </Compile>
     <Compile Include="WinformsUtil.cs" />
+    <EmbeddedResource Include="About.resx">
+      <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AmmoValues.resx">
       <DependentUpon>AmmoValues.cs</DependentUpon>
     </EmbeddedResource>

@@ -311,6 +311,28 @@ namespace CataclysmModder
                 }
             }
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new About().ShowDialog();
+        }
+
+        private void nextQuicksearchResultToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SearchSelect(searchBox.Text, true);
+        }
+
+        private void nextItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (entriesListBox.SelectedIndex < entriesListBox.Items.Count - 1)
+                entriesListBox.SelectedIndex++;
+        }
+
+        private void previousItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (entriesListBox.SelectedIndex > 0)
+                entriesListBox.SelectedIndex--;
+        }
     }
 
 
