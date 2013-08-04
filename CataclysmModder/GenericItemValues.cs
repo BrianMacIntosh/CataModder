@@ -185,7 +185,7 @@ namespace CataclysmModder
                     }
                 }
             }
-            Storage.SetCurrentItem(newData);
+            Storage.CurrentItemData = newData;
         }
 
         private void flagsCheckedListBox_selectedIndexChanged(object sender, EventArgs e)

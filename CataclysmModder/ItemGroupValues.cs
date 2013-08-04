@@ -49,6 +49,7 @@ namespace CataclysmModder
             idTextBox.Tag = new JsonFormTag(
                 "id",
                 "A unique string identifier for this item group,");
+            ((JsonFormTag)idTextBox.Tag).isItemId = true;
 
             WinformsUtil.ControlsAttachHooks(Controls[0]);
             WinformsUtil.TagsSetDefaults(Controls[0]);

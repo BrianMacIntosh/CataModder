@@ -18,11 +18,13 @@ namespace CataclysmModder
                 "The item id of an item that is required to ingest this comestible.",
                 true,
                 "null");
+            ((JsonFormTag)toolTextBox.Tag).isItemId = true;
             containerTextBox.Tag = new JsonFormTag(
                 "container",
                 "The item id of an item that will be the default container for this comestible.",
                 true,
                 "null");
+            ((JsonFormTag)containerTextBox.Tag).isItemId = true;
             nutritionNumeric.Tag = new JsonFormTag(
                 "nutrition",
                 "The amount applied to the player's hunger level when this comestible is taken.");

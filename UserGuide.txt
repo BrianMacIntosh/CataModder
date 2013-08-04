@@ -1,0 +1,46 @@
+CataModder
+by Brian MacIntosh (BMacZero)
+
+No warranty of usability or fitness for any purpose
+is given.
+
+
+For version information, see Help->About.  MAKE
+SURE YOU ARE USING THE RIGHT VERSION OF CATACLYSM.
+
+
+HOW TO USE THIS SOFTWARE: ===============================
+
+- Back up the 'raw' folder that contains the game
+  JSONs (it's in [Cataclysm Root]/data).
+
+- Run CataclysmModder.exe
+- Go to File->Open
+- Select the 'raw' folder mentioned above
+
+Now the dropdown box in the top-left corner of the
+program contains all the JSON data files that define
+Cataclysm's content, though the program only supports
+editing "item_groups.json" and the "item/" files for now.
+
+Once you select a file from this box, the file's contents
+are loaded into the "Entries" box under it, and if the
+file can be edited, the editing area appears to the right.
+
+
+USABILITY TIPS: ==========================================
+
+You can type in the "Quicksearch" bar at the top right to
+search the entries list by name or id. Press Enter to
+scan through the search results.
+
+You can press Ctrl+Space at any time to select the next
+item matching the quicksearch.
+
+You can use Ctrl+Up and Ctrl+Down at any time to navigate
+up and down the entries list.
+
+Some fields require the Id of an item (such as the Revert
+To field on Tool items).  These fields will show suggestions
+as you type in them.  To see the next suggestion, press
+Ctrl+Tab.

@@ -31,6 +31,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openRawsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -78,6 +79,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openRawsToolStripMenuItem,
+            this.reloadMenuItem,
             this.saveFileToolStripMenuItem,
             this.saveItemToolStripMenuItem,
             this.toolStripSeparator1,
@@ -94,12 +96,19 @@
             this.openRawsToolStripMenuItem.Text = "Open Raws";
             this.openRawsToolStripMenuItem.Click += new System.EventHandler(this.openRawsToolStripMenuItem_Click);
             // 
+            // reloadMenuItem
+            // 
+            this.reloadMenuItem.Name = "reloadMenuItem";
+            this.reloadMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.reloadMenuItem.Text = "Reload Raws";
+            this.reloadMenuItem.Click += new System.EventHandler(this.reloadMenuItem_Click);
+            // 
             // saveFileToolStripMenuItem
             // 
             this.saveFileToolStripMenuItem.Name = "saveFileToolStripMenuItem";
             this.saveFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveFileToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
-            this.saveFileToolStripMenuItem.Text = "Save File";
+            this.saveFileToolStripMenuItem.Text = "Save All";
             this.saveFileToolStripMenuItem.Click += new System.EventHandler(this.saveFileToolStripMenuItem_Click);
             // 
             // saveItemToolStripMenuItem
@@ -170,6 +179,7 @@
             // 
             // cutToolStripMenuItem
             // 
+            this.cutToolStripMenuItem.Enabled = false;
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.cutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
@@ -177,6 +187,7 @@
             // 
             // copyToolStripMenuItem
             // 
+            this.copyToolStripMenuItem.Enabled = false;
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
@@ -184,6 +195,7 @@
             // 
             // pasteToolStripMenuItem
             // 
+            this.pasteToolStripMenuItem.Enabled = false;
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.pasteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
@@ -191,6 +203,7 @@
             // 
             // deleteToolStripMenuItem
             // 
+            this.deleteToolStripMenuItem.Enabled = false;
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
@@ -372,6 +385,7 @@
         private System.Windows.Forms.ToolStripMenuItem nextQuicksearchResultToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nextItemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem previousItemToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reloadMenuItem;
     }
 }
 

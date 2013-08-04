@@ -173,7 +173,7 @@ namespace CataclysmModder
         {
             if (!Storage.FilesLoaded) return;
 
-            Storage.LoadFile((string)filesComboBox.SelectedItem);
+            Storage.SelectFile(filesComboBox.SelectedIndex);
 
             //Hide all forms
             ItemGroupControl.Visible = false;
@@ -191,7 +191,7 @@ namespace CataclysmModder
                 ItemGroupControl.Visible = true;
             }
 
-            //Populate item box
+            //Prepare item box
             entriesListBox.ClearSelected();
             entriesListBox.DataSource = Storage.OpenItems;
             entriesListBox.DisplayMember = "Display";
@@ -332,6 +332,14 @@ namespace CataclysmModder
         {
             if (entriesListBox.SelectedIndex > 0)
                 entriesListBox.SelectedIndex--;
+        }
+
+        private void reloadMenuItem_Click(object sender, EventArgs e)
+        {
+            Storage.ReloadFiles();
+
+            //Force reload of current item
+            entriesListBox_SelectedIndexChanged(null, null);
         }
     }
 

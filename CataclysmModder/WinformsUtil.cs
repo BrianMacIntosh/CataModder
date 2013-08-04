@@ -26,6 +26,7 @@ namespace CataclysmModder
         public object def;
         public bool mandatory = true;
         public BindingList<HelpItem> listitems;
+        public bool isItemId = false;
 
         public JsonFormTag(string key, string help)
         {
@@ -184,9 +185,33 @@ namespace CataclysmModder
             ApplyValue(((JsonFormTag)num.Tag).key, (int)num.Value, ((JsonFormTag)num.Tag).mandatory);
         }
 
+        private static int autocompleteIndex = 0;
+        private static bool backspace = false;
+        private static bool eatCallback = false;
+        private const int autocompleteMinLength = 2;
+        private static string lastAutocomplete = "";
+
         public static void TextValueChanged(object sender, EventArgs e)
         {
+            if (eatCallback)
+            {
+                eatCallback = false;
+                return;
+            }
+
             Control num = (Control)sender;
+
+            //ID autocomplete
+            if (backspace)
+            {
+                
+            }
+            else if (((JsonFormTag)num.Tag).isItemId
+                && num.Text.Length >= autocompleteMinLength)
+            {
+                AutocompleteFieldItem(num);
+            }
+
             ApplyValue(((JsonFormTag)num.Tag).key, num.Text, ((JsonFormTag)num.Tag).mandatory);
         }
 
@@ -205,8 +230,69 @@ namespace CataclysmModder
         public static void DisplayHelp(object sender, EventArgs e)
         {
             Form1.Instance.SetHelpText(((JsonFormTag)((Control)sender).Tag).help);
+            autocompleteIndex = 0;
         }
 
+        public static void AutocompleteFieldItem(Control field)
+        {
+            TextBox text = (TextBox)field;
+            
+            //Something different is happening, reset
+            if (!lastAutocomplete.StartsWith(text.Text))
+            {
+                autocompleteIndex = 0;
+            }
+
+            int autofind = 0;
+            bool breakout = false;
+            string matchstring = text.Text.Substring(0, text.Text.Length - text.SelectionLength);
+            for (int c = 0; c < Storage.openItems.Count; c++)
+            {
+                if (!Storage.FileIsItems(Storage.OpenFiles[c])) continue;
+                foreach (ItemDataWrapper item in Storage.openItems[c])
+                {
+                    if (item.Display.StartsWith(matchstring))
+                    {
+                        if (autofind >= autocompleteIndex)
+                        {
+                            autocompleteIndex = autofind;
+
+                            //Autofill this item
+                            eatCallback = true;
+                            int selectStart = matchstring.Length;
+                            text.Text = item.Display;
+                            text.SelectionStart = selectStart;
+                            text.SelectionLength = text.Text.Length - text.SelectionStart;
+
+                            breakout = true;
+                            break;
+                        }
+                        else
+                        {
+                            autofind++;
+                        }
+                    }
+                }
+                if (breakout) break;
+            }
+        }
+
+        public static void OnItemidKeydown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Back)
+            {
+                backspace = true;
+                autocompleteIndex = -1;
+            }
+            else
+                backspace = false;
+
+            if (e.KeyCode == Keys.Tab && e.Control)
+            {
+                autocompleteIndex++;
+                AutocompleteFieldItem((Control)sender);
+            }
+        }
 
         public static void ControlsAttachHooks(Control control)
         {
@@ -215,6 +301,9 @@ namespace CataclysmModder
                 if (c.Tag is JsonFormTag)
                 {
                     c.Enter += DisplayHelp;
+
+                    if (((JsonFormTag)c.Tag).isItemId)
+                        c.PreviewKeyDown += OnItemidKeydown;
 
                     if (c is NumericUpDown)
                         ((NumericUpDown)c).ValueChanged += NumericValueChanged;

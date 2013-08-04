@@ -76,20 +76,45 @@ namespace CataclysmModder
         public static bool UnsavedChanges { get { return unsavedChanges; } }
         
         private static string workspacePath = "";
-        private static string currentFileName = "";
-        public static string CurrentFileName { get { return currentFileName; } }
-        private static int currentItemIndex = -1;
-
-        public static bool CurrentFileIsItems
+        private static int currentFileIndex = -1;
+        public static string CurrentFileName
         {
             get
             {
-                string[] bits = currentFileName.Split('\\');
-                foreach (string s in bits)
-                    if (s.Equals("items", StringComparison.InvariantCultureIgnoreCase))
-                        return true;
-                return false;
+                if (currentFileIndex >= 0)
+                    return openFiles[currentFileIndex];
+                else
+                    return "";
             }
+        }
+        private static int currentItemIndex = -1;
+        public static Dictionary<string, object> CurrentItemData
+        {
+            get
+            {
+                if (currentItemIndex >= 0)
+                    return openItems[currentFileIndex][currentItemIndex].data;
+                else
+                    return null;
+            }
+            set
+            {
+                openItems[currentFileIndex][currentItemIndex].data = value;
+            }
+        }
+
+        public static bool CurrentFileIsItems
+        {
+            get { return FileIsItems(CurrentFileName); }
+        }
+
+        public static bool FileIsItems(string name)
+        {
+            string[] bits = name.Split('\\');
+            foreach (string s in bits)
+                if (s.Equals("items", StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+            return false;
         }
 
         /// <summary>
@@ -99,23 +124,22 @@ namespace CataclysmModder
         private static string[] openFiles;
 
         /// <summary>
-        /// Items in currently loaded file, slightly parsed
+        /// Items in currently loaded files, slightly parsed
         /// </summary>
-        public static BindingList<ItemDataWrapper> OpenItems { get { return openItems; } }
-        private static BindingList<ItemDataWrapper> openItems;
-
-        /// <summary>
-        /// For items, JSON data on the selected item.
-        /// </summary>
-        public static Dictionary<string, object> CurrentItemData
+        public static BindingList<ItemDataWrapper> OpenItems
         {
-            get { return currentItemData; }
-            set { currentItemData = value; }
+            get
+            {
+                if (currentFileIndex >= 0)
+                    return openItems[currentFileIndex];
+                else
+                    return null;
+            }
         }
-        public static Dictionary<string, object> currentItemData;
+        public static List<BindingList<ItemDataWrapper>> openItems = new List<BindingList<ItemDataWrapper>>();
 
         public static bool FilesLoaded { get { return !string.IsNullOrEmpty(workspacePath); } }
-        public static bool ItemsLoaded { get { return !string.IsNullOrEmpty(currentFileName); } }
+        public static bool ItemsLoaded { get { return currentFileIndex >= 0; } }
 
 
         static Storage()
@@ -136,9 +160,18 @@ namespace CataclysmModder
             workspacePath = path;
 
             //Load all JSON files in directory and subs
+            openItems.Clear();
             openFiles = Directory.GetFiles(path, "*.json", SearchOption.AllDirectories);
             for (int c = 0; c < openFiles.Length; c++)
+            {
                 openFiles[c] = openFiles[c].Substring(workspacePath.Length + 1);
+                LoadFile(openFiles[c]);
+            }
+        }
+
+        public static void ReloadFiles()
+        {
+            LoadFiles(workspacePath);
         }
 
         /// <summary>
@@ -147,13 +180,12 @@ namespace CataclysmModder
         public static void LoadFile(string path)
         {
             //Load up contents of the file
-            currentFileName = path;
             object json = LoadJson(path);
             
             //Parse different formats
-            openItems = new BindingList<ItemDataWrapper>();
-            string ffilename = Path.GetFileName(currentFileName);
-            if (CurrentFileIsItems
+            BindingList<ItemDataWrapper> newItems = new BindingList<ItemDataWrapper>();
+            string ffilename = Path.GetFileName(path);
+            if (FileIsItems(path)
                 || ffilename.Equals("bionics.json")
                 || ffilename.Equals("item_groups.json")
                 || ffilename.Equals("materials.json")
@@ -162,8 +194,15 @@ namespace CataclysmModder
                 || ffilename.Equals("professions.json"))
             {
                 foreach (Dictionary<string, object> item in (object[])json)
-                    openItems.Add(new ItemDataWrapper(item));
+                    newItems.Add(new ItemDataWrapper(item));
             }
+
+            openItems.Add(newItems);
+        }
+
+        public static void SelectFile(int file)
+        {
+            currentFileIndex = file;
         }
 
         public static object LoadJson(string file)
@@ -247,27 +286,16 @@ namespace CataclysmModder
             if (index < 0) return;
 
             currentItemIndex = index;
-            if (CurrentFileIsItems)
-            {
-                currentItemData = openItems[index].data;
-                WinformsUtil.ControlsLoadItem(Form1.Instance.GenericItemControl.Controls[0], currentItemData);
-            }
-            else if (Path.GetFileName(CurrentFileName).Equals("item_groups.json"))
-            {
-                currentItemData = openItems[index].data;
-                WinformsUtil.ControlsLoadItem(Form1.Instance.ItemGroupControl.Controls[0], currentItemData);
-            }
-        }
 
-        public static void SetCurrentItem(Dictionary<string, object> item)
-        {
-            currentItemData = item;
-            openItems[currentItemIndex].data = currentItemData;
+            if (CurrentFileIsItems)
+                WinformsUtil.ControlsLoadItem(Form1.Instance.GenericItemControl.Controls[0], CurrentItemData);
+            else if (Path.GetFileName(CurrentFileName).Equals("item_groups.json"))
+                WinformsUtil.ControlsLoadItem(Form1.Instance.ItemGroupControl.Controls[0], CurrentItemData);
         }
 
         public static void SaveCurrentFile()
         {
-            string ffilename = Path.GetFileName(currentFileName);
+            string ffilename = Path.GetFileName(CurrentFileName);
             if (CurrentFileIsItems
                 || ffilename.Equals("bionics.json")
                 || ffilename.Equals("item_groups.json")
@@ -276,14 +304,14 @@ namespace CataclysmModder
                 || ffilename.Equals("names.json")
                 || ffilename.Equals("professions.json"))
             {
-                object[] serialData = new object[openItems.Count];
+                object[] serialData = new object[OpenItems.Count];
                 int c = 0;
-                foreach (ItemDataWrapper v in openItems)
+                foreach (ItemDataWrapper v in OpenItems)
                 {
                     serialData[c] = v.data;
                     c++;
                 }
-                SaveJson(currentFileName, serialData);
+                SaveJson(CurrentFileName, serialData);
             }
             else
             {
@@ -299,12 +327,12 @@ namespace CataclysmModder
         {
             if (!mandatory && value.Equals(""))
             {
-                if (currentItemData.ContainsKey(key))
-                    currentItemData.Remove(key);
+                if (CurrentItemData.ContainsKey(key))
+                    CurrentItemData.Remove(key);
             }
-            else if (!currentItemData.ContainsKey(key) || value != currentItemData[key])
+            else if (!CurrentItemData.ContainsKey(key) || value != CurrentItemData[key])
             {
-                currentItemData[key] = value;
+                CurrentItemData[key] = value;
                 unsavedChanges = true;
             }
         }
