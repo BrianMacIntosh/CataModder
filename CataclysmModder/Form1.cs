@@ -25,6 +25,8 @@ namespace CataclysmModder
 
         public ItemGroupValues ItemGroupControl;
 
+        public RecipeControl RecipeControl;
+
         Point itemExtensionLocation;
         Point mainPanelLocation;
 
@@ -93,6 +95,12 @@ namespace CataclysmModder
             ItemGroupControl.Visible = false;
             Controls.Add(ItemGroupControl);
 
+            RecipeControl = new RecipeControl();
+            RecipeControl.Tag = new DataFormTag();
+            RecipeControl.Location = mainPanelLocation;
+            RecipeControl.Visible = false;
+            Controls.Add(RecipeControl);
+
             //Load previous workspace
             if (File.Exists(".conf"))
             {
@@ -116,11 +124,6 @@ namespace CataclysmModder
             {
                 loadFiles(open.SelectedPath);
             }
-        }
-
-        public void saveFiles()
-        {
-            Storage.SaveCurrentFile();
         }
 
         public void loadFiles(string path)
@@ -164,7 +167,7 @@ namespace CataclysmModder
                 if (confirm == DialogResult.Cancel)
                     return false;
                 else if (confirm == DialogResult.Yes)
-                    saveFiles();
+                    Storage.SaveOpenFiles();
             }
             return true;
         }
@@ -178,17 +181,23 @@ namespace CataclysmModder
             //Hide all forms
             ItemGroupControl.Visible = false;
             GenericItemControl.Visible = false;
+            RecipeControl.Visible = false;
             HideItemExtensions();
 
             //Show appropriate forms
+            string ffilename = Path.GetFileName(Storage.CurrentFileName);
             if (Storage.CurrentFileIsItems)
             {
                 WinformsUtil.ControlsResetValues(GenericItemControl.Controls[0]);
                 GenericItemControl.Visible = true;
             }
-            else if (Path.GetFileName(Storage.CurrentFileName).Equals("item_groups.json"))
+            else if (ffilename.Equals("item_groups.json"))
             {
                 ItemGroupControl.Visible = true;
+            }
+            else if (ffilename.Equals("recipes.json"))
+            {
+                RecipeControl.Visible = true;
             }
 
             //Prepare item box
@@ -275,12 +284,12 @@ namespace CataclysmModder
 
         private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Storage.SaveCurrentFile();
+            Storage.SaveOpenFiles();
         }
 
         private void saveFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Storage.SaveCurrentFile();
+            Storage.SaveFile(Storage.CurrentFileName);
         }
 
         private void saveItemToolStripMenuItem_Click(object sender, EventArgs e)

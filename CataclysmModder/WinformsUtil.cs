@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.IO;
 
 namespace CataclysmModder
 {
@@ -29,16 +30,15 @@ namespace CataclysmModder
         public bool isItemId = false;
 
         public JsonFormTag(string key, string help)
+            : this(key, help, true)
         {
-            this.key = key;
-            this.help = help;
+            
         }
 
         public JsonFormTag(string key, string help, bool mandatory)
+            : this(key, help, mandatory, null)
         {
-            this.key = key;
-            this.help = help;
-            this.mandatory = mandatory;
+            
         }
 
         public JsonFormTag(string key, string help, bool mandatory, object def)
@@ -202,7 +202,7 @@ namespace CataclysmModder
 
             Control num = (Control)sender;
 
-            //ID autocomplete
+            //Autocompletes
             if (backspace)
             {
                 
@@ -210,7 +210,13 @@ namespace CataclysmModder
             else if (((JsonFormTag)num.Tag).isItemId
                 && num.Text.Length >= autocompleteMinLength)
             {
+                //Item Id
                 AutocompleteFieldItem(num);
+            }
+            else if (sender is ComboBox)
+            {
+                //Combo box
+                //TODO:
             }
 
             if (!string.IsNullOrEmpty(((JsonFormTag)num.Tag).key))
@@ -252,7 +258,9 @@ namespace CataclysmModder
             string matchstring = text.Text.Substring(0, text.Text.Length - text.SelectionLength);
             for (int c = 0; c < Storage.openItems.Count; c++)
             {
-                if (!Storage.FileIsItems(Storage.OpenFiles[c])) continue;
+                if (!Storage.FileIsItems(Storage.OpenFiles[c])
+                    && !Path.GetFileName(Storage.OpenFiles[c]).Equals("bionics.json"))
+                    continue;
                 foreach (ItemDataWrapper item in Storage.openItems[c])
                 {
                     if (item.Display.StartsWith(matchstring))

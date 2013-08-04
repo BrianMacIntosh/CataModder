@@ -21,6 +21,8 @@ namespace CataclysmModder
                     return (string)data["ident"];
                 else if (data.ContainsKey("name"))
                     return (string)data["name"];
+                else if (data.ContainsKey("result"))
+                    return (string)data["result"];
                 else
                     return "item";
             }
@@ -141,6 +143,8 @@ namespace CataclysmModder
         public static bool FilesLoaded { get { return !string.IsNullOrEmpty(workspacePath); } }
         public static bool ItemsLoaded { get { return currentFileIndex >= 0; } }
 
+        public static object[] CraftCategories;
+
 
         static Storage()
         {
@@ -195,6 +199,14 @@ namespace CataclysmModder
             {
                 foreach (Dictionary<string, object> item in (object[])json)
                     newItems.Add(new ItemDataWrapper(item));
+            }
+            else if (ffilename.Equals("recipes.json"))
+            {
+                foreach (Dictionary<string, object> recipe in (object[])((Dictionary<string, object>)json)["recipes"])
+                    newItems.Add(new ItemDataWrapper(recipe));
+
+                //Also load cats
+                CraftCategories = (object[])((Dictionary<string, object>)json)["categories"];
             }
 
             openItems.Add(newItems);
@@ -287,16 +299,25 @@ namespace CataclysmModder
 
             currentItemIndex = index;
 
+            string ffilename = Path.GetFileName(CurrentFileName);
             if (CurrentFileIsItems)
                 WinformsUtil.ControlsLoadItem(Form1.Instance.GenericItemControl.Controls[0], CurrentItemData);
-            else if (Path.GetFileName(CurrentFileName).Equals("item_groups.json"))
+            else if (ffilename.Equals("item_groups.json"))
                 WinformsUtil.ControlsLoadItem(Form1.Instance.ItemGroupControl.Controls[0], CurrentItemData);
+            else if (ffilename.Equals("recipes.json"))
+                WinformsUtil.ControlsLoadItem(Form1.Instance.RecipeControl.Controls[0], CurrentItemData);
         }
 
-        public static void SaveCurrentFile()
+        public static void SaveOpenFiles()
         {
-            string ffilename = Path.GetFileName(CurrentFileName);
-            if (CurrentFileIsItems
+            foreach (string file in openFiles)
+                SaveFile(file);
+        }
+
+        public static void SaveFile(string file)
+        {
+            string ffilename = Path.GetFileName(file);
+            if (FileIsItems(file)
                 || ffilename.Equals("bionics.json")
                 || ffilename.Equals("item_groups.json")
                 || ffilename.Equals("materials.json")
@@ -311,7 +332,21 @@ namespace CataclysmModder
                     serialData[c] = v.data;
                     c++;
                 }
-                SaveJson(CurrentFileName, serialData);
+                SaveJson(file, serialData);
+            }
+            else if (ffilename.Equals("recipes.json"))
+            {
+                object[] serialData = new object[OpenItems.Count];
+                int c = 0;
+                foreach (ItemDataWrapper v in OpenItems)
+                {
+                    serialData[c] = v.data;
+                    c++;
+                }
+                Dictionary<string, object> serial2 = new Dictionary<string, object>();
+                serial2["recipes"] = serialData;
+                serial2["categories"] = CraftCategories;
+                SaveJson(file, serial2);
             }
             else
             {
@@ -340,13 +375,13 @@ namespace CataclysmModder
         public static void LoadMaterials(ListBox box)
         {
             box.Items.Clear();
-            foreach (string s in openFiles)
+            for (int c = 0; c < openFiles.Length; c++)
             {
-                if (Path.GetFileName(s).Equals("materials.json"))
+                if (Path.GetFileName(openFiles[c]).Equals("materials.json"))
                 {
-                    foreach (Dictionary<string, object> item in (object[])LoadJson(s))
+                    foreach (ItemDataWrapper item in openItems[c])
                     {
-                        box.Items.Add(item["ident"]);
+                        box.Items.Add(item.data["ident"]);
                     }
                     return;
                 }
@@ -389,6 +424,15 @@ namespace CataclysmModder
                     }
                     return;
                 }
+            }
+        }
+
+        public static void LoadCraftCategories(ComboBox box)
+        {
+            box.Items.Clear();
+            foreach (string cc in CraftCategories)
+            {
+                box.Items.Add(cc);
             }
         }
     }

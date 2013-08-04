@@ -32,6 +32,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openRawsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -80,6 +81,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openRawsToolStripMenuItem,
             this.reloadMenuItem,
+            this.saveAllToolStripMenuItem,
             this.saveFileToolStripMenuItem,
             this.saveItemToolStripMenuItem,
             this.toolStripSeparator1,
@@ -103,12 +105,19 @@
             this.reloadMenuItem.Text = "Reload Raws";
             this.reloadMenuItem.Click += new System.EventHandler(this.reloadMenuItem_Click);
             // 
+            // saveAllToolStripMenuItem
+            // 
+            this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
+            this.saveAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.saveAllToolStripMenuItem.Text = "Save All";
+            this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
+            // 
             // saveFileToolStripMenuItem
             // 
             this.saveFileToolStripMenuItem.Name = "saveFileToolStripMenuItem";
-            this.saveFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveFileToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
-            this.saveFileToolStripMenuItem.Text = "Save All";
+            this.saveFileToolStripMenuItem.Text = "Save File";
             this.saveFileToolStripMenuItem.Click += new System.EventHandler(this.saveFileToolStripMenuItem_Click);
             // 
             // saveItemToolStripMenuItem
@@ -377,7 +386,7 @@
         private System.Windows.Forms.Button deleteButton;
         private System.Windows.Forms.Button duplicateButton;
         private System.Windows.Forms.ToolStripStatusLabel helpTextStatusLabel;
-        private System.Windows.Forms.ToolStripMenuItem saveFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveItemToolStripMenuItem;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox searchBox;
@@ -385,6 +394,7 @@
         private System.Windows.Forms.ToolStripMenuItem nextItemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem previousItemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveFileToolStripMenuItem;
     }
 }
 
