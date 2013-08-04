@@ -177,12 +177,13 @@ namespace CataclysmModder
                         if (d.Tag is JsonFormTag)
                         {
                             string key = ((JsonFormTag)d.Tag).key;
-                            if (string.IsNullOrEmpty(key))
-                                ;
-                            else if (Storage.CurrentItemData.ContainsKey(key))
-                                newData[key] = Storage.CurrentItemData[key];
-                            else if (((JsonFormTag)d.Tag).mandatory)
-                                newData[key] = ((JsonFormTag)d.Tag).def;
+                            if (!string.IsNullOrEmpty(key))
+                            {
+                                if (Storage.CurrentItemData.ContainsKey(key))
+                                    newData[key] = Storage.CurrentItemData[key];
+                                else if (((JsonFormTag)d.Tag).mandatory)
+                                    newData[key] = ((JsonFormTag)d.Tag).def;
+                            }
                         }
                     }
                 }

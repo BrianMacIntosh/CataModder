@@ -8,23 +8,31 @@ using System.Text;
 
 namespace CataclysmModder
 {
-    class ItemDataWrapper
+    class ItemDataWrapper : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyKeyChanged(string key)
+        {
+            foreach (string s in DisplayMembers)
+                if (s.Equals(key))
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("Display"));
+                    return;
+                }
+        }
+
+        public static string[] DisplayMembers = new string[] { "id", "ident", "name", "result" };
+        
         public Dictionary<string, object> data;
         public string Display
         {
             get
             {
-                if (data.ContainsKey("id"))
-                    return (string)data["id"];
-                else if (data.ContainsKey("ident"))
-                    return (string)data["ident"];
-                else if (data.ContainsKey("name"))
-                    return (string)data["name"];
-                else if (data.ContainsKey("result"))
-                    return (string)data["result"];
-                else
-                    return "item";
+                foreach (string s in DisplayMembers)
+                    if (data.ContainsKey(s))
+                        return (string)data[s];
+                return "[item]";
             }
         }
 
@@ -44,6 +52,8 @@ namespace CataclysmModder
 
                     }
                 }
+
+            //TODO: might need a different display member
             data["id"] = copy.Display + (lastitem + 1);
         }
 
@@ -68,6 +78,8 @@ namespace CataclysmModder
 
                     }
                 }
+
+            //TODO: might need a different display member
             data["id"] = "newitem" + (lastitem + 1);
         }
     }
@@ -145,6 +157,8 @@ namespace CataclysmModder
 
         public static object[] CraftCategories;
 
+        public static AutoCompleteStringCollection AutocompleteItemSource = new AutoCompleteStringCollection();
+
 
         static Storage()
         {
@@ -156,6 +170,39 @@ namespace CataclysmModder
             unsavedChanges = true;
         }
 
+        private static void AutocompleteNeedsModified(object sender, ListChangedEventArgs e)
+        {
+            switch (e.ListChangedType)
+            {
+                case ListChangedType.PropertyDescriptorAdded:
+                case ListChangedType.PropertyDescriptorChanged:
+                case ListChangedType.PropertyDescriptorDeleted:
+                case ListChangedType.Reset:
+
+                //These might possibly be handled more efficiently
+                case ListChangedType.ItemMoved:
+                case ListChangedType.ItemChanged:
+                case ListChangedType.ItemDeleted:
+                    //Rebuild autocomplete list
+                    AutocompleteItemSource.Clear();
+                    for (int c = 0; c < openItems.Count; c++)
+                    {
+                        if (FileIsItems(openFiles[c])
+                            || Path.GetFileName(openFiles[c]).Equals("bionics.json"))
+                        {
+                            for (int d = 0; d < openItems[c].Count; d++)
+                                AutocompleteItemSource.Add(openItems[c][d].Display);
+                        }
+                    }
+                    break;
+
+                case ListChangedType.ItemAdded:
+                    //Update autocomplete list
+                    AutocompleteItemSource.Add(((BindingList<ItemDataWrapper>)sender)[e.NewIndex].Display);
+                    break;
+            }
+        }
+
         /// <summary>
         /// Load game files from the specified path.
         /// </summary>
@@ -163,8 +210,12 @@ namespace CataclysmModder
         {
             workspacePath = path;
 
-            //Load all JSON files in directory and subs
+            //Clear
+            foreach (BindingList<ItemDataWrapper> list in openItems)
+                list.ListChanged -= AutocompleteNeedsModified;
             openItems.Clear();
+
+            //Load all JSON files in directory and subs
             openFiles = Directory.GetFiles(path, "*.json", SearchOption.AllDirectories);
             for (int c = 0; c < openFiles.Length; c++)
             {
@@ -186,9 +237,11 @@ namespace CataclysmModder
             //Load up contents of the file
             object json = LoadJson(path);
             
-            //Parse different formats
             BindingList<ItemDataWrapper> newItems = new BindingList<ItemDataWrapper>();
+            openItems.Add(newItems);
             string ffilename = Path.GetFileName(path);
+
+            //Parse different formats
             if (FileIsItems(path)
                 || ffilename.Equals("bionics.json")
                 || ffilename.Equals("item_groups.json")
@@ -209,7 +262,13 @@ namespace CataclysmModder
                 CraftCategories = (object[])((Dictionary<string, object>)json)["categories"];
             }
 
-            openItems.Add(newItems);
+            //Subscribe to events
+            if (FileIsItems(path)
+                || ffilename.Equals("bionics.json"))
+                newItems.ListChanged += AutocompleteNeedsModified;
+
+            //Rebuild autocomplete
+            AutocompleteNeedsModified(newItems, new ListChangedEventArgs(ListChangedType.Reset, 0));
         }
 
         public static void SelectFile(int file)
@@ -370,6 +429,8 @@ namespace CataclysmModder
                 CurrentItemData[key] = value;
                 unsavedChanges = true;
             }
+
+            openItems[currentFileIndex][currentFileIndex].NotifyKeyChanged(key);
         }
 
         public static void LoadMaterials(ListBox box)

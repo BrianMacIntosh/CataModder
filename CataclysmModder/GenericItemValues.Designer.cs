@@ -122,6 +122,8 @@
             // 
             // functionComboBox
             // 
+            this.functionComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.functionComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.functionComboBox.FormattingEnabled = true;
             this.functionComboBox.Items.AddRange(new object[] {
             "NONE",

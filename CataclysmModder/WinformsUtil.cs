@@ -188,37 +188,12 @@ namespace CataclysmModder
 
         private static int autocompleteIndex = 0;
         private static bool backspace = false;
-        private static bool eatCallback = false;
         private const int autocompleteMinLength = 2;
         private static string lastAutocomplete = "";
 
         public static void TextValueChanged(object sender, EventArgs e)
         {
-            if (eatCallback)
-            {
-                eatCallback = false;
-                return;
-            }
-
             Control num = (Control)sender;
-
-            //Autocompletes
-            if (backspace)
-            {
-                
-            }
-            else if (((JsonFormTag)num.Tag).isItemId
-                && num.Text.Length >= autocompleteMinLength)
-            {
-                //Item Id
-                AutocompleteFieldItem(num);
-            }
-            else if (sender is ComboBox)
-            {
-                //Combo box
-                //TODO:
-            }
-
             if (!string.IsNullOrEmpty(((JsonFormTag)num.Tag).key))
                 ApplyValue(((JsonFormTag)num.Tag).key, num.Text, ((JsonFormTag)num.Tag).mandatory);
         }
@@ -243,69 +218,6 @@ namespace CataclysmModder
             autocompleteIndex = 0;
         }
 
-        public static void AutocompleteFieldItem(Control field)
-        {
-            TextBox text = (TextBox)field;
-            
-            //Something different is happening, reset
-            if (!lastAutocomplete.StartsWith(text.Text))
-            {
-                autocompleteIndex = 0;
-            }
-
-            int autofind = 0;
-            bool breakout = false;
-            string matchstring = text.Text.Substring(0, text.Text.Length - text.SelectionLength);
-            for (int c = 0; c < Storage.openItems.Count; c++)
-            {
-                if (!Storage.FileIsItems(Storage.OpenFiles[c])
-                    && !Path.GetFileName(Storage.OpenFiles[c]).Equals("bionics.json"))
-                    continue;
-                foreach (ItemDataWrapper item in Storage.openItems[c])
-                {
-                    if (item.Display.StartsWith(matchstring))
-                    {
-                        if (autofind >= autocompleteIndex)
-                        {
-                            autocompleteIndex = autofind;
-
-                            //Autofill this item
-                            eatCallback = true;
-                            int selectStart = matchstring.Length;
-                            text.Text = item.Display;
-                            text.SelectionStart = selectStart;
-                            text.SelectionLength = text.Text.Length - text.SelectionStart;
-
-                            breakout = true;
-                            break;
-                        }
-                        else
-                        {
-                            autofind++;
-                        }
-                    }
-                }
-                if (breakout) break;
-            }
-        }
-
-        public static void OnItemidKeydown(object sender, PreviewKeyDownEventArgs e)
-        {
-            if (e.KeyCode == Keys.Back)
-            {
-                backspace = true;
-                autocompleteIndex = -1;
-            }
-            else
-                backspace = false;
-
-            if (e.KeyCode == Keys.Tab && e.Control)
-            {
-                autocompleteIndex++;
-                AutocompleteFieldItem((Control)sender);
-            }
-        }
-
         public static void ControlsAttachHooks(Control control)
         {
             foreach (Control c in control.Controls)
@@ -314,8 +226,20 @@ namespace CataclysmModder
                 {
                     c.Enter += DisplayHelp;
 
+                    //Set up autocompleting text fields
                     if (((JsonFormTag)c.Tag).isItemId)
-                        c.PreviewKeyDown += OnItemidKeydown;
+                    {
+                        TextBox c1 = (TextBox)c;
+                        c1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                        c1.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                        c1.AutoCompleteCustomSource = Storage.AutocompleteItemSource;
+                    }
+                    else if (c is ComboBox)
+                    {
+                        ComboBox c1 = (ComboBox)c;
+                        c1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                        c1.AutoCompleteSource = AutoCompleteSource.ListItems;
+                    }
 
                     if (c is NumericUpDown)
                         ((NumericUpDown)c).ValueChanged += NumericValueChanged;

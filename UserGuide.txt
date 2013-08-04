@@ -40,11 +40,6 @@ item matching the quicksearch.
 You can use Ctrl+Up and Ctrl+Down at any time to navigate
 up and down the entries list.
 
-Some fields require the Id of an item (such as the Revert
-To field on Tool items).  These fields will show suggestions
-as you type in them.  To see the next suggestion, press
-Ctrl+Tab.
-
 In list boxes with a lot of items, you can press a key on
 the keyboard to scroll through items starting with that
 letter.
