@@ -182,7 +182,8 @@ namespace CataclysmModder
         public static void NumericValueChanged(object sender, EventArgs e)
         {
             NumericUpDown num = (NumericUpDown)sender;
-            ApplyValue(((JsonFormTag)num.Tag).key, (int)num.Value, ((JsonFormTag)num.Tag).mandatory);
+            if (!string.IsNullOrEmpty(((JsonFormTag)num.Tag).key))
+                ApplyValue(((JsonFormTag)num.Tag).key, (int)num.Value, ((JsonFormTag)num.Tag).mandatory);
         }
 
         private static int autocompleteIndex = 0;
@@ -212,19 +213,22 @@ namespace CataclysmModder
                 AutocompleteFieldItem(num);
             }
 
-            ApplyValue(((JsonFormTag)num.Tag).key, num.Text, ((JsonFormTag)num.Tag).mandatory);
+            if (!string.IsNullOrEmpty(((JsonFormTag)num.Tag).key))
+                ApplyValue(((JsonFormTag)num.Tag).key, num.Text, ((JsonFormTag)num.Tag).mandatory);
         }
 
         public static void ChecksValueChanged(object sender, EventArgs e)
         {
             CheckedListBox num = (CheckedListBox)sender;
-            ApplyTags(((JsonFormTag)num.Tag).key, num, (ItemCheckEventArgs)e);
+            if (!string.IsNullOrEmpty(((JsonFormTag)num.Tag).key))
+                ApplyTags(((JsonFormTag)num.Tag).key, num, (ItemCheckEventArgs)e);
         }
 
         public static void CheckValueChanged(object sender, EventArgs e)
         {
             CheckBox num = (CheckBox)sender;
-            ApplyValue(((JsonFormTag)num.Tag).key, num.Checked, ((JsonFormTag)num.Tag).mandatory);
+            if (!string.IsNullOrEmpty(((JsonFormTag)num.Tag).key))
+                ApplyValue(((JsonFormTag)num.Tag).key, num.Checked, ((JsonFormTag)num.Tag).mandatory);
         }
 
         public static void DisplayHelp(object sender, EventArgs e)
@@ -360,14 +364,17 @@ namespace CataclysmModder
                 if (c.Tag is JsonFormTag)
                 {
                     JsonFormTag tag = (JsonFormTag)c.Tag;
-                    if (c is NumericUpDown)
-                        SetInt(itemValues, tag.key, (NumericUpDown)c, id, tag.mandatory);
-                    else if (c is CheckedListBox)
-                        SetChecks(itemValues, tag.key, (CheckedListBox)c, id, tag.mandatory);
-                    else if (c is CheckBox)
-                        SetCheckBox(itemValues, tag.key, (CheckBox)c, id, tag.mandatory);
-                    else
-                        SetString(itemValues, tag.key, c, id, tag.mandatory);
+                    if (!string.IsNullOrEmpty(tag.key))
+                    {
+                        if (c is NumericUpDown)
+                            SetInt(itemValues, tag.key, (NumericUpDown)c, id, tag.mandatory);
+                        else if (c is CheckedListBox)
+                            SetChecks(itemValues, tag.key, (CheckedListBox)c, id, tag.mandatory);
+                        else if (c is CheckBox)
+                            SetCheckBox(itemValues, tag.key, (CheckBox)c, id, tag.mandatory);
+                        else
+                            SetString(itemValues, tag.key, c, id, tag.mandatory);
+                    }
                 }
             }
 

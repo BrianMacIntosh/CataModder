@@ -44,3 +44,11 @@ Some fields require the Id of an item (such as the Revert
 To field on Tool items).  These fields will show suggestions
 as you type in them.  To see the next suggestion, press
 Ctrl+Tab.
+
+In list boxes with a lot of items, you can press a key on
+the keyboard to scroll through items starting with that
+letter.
+
+Whenever you select a field in the editor, a short helpful
+description of what that field means is shown in the very
+bottom-right.

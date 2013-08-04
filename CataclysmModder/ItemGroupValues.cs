@@ -49,7 +49,16 @@ namespace CataclysmModder
             idTextBox.Tag = new JsonFormTag(
                 "id",
                 "A unique string identifier for this item group,");
-            ((JsonFormTag)idTextBox.Tag).isItemId = true;
+            itemidTextBox.Tag = new JsonFormTag(
+                null,
+                "The id of the item to spawn.");
+            ((JsonFormTag)itemidTextBox.Tag).isItemId = true;
+            freqNumeric.Tag = new JsonFormTag(
+                null,
+                "The relative frequency of this item to spawn.");
+            itemsListBox.Tag = new JsonFormTag(
+                null,
+                "The list of items in this group and their relative frequencies.");
 
             WinformsUtil.ControlsAttachHooks(Controls[0]);
             WinformsUtil.TagsSetDefaults(Controls[0]);

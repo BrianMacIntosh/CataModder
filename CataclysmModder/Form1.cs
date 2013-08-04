@@ -233,7 +233,9 @@ namespace CataclysmModder
                 {
                     foreach (Control d in c.Controls[0].Controls)
                     {
-                        if (d.Tag is JsonFormTag && ((JsonFormTag)d.Tag).mandatory
+                        if (d.Tag is JsonFormTag
+                            && !string.IsNullOrEmpty(((JsonFormTag)d.Tag).key)
+                            && ((JsonFormTag)d.Tag).mandatory
                             && !newitem.data.ContainsKey(((JsonFormTag)d.Tag).key))
                         {
                             newitem.data[((JsonFormTag)d.Tag).key] = ((JsonFormTag)d.Tag).def;
