@@ -176,7 +176,11 @@ namespace CataclysmModder
             }
             if (e.NewValue == CheckState.Checked)
                 vals[d] = box.Items[e.Index];
-            ApplyValue(key, vals, true);
+
+            if (key.Equals("material") && vals.Length == 1)
+                ApplyValue(key, vals[0], ((JsonFormTag)box.Tag).mandatory);
+            else
+                ApplyValue(key, vals, ((JsonFormTag)box.Tag).mandatory);
         }
 
         public static void NumericValueChanged(object sender, EventArgs e)
@@ -185,11 +189,6 @@ namespace CataclysmModder
             if (!string.IsNullOrEmpty(((JsonFormTag)num.Tag).key))
                 ApplyValue(((JsonFormTag)num.Tag).key, (int)num.Value, ((JsonFormTag)num.Tag).mandatory);
         }
-
-        private static int autocompleteIndex = 0;
-        private static bool backspace = false;
-        private const int autocompleteMinLength = 2;
-        private static string lastAutocomplete = "";
 
         public static void TextValueChanged(object sender, EventArgs e)
         {
@@ -215,7 +214,6 @@ namespace CataclysmModder
         public static void DisplayHelp(object sender, EventArgs e)
         {
             Form1.Instance.SetHelpText(((JsonFormTag)((Control)sender).Tag).help);
-            autocompleteIndex = 0;
         }
 
         public static void ControlsAttachHooks(Control control)

@@ -52,7 +52,7 @@ namespace CataclysmModder
                 false);
             disLearnNumeric.Tag = new JsonFormTag(
                 "decomp_learn",
-                "The skill level required to learn this recipe by disassembling the result item.",
+                "The skill level required to learn this recipe by disassembling the result item (-1 forbids this).",
                 false,
                 -1);
 

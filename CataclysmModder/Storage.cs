@@ -14,6 +14,7 @@ namespace CataclysmModder
 
         public void NotifyKeyChanged(string key)
         {
+            //TODO: entries box still doesn't update on name change
             foreach (string s in DisplayMembers)
                 if (s.Equals(key))
                 {
@@ -451,6 +452,7 @@ namespace CataclysmModder
 
         public static void LoadSkills(ComboBox box)
         {
+            //TODO: don't reload these files all the time
             box.Items.Clear();
             box.Items.Add("none");
             foreach (string s in openFiles)
@@ -468,6 +470,7 @@ namespace CataclysmModder
 
         public static void LoadGunSkills(ComboBox box)
         {
+            //TODO: don't reload these files all the time
             box.Items.Clear();
             box.Items.Add("none");
             foreach (string s in openFiles)
