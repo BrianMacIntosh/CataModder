@@ -26,7 +26,6 @@ namespace CataclysmModder
         public string help;
         public object def;
         public bool mandatory = true;
-        public BindingList<HelpItem> listitems;
         public bool isItemId = false;
 
         public JsonFormTag(string key, string help)

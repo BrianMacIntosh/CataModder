@@ -302,7 +302,10 @@ namespace CataclysmModder
             try
             {
                 string json = new JavaScriptSerializer().Serialize(obj);
-                write.Write(SpaceJson(json));
+                if (Options.DontFormatJson)
+                    write.Write(json);
+                else
+                    write.Write(SpaceJson(json));
                 unsavedChanges = false;
             }
             catch (ArgumentException)
@@ -319,6 +322,16 @@ namespace CataclysmModder
         {
             StringBuilder newjson = new StringBuilder();
             string nlindent = "\n";
+
+            string indent = "";
+            if (Options.IndentWithTabs)
+                indent = "\t";
+            else
+            {
+                for (int c = 0; c < Options.IndentSpaces; c++)
+                    indent += " ";
+            }
+
             bool quoteOpen = false;
             bool escape = false;
             for (int c = 0; c < json.Length; c++)
@@ -329,12 +342,12 @@ namespace CataclysmModder
 
                 if (!quoteOpen && (json[c] == ']' || json[c] == '}'))
                 {
-                    nlindent = nlindent.Substring(0, nlindent.Length-1);
+                    nlindent = nlindent.Substring(0, nlindent.Length-indent.Length);
                     newjson.Append(nlindent + json[c]);
                 }
                 else if (!quoteOpen && (json[c] == '[' || json[c] == '{'))
                 {
-                    nlindent += '\t';
+                    nlindent += indent;
                     newjson.Append(json[c] + nlindent);
                 }
                 else if (!quoteOpen && json[c] == ',')

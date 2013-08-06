@@ -352,6 +352,11 @@ namespace CataclysmModder
             //Force reload of current item
             entriesListBox_SelectedIndexChanged(null, null);
         }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Options().ShowDialog();
+        }
     }
 
 
