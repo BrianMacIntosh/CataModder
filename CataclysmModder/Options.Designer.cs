@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.preserveUnchangedCheck = new System.Windows.Forms.CheckBox();
             this.indentSpacesNumeric = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.indentTabsCheck = new System.Windows.Forms.CheckBox();
@@ -41,6 +42,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.preserveUnchangedCheck);
             this.groupBox1.Controls.Add(this.indentSpacesNumeric);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.indentTabsCheck);
@@ -51,6 +53,16 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Export Options";
+            // 
+            // preserveUnchangedCheck
+            // 
+            this.preserveUnchangedCheck.AutoSize = true;
+            this.preserveUnchangedCheck.Location = new System.Drawing.Point(7, 94);
+            this.preserveUnchangedCheck.Name = "preserveUnchangedCheck";
+            this.preserveUnchangedCheck.Size = new System.Drawing.Size(149, 17);
+            this.preserveUnchangedCheck.TabIndex = 4;
+            this.preserveUnchangedCheck.Text = "Preserve unchanged data";
+            this.preserveUnchangedCheck.UseVisualStyleBackColor = true;
             // 
             // indentSpacesNumeric
             // 
@@ -141,5 +153,6 @@
         private System.Windows.Forms.CheckBox dontFormatJsonCheck;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button applyButton;
+        private System.Windows.Forms.CheckBox preserveUnchangedCheck;
     }
 }

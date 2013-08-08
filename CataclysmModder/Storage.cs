@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Text;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
-using System.ComponentModel;
-using System.Text;
 
 namespace CataclysmModder
 {
@@ -87,6 +87,8 @@ namespace CataclysmModder
 
     static class Storage
     {
+        private static JsonSchema itemSchema;
+
         private static bool unsavedChanges = false;
         public static bool UnsavedChanges { get { return unsavedChanges; } }
         
@@ -163,7 +165,8 @@ namespace CataclysmModder
 
         static Storage()
         {
-
+            //Load schemas
+            itemSchema = new JsonSchema("CataclysmModder.schemas.items.txt");
         }
 
         public static void FileChanged()
@@ -296,6 +299,39 @@ namespace CataclysmModder
             }
         }
 
+        public static void SaveJsonItem(string file, object obj)
+        {
+            StreamWriter write = new StreamWriter(new FileStream(Path.Combine(workspacePath, file), FileMode.Create));
+            try
+            {
+                StringBuilder sb = new StringBuilder("[");
+                foreach (Dictionary<string, object> item in (object[])obj)
+                {
+                    string type = (item.ContainsKey("type") ? (string)item["type"] : "");
+                    sb.Append(itemSchema.Serialize(item, type));
+                    sb.Append(",");
+                }
+                //Remove last comma
+                sb.Remove(sb.Length - 1, 1);
+
+                sb.Append("]");
+
+                if (Options.DontFormatJson)
+                    write.Write(sb.ToString());
+                else
+                    write.Write(SpaceJson(sb.ToString()));
+            }
+            catch (ArgumentException)
+            {
+                //TODO: error message
+                return;
+            }
+            finally
+            {
+                write.Close();
+            }
+        }
+
         public static void SaveJson(string file, object obj)
         {
             StreamWriter write = new StreamWriter(new FileStream(Path.Combine(workspacePath, file), FileMode.Create));
@@ -306,7 +342,6 @@ namespace CataclysmModder
                     write.Write(json);
                 else
                     write.Write(SpaceJson(json));
-                unsavedChanges = false;
             }
             catch (ArgumentException)
             {
@@ -385,13 +420,24 @@ namespace CataclysmModder
         {
             foreach (string file in openFiles)
                 SaveFile(file);
+            unsavedChanges = false;
         }
 
         public static void SaveFile(string file)
         {
             string ffilename = Path.GetFileName(file);
-            if (FileIsItems(file)
-                || ffilename.Equals("bionics.json")
+            if (FileIsItems(file))
+            {
+                object[] serialData = new object[OpenItems.Count];
+                int c = 0;
+                foreach (ItemDataWrapper v in OpenItems)
+                {
+                    serialData[c] = v.data;
+                    c++;
+                }
+                SaveJsonItem(file, serialData);
+            }
+            else if (ffilename.Equals("bionics.json")
                 || ffilename.Equals("item_groups.json")
                 || ffilename.Equals("materials.json")
                 || ffilename.Equals("monstergroups.json")

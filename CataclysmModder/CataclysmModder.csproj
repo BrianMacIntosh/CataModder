@@ -116,6 +116,7 @@
     <Compile Include="ItemGroupValues.Designer.cs">
       <DependentUpon>ItemGroupValues.cs</DependentUpon>
     </Compile>
+    <Compile Include="JsonSchema.cs" />
     <Compile Include="Options.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -200,6 +201,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="schemas\items.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

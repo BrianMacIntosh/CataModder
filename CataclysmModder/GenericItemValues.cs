@@ -79,14 +79,18 @@ namespace CataclysmModder
                 "A unique string ID for the object, used in recipes and the code.");
             symbolTextBox.Tag = new JsonFormTag(
                 "symbol",
-                "A single character used to display this item on the map.");
+                "A single character used to display this item on the map.",
+                true,
+                "_");
             typeComboBox.Tag = new JsonFormTag(
                 "type",
                 "The type of the object, controlling what extra information it needs.",
                 false);
             colorComboBox.Tag = new JsonFormTag(
                  "color",
-                 "The color used to display this item on the map.");
+                 "The color used to display this item on the map.",
+                 true,
+                 "light_gray");
             nameTextBox.Tag = new JsonFormTag(
                 "name",
                 "The displayed name of the object. Should be all lowercase except in special cases (like proper nouns and acronyms).");
@@ -166,8 +170,7 @@ namespace CataclysmModder
                 }
             }
 
-            //Remove now-invalid keys and fill defaults for missing ones
-            Dictionary<string, object> newData = new Dictionary<string, object>();
+            //Fill defaults for missing keys
             foreach (Control c in Form1.Instance.Controls)
             {
                 if (c.Tag is DataFormTag && c.Visible)
@@ -177,18 +180,14 @@ namespace CataclysmModder
                         if (d.Tag is JsonFormTag)
                         {
                             string key = ((JsonFormTag)d.Tag).key;
-                            if (!string.IsNullOrEmpty(key))
-                            {
-                                if (Storage.CurrentItemData.ContainsKey(key))
-                                    newData[key] = Storage.CurrentItemData[key];
-                                else if (((JsonFormTag)d.Tag).mandatory)
-                                    newData[key] = ((JsonFormTag)d.Tag).def;
-                            }
+                            if (!string.IsNullOrEmpty(key)
+                                && !Storage.CurrentItemData.ContainsKey(key)
+                                && ((JsonFormTag)d.Tag).mandatory)
+                                Storage.CurrentItemData[key] = ((JsonFormTag)d.Tag).def;
                         }
                     }
                 }
             }
-            Storage.CurrentItemData = newData;
         }
 
         private void flagsCheckedListBox_selectedIndexChanged(object sender, EventArgs e)

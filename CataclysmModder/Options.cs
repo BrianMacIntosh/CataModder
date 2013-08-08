@@ -15,6 +15,7 @@ namespace CataclysmModder
         public static bool DontFormatJson = false;
         public static bool IndentWithTabs = false;
         public static int IndentSpaces = 4;
+        public static bool PreserveUnchanged = false;
 
         public Options()
         {
@@ -25,6 +26,7 @@ namespace CataclysmModder
             dontFormatJsonCheck.Checked = DontFormatJson;
             indentTabsCheck.Checked = IndentWithTabs;
             indentSpacesNumeric.Value = IndentSpaces;
+            preserveUnchangedCheck.Checked = PreserveUnchanged;
         }
 
         private void dontFormatJsonCheck_CheckedChanged(object sender, EventArgs e)
@@ -61,6 +63,7 @@ namespace CataclysmModder
             write.WriteLine("dontFormatJson = " + DontFormatJson);
             write.WriteLine("indentWithTabs = " + IndentWithTabs);
             write.WriteLine("indentSpaces = " + IndentSpaces);
+            write.WriteLine("preserveUnchanged = " + PreserveUnchanged);
             write.Close();
         }
 
@@ -99,6 +102,8 @@ namespace CataclysmModder
                         IndentWithTabs = bool.Parse(value.Trim());
                     else if (key.Equals("indentspaces"))
                         IndentSpaces = int.Parse(value.Trim());
+                    else if (key.Equals("preserveunchanged"))
+                        PreserveUnchanged = bool.Parse(value.Trim());
                 }
                 catch (FormatException)
                 {
@@ -113,6 +118,7 @@ namespace CataclysmModder
             DontFormatJson = dontFormatJsonCheck.Checked;
             IndentWithTabs = indentTabsCheck.Checked;
             IndentSpaces = (int)indentSpacesNumeric.Value;
+            PreserveUnchanged = preserveUnchangedCheck.Checked;
 
             SaveOptions();
 
