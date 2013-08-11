@@ -318,7 +318,7 @@ namespace CataclysmModder
             }
         }
 
-        public static void SaveJsonItem(string file, object obj, JsonSchema schema, string pivotKey)
+        public static void SaveJsonItem(string file, object obj, JsonSchema schema, string pivotKey, int bracketBlockLevel = 1)
         {
             StreamWriter write = new StreamWriter(new FileStream(file, FileMode.Create));
             try
@@ -338,7 +338,7 @@ namespace CataclysmModder
                 if (Options.DontFormatJson)
                     write.Write(sb.ToString());
                 else
-                    write.Write(SpaceJson(sb.ToString()));
+                    write.Write(SpaceJson(sb.ToString(), bracketBlockLevel));
             }
             catch (ArgumentException)
             {
@@ -372,7 +372,7 @@ namespace CataclysmModder
             }
         }*/
         
-        public static string SpaceJson(string json)
+        public static string SpaceJson(string json, int bracketBlockLevel = 1)
         {
             StringBuilder newjson = new StringBuilder();
             string nlindent = "\n";
@@ -388,6 +388,7 @@ namespace CataclysmModder
 
             bool quoteOpen = false;
             bool escape = false;
+            int squareBrackets = 0; //HACK: slightly
             for (int c = 0; c < json.Length; c++)
             {
                 if (!escape && json[c] == '"') quoteOpen = !quoteOpen;
@@ -397,16 +398,21 @@ namespace CataclysmModder
                 if (!quoteOpen && (json[c] == ']' || json[c] == '}'))
                 {
                     nlindent = nlindent.Substring(0, nlindent.Length-indent.Length);
-                    newjson.Append(nlindent + json[c]);
+                    if (squareBrackets <= bracketBlockLevel) newjson.Append(nlindent);
+                    newjson.Append(json[c]);
+                    if (json[c] == ']') squareBrackets--;
                 }
                 else if (!quoteOpen && (json[c] == '[' || json[c] == '{'))
                 {
+                    if (json[c] == '[') squareBrackets++;
                     nlindent += indent;
-                    newjson.Append(json[c] + nlindent);
+                    newjson.Append(json[c]);
+                    if (squareBrackets <= bracketBlockLevel) newjson.Append(nlindent);
                 }
                 else if (!quoteOpen && json[c] == ',')
                 {
-                    newjson.Append(json[c] + nlindent);
+                    newjson.Append(json[c]);
+                    if (squareBrackets <= bracketBlockLevel) newjson.Append(nlindent);
                 }
                 else
                 {
@@ -466,7 +472,7 @@ namespace CataclysmModder
                     serialData[c] = OpenItems[i].data;
                     c++;
                 }
-                SaveJsonItem(file, serialData, itemgroupSchema, "");
+                SaveJsonItem(file, serialData, itemgroupSchema, "", 2);
             }
             else
             {
@@ -511,7 +517,7 @@ namespace CataclysmModder
                     serialData[c] = v.data;
                     c++;
                 }
-                SaveJsonItem(Path.Combine(workspacePath, file), serialData, itemgroupSchema, "");
+                SaveJsonItem(Path.Combine(workspacePath, file), serialData, itemgroupSchema, "", 2);
             }
             /*else if (ffilename.Equals("recipes.json"))
             {
