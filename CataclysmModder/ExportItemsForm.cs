@@ -40,7 +40,12 @@ namespace CataclysmModder
 
             if (save.ShowDialog() == DialogResult.OK)
             {
-
+                int[] indices = new int[checkedListBox1.CheckedIndices.Count];
+                for (int c = 0; c < checkedListBox1.CheckedIndices.Count; c++)
+                    indices[c] = checkedListBox1.CheckedIndices[c];
+                Storage.ExportFile(save.FileName, indices);
+                DialogResult = DialogResult.OK;
+                Close();
             }
         }
     }
