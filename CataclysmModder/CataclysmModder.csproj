@@ -85,6 +85,12 @@
     <Compile Include="ContainValues.Designer.cs">
       <DependentUpon>ContainValues.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExportItemsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExportItemsForm.Designer.cs">
+      <DependentUpon>ExportItemsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -157,6 +163,9 @@
     <EmbeddedResource Include="ContainValues.resx">
       <DependentUpon>ContainValues.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ExportItemsForm.resx">
+      <DependentUpon>ExportItemsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -204,6 +213,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="schemas\items.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="schemas\item_group.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -9,6 +9,11 @@ For version information, see Help->About.  MAKE
 SURE YOU ARE USING THE RIGHT VERSION OF CATACLYSM.
 
 
+You'll need the Microsoft .NET Redistributable 4.0 to
+run this version.
+http://www.microsoft.com/en-us/download/details.aspx?id=17851
+
+
 HOW TO USE THIS SOFTWARE: ===============================
 
 - Back up the 'raw' folder that contains the game

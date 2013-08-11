@@ -8,13 +8,17 @@ using System.Windows.Forms;
 
 namespace CataclysmModder
 {
+    /// <summary>
+    /// Wraps data loaded from a JSON item for display in a listbox.
+    /// </summary>
     class ItemDataWrapper : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void NotifyKeyChanged(string key)
         {
-            //TODO: entries box still doesn't update on name change
+            Modified = true;
+
             foreach (string s in DisplayMembers)
                 if (s.Equals(key))
                 {
@@ -24,8 +28,13 @@ namespace CataclysmModder
         }
 
         public static string[] DisplayMembers = new string[] { "id", "ident", "name", "result" };
-        
-        public Dictionary<string, object> data;
+
+        public Dictionary<string, object> data
+        {
+            get;
+            private set;
+        }
+
         public string Display
         {
             get
@@ -36,6 +45,8 @@ namespace CataclysmModder
                 return "[item]";
             }
         }
+
+        public bool Modified = false;
 
         public ItemDataWrapper(ItemDataWrapper copy)
         {
@@ -88,6 +99,7 @@ namespace CataclysmModder
     static class Storage
     {
         private static JsonSchema itemSchema;
+        private static JsonSchema itemgroupSchema;
 
         private static bool unsavedChanges = false;
         public static bool UnsavedChanges { get { return unsavedChanges; } }
@@ -105,6 +117,7 @@ namespace CataclysmModder
             }
         }
         private static int currentItemIndex = -1;
+        public static int CurrentItemIndex { get { return currentItemIndex; } }
         public static Dictionary<string, object> CurrentItemData
         {
             get
@@ -113,10 +126,6 @@ namespace CataclysmModder
                     return openItems[currentFileIndex][currentItemIndex].data;
                 else
                     return null;
-            }
-            set
-            {
-                openItems[currentFileIndex][currentItemIndex].data = value;
             }
         }
 
@@ -167,6 +176,7 @@ namespace CataclysmModder
         {
             //Load schemas
             itemSchema = new JsonSchema("CataclysmModder.schemas.items.txt");
+            itemgroupSchema = new JsonSchema("CataclysmModder.schemas.item_group.txt");
         }
 
         public static void FileChanged()
@@ -240,6 +250,8 @@ namespace CataclysmModder
         {
             //Load up contents of the file
             object json = LoadJson(path);
+            if (json == null)
+                return;
             
             BindingList<ItemDataWrapper> newItems = new BindingList<ItemDataWrapper>();
             openItems.Add(newItems);
@@ -288,9 +300,16 @@ namespace CataclysmModder
             {
                 return new JavaScriptSerializer().DeserializeObject(json);
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
-                //TODO: error message
+                MessageBox.Show("Failed to parse JSON from file '" + file + "': " + e.Message,
+                    "Argument Exception", MessageBoxButtons.OK);
+                return null;
+            }
+            catch (InvalidOperationException e)
+            {
+                MessageBox.Show("Failed to parse JSON from file '" + file + "': " + e.Message,
+                    "Invalid Operation Exception", MessageBoxButtons.OK);
                 return null;
             }
             finally
@@ -299,7 +318,7 @@ namespace CataclysmModder
             }
         }
 
-        public static void SaveJsonItem(string file, object obj)
+        public static void SaveJsonItem(string file, object obj, JsonSchema schema, string pivotKey)
         {
             StreamWriter write = new StreamWriter(new FileStream(Path.Combine(workspacePath, file), FileMode.Create));
             try
@@ -307,8 +326,8 @@ namespace CataclysmModder
                 StringBuilder sb = new StringBuilder("[");
                 foreach (Dictionary<string, object> item in (object[])obj)
                 {
-                    string type = (item.ContainsKey("type") ? (string)item["type"] : "");
-                    sb.Append(itemSchema.Serialize(item, type));
+                    string type = (item.ContainsKey(pivotKey) ? (string)item[pivotKey] : "");
+                    sb.Append(schema.Serialize(item, type));
                     sb.Append(",");
                 }
                 //Remove last comma
@@ -332,7 +351,9 @@ namespace CataclysmModder
             }
         }
 
-        public static void SaveJson(string file, object obj)
+
+
+        /*public static void SaveJson(string file, object obj)
         {
             StreamWriter write = new StreamWriter(new FileStream(Path.Combine(workspacePath, file), FileMode.Create));
             try
@@ -351,8 +372,8 @@ namespace CataclysmModder
             {
                 write.Close();
             }
-        }
-
+        }*/
+        
         public static string SpaceJson(string json)
         {
             StringBuilder newjson = new StringBuilder();
@@ -419,45 +440,54 @@ namespace CataclysmModder
         public static void SaveOpenFiles()
         {
             foreach (string file in openFiles)
-                SaveFile(file);
+                SaveFile(file, false);
             unsavedChanges = false;
+            MessageBox.Show("All files saved.", "Saving", MessageBoxButtons.OK);
         }
 
-        public static void SaveFile(string file)
+        public static void SaveFile(string file, bool standalone = true)
         {
+            int fileIndex = -1;
+            for (int c = 0; c < OpenFiles.Length; c++)
+                if (file.Equals(OpenFiles[c]))
+                {
+                    fileIndex = c;
+                    break;
+                }
+            if (fileIndex == -1)
+            {
+                //TODO: error
+                return;
+            }
+
             string ffilename = Path.GetFileName(file);
             if (FileIsItems(file))
             {
-                object[] serialData = new object[OpenItems.Count];
+                object[] serialData = new object[openItems[fileIndex].Count];
                 int c = 0;
-                foreach (ItemDataWrapper v in OpenItems)
+                foreach (ItemDataWrapper v in openItems[fileIndex])
                 {
                     serialData[c] = v.data;
                     c++;
                 }
-                SaveJsonItem(file, serialData);
+                SaveJsonItem(file, serialData, itemSchema, "type");
             }
-            else if (ffilename.Equals("bionics.json")
-                || ffilename.Equals("item_groups.json")
-                || ffilename.Equals("materials.json")
-                || ffilename.Equals("monstergroups.json")
-                || ffilename.Equals("names.json")
-                || ffilename.Equals("professions.json"))
+            else if (ffilename.Equals("item_groups.json"))
             {
-                object[] serialData = new object[OpenItems.Count];
+                object[] serialData = new object[openItems[fileIndex].Count];
                 int c = 0;
-                foreach (ItemDataWrapper v in OpenItems)
+                foreach (ItemDataWrapper v in openItems[fileIndex])
                 {
                     serialData[c] = v.data;
                     c++;
                 }
-                SaveJson(file, serialData);
+                SaveJsonItem(file, serialData, itemgroupSchema, "");
             }
-            else if (ffilename.Equals("recipes.json"))
+            /*else if (ffilename.Equals("recipes.json"))
             {
-                object[] serialData = new object[OpenItems.Count];
+                object[] serialData = new object[openItems[fileIndex].Count];
                 int c = 0;
-                foreach (ItemDataWrapper v in OpenItems)
+                foreach (ItemDataWrapper v in openItems[fileIndex])
                 {
                     serialData[c] = v.data;
                     c++;
@@ -466,11 +496,29 @@ namespace CataclysmModder
                 serial2["recipes"] = serialData;
                 serial2["categories"] = CraftCategories;
                 SaveJson(file, serial2);
-            }
+            }*/
             else
             {
-                MessageBox.Show("Serializing this file is not supported.", "Error", MessageBoxButtons.OK);
+                if (standalone)
+                    MessageBox.Show("Serializing this file is not supported.", "Error", MessageBoxButtons.OK);
                 return;
+            }
+
+            //Mark items as saved
+            foreach (ItemDataWrapper data in openItems[fileIndex])
+                data.Modified = false;
+
+            if (standalone)
+                MessageBox.Show("File '" + file + "' saved.", "Saving", MessageBoxButtons.OK);
+
+            //Check if other files are still outstanding
+            if (standalone)
+            {
+                foreach (BindingList<ItemDataWrapper> list in openItems)
+                    foreach (ItemDataWrapper data in list)
+                        if (data.Modified)
+                            return;
+                unsavedChanges = false;
             }
         }
 
@@ -490,7 +538,7 @@ namespace CataclysmModder
                 unsavedChanges = true;
             }
 
-            openItems[currentFileIndex][currentFileIndex].NotifyKeyChanged(key);
+            openItems[currentFileIndex][currentItemIndex].NotifyKeyChanged(key);
         }
 
         public static void LoadMaterials(ListBox box)
@@ -518,7 +566,10 @@ namespace CataclysmModder
             {
                 if (Path.GetFileName(s).Equals("skills.json"))
                 {
-                    foreach (object[] item in (object[])LoadJson(s))
+                    object json = LoadJson(s);
+                    if (json == null)
+                        return;
+                    foreach (object[] item in (object[])json)
                     {
                         box.Items.Add(item[0]);
                     }
@@ -536,7 +587,10 @@ namespace CataclysmModder
             {
                 if (Path.GetFileName(s).Equals("skills.json"))
                 {
-                    foreach (object[] item in (object[])LoadJson(s))
+                    object json = LoadJson(s);
+                    if (json == null)
+                        return;
+                    foreach (object[] item in (object[])json)
                     {
                         foreach (string f in (object[])item[3])
                             if (f.Equals("gun_type"))

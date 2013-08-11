@@ -74,22 +74,59 @@ namespace CataclysmModder
             string id, bool mandatory)
         {
             if (itemValues.ContainsKey(key))
-                field.Text = (string)itemValues[key];
+            {
+                try
+                {
+                    field.Text = (string)itemValues[key];
+                }
+                catch (InvalidCastException)
+                {
+                    MessageBox.Show("Expected 'string' for key '" + key + "' but got '" + itemValues[key].GetType().ToString() + "'",
+                        "Data Error", MessageBoxButtons.OK);
+                }
+            }
             else if (mandatory)
+            {
                 IssueTracker.PostIssue(
                     "Item '" + id + "': missing mandatory value for '" + key + "'.",
                     IssueTracker.IssueLevel.ERROR);
+            }
         }
 
         public static void SetInt(Dictionary<string, object> itemValues, string key, NumericUpDown field,
             string id, bool mandatory)
         {
             if (itemValues.ContainsKey(key))
-                field.Value = (int)itemValues[key];
+            {
+                try
+                {
+                    int val = (int)itemValues[key];
+                    if (val > field.Maximum)
+                    {
+                        IssueTracker.PostIssue("Value '" + val + "' for key '" + key + "' exceeds the maximum allowed.",
+                            IssueTracker.IssueLevel.WARNING);
+                        val = (int)field.Maximum;
+                    }
+                    else if (val < field.Minimum)
+                    {
+                        IssueTracker.PostIssue("Value '" + val + "' for key '" + key + "' is below the minimum allowed.",
+                            IssueTracker.IssueLevel.WARNING);
+                        val = (int)field.Minimum;
+                    }
+                    field.Value = val;
+                }
+                catch (InvalidCastException)
+                {
+                    MessageBox.Show("Expected 'int' for key '" + key + "' but got '" + itemValues[key].GetType().ToString() + "'",
+                        "Data Error", MessageBoxButtons.OK);
+                }
+            }
             else if (mandatory)
+            {
                 IssueTracker.PostIssue(
                     "Item '" + id + "': missing mandatory value for '" + key + "'.",
                     IssueTracker.IssueLevel.ERROR);
+            }
         }
 
         public static void SetChecks(Dictionary<string, object> itemValues, string key, CheckedListBox field,
@@ -109,13 +146,23 @@ namespace CataclysmModder
                 }
                 else
                 {
-                    SetCheck(id, (string)itemValues[key], field);
+                    try
+                    {
+                        SetCheck(id, (string)itemValues[key], field);
+                    }
+                    catch (InvalidCastException)
+                    {
+                        MessageBox.Show("Expected 'array' or 'string' for key '" + key + "' but got '" + itemValues[key].GetType().ToString() + "'",
+                            "Data Error", MessageBoxButtons.OK);
+                    }
                 }
             }
             else if (mandatory)
+            {
                 IssueTracker.PostIssue(
                     "Item '" + id + "': missing mandatory value for '" + key + "'.",
                     IssueTracker.IssueLevel.ERROR);
+            }
         }
 
         public static void SetCheck(string id, string item, CheckedListBox field)
@@ -139,11 +186,23 @@ namespace CataclysmModder
             string id, bool mandatory, bool material = false)
         {
             if (itemValues.ContainsKey(key))
-                field.Checked = (bool)itemValues[key];
+            {
+                try
+                {
+                    field.Checked = (bool)itemValues[key];
+                }
+                catch (InvalidCastException)
+                {
+                    MessageBox.Show("Expected 'bool' for key '" + key + "' but got '" + itemValues[key].GetType().ToString() + "'",
+                        "Data Error", MessageBoxButtons.OK);
+                }
+            }
             else if (mandatory)
+            {
                 IssueTracker.PostIssue(
                     "Item '" + id + "': missing mandatory value for '" + key + "'.",
                     IssueTracker.IssueLevel.ERROR);
+            }
         }
 
         /// <summary>

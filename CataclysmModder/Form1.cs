@@ -216,6 +216,7 @@ namespace CataclysmModder
         private void entriesListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (!Storage.ItemsLoaded) return;
+            if (entriesListBox.SelectedIndex == Storage.CurrentItemIndex) return;
 
             //Load up an item to edit
             int loadItem = entriesListBox.SelectedIndex;
@@ -356,6 +357,11 @@ namespace CataclysmModder
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new Options().ShowDialog();
+        }
+
+        private void exportItemsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new ExportItemsForm().ShowDialog();
         }
     }
 
