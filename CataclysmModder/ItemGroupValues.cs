@@ -98,7 +98,7 @@ namespace CataclysmModder
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            if (itemsListBox.SelectedIndex > 0)
+            if (itemsListBox.SelectedIndex >= 0)
             {
                 items.Remove((ItemGroupLine)itemsListBox.SelectedItem);
                 SaveItemlistToStorage();
