@@ -68,7 +68,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(238, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = " ver 0.1 rev 10.  For Cataclysm ver 0.7 (Lindqvist)";
+            this.label2.Text = " ver 0.1 rev 16.  For Cataclysm ver 0.7 (Lindqvist)";
             // 
             // label3
             // 
@@ -102,6 +102,7 @@
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(146, 13);
             this.linkLabel1.TabIndex = 5;
+            this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "http://en.cataclysmdda.com/";
             this.linkLabel1.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
@@ -117,6 +118,7 @@
             this.linkLabel2.Name = "linkLabel2";
             this.linkLabel2.Size = new System.Drawing.Size(237, 13);
             this.linkLabel2.TabIndex = 6;
+            this.linkLabel2.TabStop = true;
             this.linkLabel2.Text = "https://github.com/BrianMacIntosh/CataModder";
             this.linkLabel2.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
             this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);

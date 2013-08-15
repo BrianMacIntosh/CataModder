@@ -20,6 +20,21 @@ namespace CataclysmModder
                 this.item = item;
                 this.help = help;
             }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is string)
+                    return ((string)obj).ToLower().Equals(item.ToLower());
+                else if (obj is HelpItem)
+                    return obj == this;
+                else
+                    return false;
+            }
+
+            public override string ToString()
+            {
+                return Display;
+            }
         }
 
         public string key;
@@ -227,13 +242,13 @@ namespace CataclysmModder
                 {
                     if (c != e.Index || e.NewValue != CheckState.Unchecked)
                     {
-                        vals[d] = box.Items[c];
+                        vals[d] = box.Items[c].ToString();
                         d++;
                     }
                 }
             }
             if (e.NewValue == CheckState.Checked)
-                vals[d] = box.Items[e.Index];
+                vals[d] = box.Items[e.Index].ToString();
 
             if (key.Equals("material") && vals.Length == 1)
                 ApplyValue(key, vals[0], ((JsonFormTag)box.Tag).mandatory);

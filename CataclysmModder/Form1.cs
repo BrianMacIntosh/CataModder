@@ -204,6 +204,11 @@ namespace CataclysmModder
             entriesListBox.ClearSelected();
             entriesListBox.DataSource = Storage.OpenItems;
             entriesListBox.DisplayMember = "Display";
+
+            //Load first item
+            entriesListBox.SelectedIndex = 0;
+            HideItemExtensions();
+            Storage.LoadItem(entriesListBox.SelectedIndex);
         }
 
         public void HideItemExtensions()
@@ -219,11 +224,8 @@ namespace CataclysmModder
             if (entriesListBox.SelectedIndex == Storage.CurrentItemIndex) return;
 
             //Load up an item to edit
-            int loadItem = entriesListBox.SelectedIndex;
-
             HideItemExtensions();
-
-            Storage.LoadItem(loadItem);
+            Storage.LoadItem(entriesListBox.SelectedIndex);
         }
 
         public void SetHelpText(string text)
@@ -235,6 +237,7 @@ namespace CataclysmModder
         {
             ItemDataWrapper newitem = new ItemDataWrapper();
             Storage.OpenItems.Add(newitem);
+            entriesListBox.SelectedIndex = Storage.OpenItems.Count - 1;
 
             //Fill in default values
             foreach (Control c in Controls)
@@ -272,6 +275,7 @@ namespace CataclysmModder
             {
                 Storage.OpenItems.Add(new ItemDataWrapper((ItemDataWrapper)entriesListBox.SelectedItem));
                 Storage.FileChanged();
+                entriesListBox.SelectedIndex = Storage.OpenItems.Count - 1;
             }
         }
 

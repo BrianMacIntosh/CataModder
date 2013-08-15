@@ -194,8 +194,7 @@ namespace CataclysmModder
                 case ListChangedType.Reset:
 
                 //These might possibly be handled more efficiently
-                case ListChangedType.ItemMoved:
-                case ListChangedType.ItemChanged:
+                //case ListChangedType.ItemChanged:
                 case ListChangedType.ItemDeleted:
                     //Rebuild autocomplete list
                     AutocompleteItemSource.Clear();

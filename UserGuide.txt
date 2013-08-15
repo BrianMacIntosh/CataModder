@@ -39,9 +39,6 @@ You can type in the "Quicksearch" bar at the top right to
 search the entries list by name or id. Press Enter to
 scan through the search results.
 
-You can press Ctrl+Space at any time to select the next
-item matching the quicksearch.
-
 You can use Ctrl+Up and Ctrl+Down at any time to navigate
 up and down the entries list.
 

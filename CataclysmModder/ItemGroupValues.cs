@@ -94,6 +94,7 @@ namespace CataclysmModder
         {
             items.Add(new ItemGroupLine(new object[] { "null", 0 }));
             SaveItemlistToStorage();
+            itemsListBox.SelectedIndex = itemsListBox.Items.Count - 1;
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
