@@ -68,7 +68,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(238, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = " ver 0.1 rev 16.  For Cataclysm ver 0.7 (Lindqvist)";
+            this.label2.Text = " ver 0.1 rev 17.  For Cataclysm ver 0.7 (Lindqvist)";
             // 
             // label3
             // 

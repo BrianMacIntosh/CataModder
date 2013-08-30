@@ -1,0 +1,13 @@
+﻿result
+<id_suffix>
+category
+<skill_pri>
+<skill_sec>
+difficulty
+time
+<reversible>
+<decomp_learn>
+autolearn
+<book_learn>
+<tools>
+<components>

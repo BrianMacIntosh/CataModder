@@ -75,7 +75,6 @@
             this.idTextBox.Name = "idTextBox";
             this.idTextBox.Size = new System.Drawing.Size(101, 20);
             this.idTextBox.TabIndex = 1;
-            this.idTextBox.TextChanged += new System.EventHandler(this.idTextBox_TextChanged);
             // 
             // itemsListBox
             // 

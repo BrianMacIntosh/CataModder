@@ -100,6 +100,7 @@ namespace CataclysmModder
     {
         private static JsonSchema itemSchema;
         private static JsonSchema itemgroupSchema;
+        private static JsonSchema recipesSchema;
 
         private static bool unsavedChanges = false;
         public static bool UnsavedChanges { get { return unsavedChanges; } }
@@ -177,6 +178,7 @@ namespace CataclysmModder
             //Load schemas
             itemSchema = new JsonSchema("CataclysmModder.schemas.items.txt");
             itemgroupSchema = new JsonSchema("CataclysmModder.schemas.item_group.txt");
+            recipesSchema = new JsonSchema("CataclysmModder.schemas.recipes.txt");
         }
 
         public static void FileChanged()
@@ -333,6 +335,49 @@ namespace CataclysmModder
                 sb.Remove(sb.Length - 1, 1);
 
                 sb.Append("]");
+
+                if (Options.DontFormatJson)
+                    write.Write(sb.ToString());
+                else
+                    write.Write(SpaceJson(sb.ToString(), bracketBlockLevel));
+            }
+            catch (ArgumentException)
+            {
+                //TODO: error message
+                return;
+            }
+            finally
+            {
+                write.Close();
+            }
+        }
+
+        public static void SaveJsonRecipes(string file, object obj, JsonSchema schema, string pivotKey, int bracketBlockLevel = 2)
+        {
+            StreamWriter write = new StreamWriter(new FileStream(file, FileMode.Create));
+            try
+            {
+                StringBuilder sb = new StringBuilder("{\"categories\":[");
+
+                //Categories
+                foreach (string cat in CraftCategories)
+                    sb.Append('"' + cat + "\",");
+                //Remove last comma
+                sb.Remove(sb.Length - 1, 1);
+
+                sb.Append("],\"recipes\":[");
+
+                //Recipes
+                foreach (Dictionary<string, object> item in (object[])obj)
+                {
+                    string type = (item.ContainsKey(pivotKey) ? (string)item[pivotKey] : "");
+                    sb.Append(schema.Serialize(item, type));
+                    sb.Append(",");
+                }
+                //Remove last comma
+                sb.Remove(sb.Length - 1, 1);
+
+                sb.Append("]}");
 
                 if (Options.DontFormatJson)
                     write.Write(sb.ToString());
@@ -617,7 +662,6 @@ namespace CataclysmModder
         {
             //TODO: don't reload these files all the time
             box.Items.Clear();
-            box.Items.Add("none");
             foreach (string s in openFiles)
             {
                 if (Path.GetFileName(s).Equals("skills.json"))
