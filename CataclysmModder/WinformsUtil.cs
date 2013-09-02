@@ -321,6 +321,10 @@ namespace CataclysmModder
                     else
                         c.TextChanged += TextValueChanged;
                 }
+                else if (c.Controls.Count > 0)
+                {
+                    ControlsAttachHooks(c);
+                }
             }
         }
 

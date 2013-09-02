@@ -352,7 +352,7 @@ namespace CataclysmModder
             }
         }
 
-        public static void SaveJsonRecipes(string file, object obj, JsonSchema schema, string pivotKey, int bracketBlockLevel = 2)
+        public static void SaveJsonRecipes(string file, object obj, JsonSchema schema, string pivotKey, int bracketBlockLevel = 3)
         {
             StreamWriter write = new StreamWriter(new FileStream(file, FileMode.Create));
             try
@@ -518,6 +518,10 @@ namespace CataclysmModder
                 }
                 SaveJsonItem(file, serialData, itemgroupSchema, "", 2);
             }
+            //else if (ffilename.Equals("recipes.json"))
+            //{
+                //TODO:
+            //}
             else
             {
                 MessageBox.Show("Serializing this file is not supported.", "Error", MessageBoxButtons.OK);
@@ -563,7 +567,7 @@ namespace CataclysmModder
                 }
                 SaveJsonItem(Path.Combine(workspacePath, file), serialData, itemgroupSchema, "", 2);
             }
-            /*else if (ffilename.Equals("recipes.json"))
+            else if (ffilename.Equals("recipes.json"))
             {
                 object[] serialData = new object[openItems[fileIndex].Count];
                 int c = 0;
@@ -572,11 +576,8 @@ namespace CataclysmModder
                     serialData[c] = v.data;
                     c++;
                 }
-                Dictionary<string, object> serial2 = new Dictionary<string, object>();
-                serial2["recipes"] = serialData;
-                serial2["categories"] = CraftCategories;
-                SaveJson(file, serial2);
-            }*/
+                SaveJsonRecipes(Path.Combine(workspacePath, file), serialData, recipesSchema, "");
+            }
             else
             {
                 if (standalone)

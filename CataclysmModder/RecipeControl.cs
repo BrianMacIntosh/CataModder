@@ -11,19 +11,36 @@ namespace CataclysmModder
 {
     public partial class RecipeControl : UserControl
     {
-        private class ComponentGroupItem
+        private class ComponentGroupItem : INotifyPropertyChanged
         {
             public object[] data;
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            public static explicit operator object[](ComponentGroupItem item)
+            {
+                return item.data;
+            }
 
             public string Id
             {
                 get { return (string)data[0]; }
-                set { data[0] = value; }
+                set
+                {
+                    data[0] = value;
+                    if (PropertyChanged != null)
+                        PropertyChanged(this, new PropertyChangedEventArgs("Display"));
+                }
             }
             public int Qty
             {
                 get { return (int)data[1]; }
-                set { data[1] = value; }
+                set
+                {
+                    data[1] = value;
+                    if (PropertyChanged != null)
+                        PropertyChanged(this, new PropertyChangedEventArgs("Display"));
+                }
             }
 
             public string Display
@@ -40,9 +57,11 @@ namespace CataclysmModder
             }
         }
 
-        private class ComponentGroup
+        private class ComponentGroup : INotifyPropertyChanged
         {
             public BindingList<ComponentGroupItem> items = new BindingList<ComponentGroupItem>();
+
+            public event PropertyChangedEventHandler PropertyChanged;
 
             public bool isTools = false;
 
@@ -59,6 +78,12 @@ namespace CataclysmModder
                 }
             }
 
+            public void NotifyItemChanged(object sender, PropertyChangedEventArgs args)
+            {
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("Display"));
+            }
+
             public ComponentGroup()
             {
 
@@ -73,6 +98,7 @@ namespace CataclysmModder
             public void AddNew()
             {
                 items.Add(new ComponentGroupItem(new object[] { "null", 1 }));
+                //items[items.Count - 1].PropertyChanged += NotifyItemChanged;
             }
         }
 
@@ -150,6 +176,7 @@ namespace CataclysmModder
             itemIdTextField.Tag = new JsonFormTag(
                 null,
                 "The string id of this item.");
+            ((JsonFormTag)itemIdTextField.Tag).isItemId = true;
             quantityNumeric.Tag = new JsonFormTag(
                 null,
                 "For components, the quantity used. For tools, the number of charges used (-1 for no charges).");
@@ -212,7 +239,7 @@ namespace CataclysmModder
             if (toolsListBox.SelectedItem != null)
             {
                 componentsListBox.SelectedIndex = -1;
-                itemsListBox.SelectedIndex = -1;
+                //itemsListBox.SelectedIndex = -1;
 
                 itemsListBox.DataSource = ((ComponentGroup)toolsListBox.SelectedItem).items;
                 itemsListBox.DisplayMember = "Display";
@@ -224,12 +251,14 @@ namespace CataclysmModder
             if (componentsListBox.SelectedItem != null)
             {
                 toolsListBox.SelectedIndex = -1;
-                itemsListBox.SelectedIndex = -1;
+                //itemsListBox.SelectedIndex = -1;
 
                 itemsListBox.DataSource = ((ComponentGroup)componentsListBox.SelectedItem).items;
                 itemsListBox.DisplayMember = "Display";
             }
         }
+
+        private bool changing = false;
 
         private void itemsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -240,7 +269,7 @@ namespace CataclysmModder
                 itemIdTextField.Text = ((ComponentGroupItem)itemsListBox.SelectedItem).Id;
                 quantityNumeric.Value = ((ComponentGroupItem)itemsListBox.SelectedItem).Qty;
             }
-            else
+            else if (!changing)
             {
                 ClearItem();
             }
@@ -263,29 +292,68 @@ namespace CataclysmModder
 
         private void SaveItemlistToStorage()
         {
-            //TODO:
+            if (toolsListBox.SelectedItem != null)
+                SaveToolListToStorage();
+            if (componentsListBox.SelectedItem != null)
+                SaveComponentListToStorage();
+        }
+
+        private void SaveComponentListToStorage()
+        {
+            object[] cgroups = new object[componentGroups.Count];
+            int c = 0;
+            foreach (ComponentGroup cg in componentGroups)
+            {
+                object[] cgroup = new object[cg.items.Count];
+                int d = 0;
+                foreach (ComponentGroupItem cgi in cg.items)
+                {
+                    cgroup[d] = (object[])cgi;
+                    d++;
+                }
+                cgroups[c] = cgroup;
+                c++;
+            }
+            Storage.ItemApplyValue("components", cgroups, true);
+        }
+
+        private void SaveToolListToStorage()
+        {
+            object[] cgroups = new object[toolGroups.Count];
+            int c = 0;
+            foreach (ComponentGroup cg in toolGroups)
+            {
+                object[] cgroup = new object[cg.items.Count];
+                int d = 0;
+                foreach (ComponentGroupItem cgi in cg.items)
+                {
+                    cgroup[d] = (object[])cgi;
+                    d++;
+                }
+                cgroups[c] = cgroup;
+                c++;
+            }
+            Storage.ItemApplyValue("tools", cgroups, true);
         }
 
         private void itemIdTextField_TextChanged(object sender, EventArgs e)
         {
             if (WinformsUtil.Resetting > 0) return;
 
+            changing = true;
             ((ComponentGroupItem)itemsListBox.SelectedItem).Id = itemIdTextField.Text;
+            changing = false;
             SaveItemlistToStorage();
-
-            //Force displays to update
-            //TODO:
         }
 
         private void quantityNumeric_ValueChanged(object sender, EventArgs e)
         {
             if (WinformsUtil.Resetting > 0) return;
 
+            changing = true;
             ((ComponentGroupItem)itemsListBox.SelectedItem).Qty = (int)quantityNumeric.Value;
+            changing = false;
             SaveItemlistToStorage();
-
-            //Force displays to update
-            //TODO:
         }
 
         private void newItemButton_Click(object sender, EventArgs e)
@@ -308,7 +376,7 @@ namespace CataclysmModder
         private void newToolButton_Click(object sender, EventArgs e)
         {
             toolGroups.Add(new ComponentGroup());
-            SaveItemlistToStorage();
+            SaveToolListToStorage();
         }
 
         private void deleteToolButton_Click(object sender, EventArgs e)
@@ -322,14 +390,14 @@ namespace CataclysmModder
                     ClearItems();
                 }
                 toolsListBox_SelectedIndexChanged(null, null);
-                SaveItemlistToStorage();
+                SaveToolListToStorage();
             }
         }
 
         private void newComponentButton_Click(object sender, EventArgs e)
         {
             componentGroups.Add(new ComponentGroup());
-            SaveItemlistToStorage();
+            SaveComponentListToStorage();
         }
 
         private void deleteComponentButton_Click(object sender, EventArgs e)
@@ -343,7 +411,7 @@ namespace CataclysmModder
                     ClearItems();
                 }
                 componentsListBox_SelectedIndexChanged(null, null);
-                SaveItemlistToStorage();
+                SaveComponentListToStorage();
             }
         }
     }
