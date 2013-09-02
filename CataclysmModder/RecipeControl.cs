@@ -86,7 +86,7 @@ namespace CataclysmModder
 
             public ComponentGroup()
             {
-
+                AddNew();
             }
 
             public ComponentGroup(object[] inItems)
@@ -359,7 +359,10 @@ namespace CataclysmModder
         private void newItemButton_Click(object sender, EventArgs e)
         {
             if (SelectedGroup != null)
+            {
                 SelectedGroup.AddNew();
+                itemsListBox.SelectedIndex = itemsListBox.Items.Count - 1;
+            }
         }
 
         private void deleteItemButton_Click(object sender, EventArgs e)
@@ -376,6 +379,7 @@ namespace CataclysmModder
         private void newToolButton_Click(object sender, EventArgs e)
         {
             toolGroups.Add(new ComponentGroup());
+            toolsListBox.SelectedIndex = toolsListBox.Items.Count - 1;
             SaveToolListToStorage();
         }
 
@@ -397,6 +401,7 @@ namespace CataclysmModder
         private void newComponentButton_Click(object sender, EventArgs e)
         {
             componentGroups.Add(new ComponentGroup());
+            componentsListBox.SelectedIndex = componentsListBox.Items.Count - 1;
             SaveComponentListToStorage();
         }
 

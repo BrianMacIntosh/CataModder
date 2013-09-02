@@ -518,10 +518,17 @@ namespace CataclysmModder
                 }
                 SaveJsonItem(file, serialData, itemgroupSchema, "", 2);
             }
-            //else if (ffilename.Equals("recipes.json"))
-            //{
-                //TODO:
-            //}
+            else if (ffilename.Equals("recipes.json"))
+            {
+                object[] serialData = new object[indices.Length];
+                int c = 0;
+                foreach (int i in indices)
+                {
+                    serialData[c] = OpenItems[i].data;
+                    c++;
+                }
+                SaveJsonRecipes(file, serialData, recipesSchema, "");
+            }
             else
             {
                 MessageBox.Show("Serializing this file is not supported.", "Error", MessageBoxButtons.OK);
