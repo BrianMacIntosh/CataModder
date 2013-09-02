@@ -31,6 +31,11 @@ namespace CataclysmModder
                     return false;
             }
 
+            public override int GetHashCode()
+            {
+                return item.ToLower().GetHashCode();
+            }
+
             public override string ToString()
             {
                 return Display;
@@ -42,6 +47,7 @@ namespace CataclysmModder
         public object def;
         public bool mandatory = true;
         public bool isItemId = false;
+        public bool isBookId = false;
 
         public JsonFormTag(string key, string help)
             : this(key, help, true)
@@ -61,6 +67,57 @@ namespace CataclysmModder
             this.help = help;
             this.mandatory = mandatory;
             this.def = def;
+        }
+    }
+
+    public class ItemGroupLine : INotifyPropertyChanged
+    {
+        public object[] data;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public static explicit operator object[](ItemGroupLine item)
+        {
+            return item.data;
+        }
+
+        public string Id
+        {
+            get { return (string)data[0]; }
+            set
+            {
+                data[0] = value;
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("Display"));
+            }
+        }
+        public int Value
+        {
+            get { return (int)data[1]; }
+            set
+            {
+                data[1] = value;
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("Display"));
+            }
+        }
+
+        public string Display
+        {
+            get
+            {
+                return Id + " (" + Value + ")";
+            }
+        }
+
+        public ItemGroupLine()
+        {
+            this.data = new object[] { "null", 0 };
+        }
+
+        public ItemGroupLine(object[] data)
+        {
+            this.data = data;
         }
     }
 
@@ -256,6 +313,18 @@ namespace CataclysmModder
                 ApplyValue(key, vals, ((JsonFormTag)box.Tag).mandatory);
         }
 
+        public static void ApplyItemGroupLines(string key, IList<ItemGroupLine> box, bool mandatory)
+        {
+            object[] iobj = new object[box.Count];
+            int c = 0;
+            foreach (ItemGroupLine ig in box)
+            {
+                iobj[c] = ig.data;
+                c++;
+            }
+            ApplyValue(key, iobj, mandatory);
+        }
+
         public static void NumericValueChanged(object sender, EventArgs e)
         {
             NumericUpDown num = (NumericUpDown)sender;
@@ -304,6 +373,13 @@ namespace CataclysmModder
                         c1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                         c1.AutoCompleteSource = AutoCompleteSource.CustomSource;
                         c1.AutoCompleteCustomSource = Storage.AutocompleteItemSource;
+                    }
+                    else if (((JsonFormTag)c.Tag).isBookId)
+                    {
+                        TextBox c1 = (TextBox)c;
+                        c1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                        c1.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                        c1.AutoCompleteCustomSource = Storage.AutocompleteBookSource;
                     }
                     else if (c is ComboBox)
                     {
@@ -358,7 +434,6 @@ namespace CataclysmModder
         {
             ControlsResetValues(control);
             Resetting++;
-            if (OnLoadItem != null) OnLoadItem(item);
 
             Dictionary<string, object> itemValues = (Dictionary<string, object>)item;
 
@@ -384,6 +459,8 @@ namespace CataclysmModder
                     }
                 }
             }
+
+            if (OnLoadItem != null) OnLoadItem(item);
 
             Resetting--;
         }

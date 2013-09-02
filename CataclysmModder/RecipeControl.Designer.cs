@@ -160,6 +160,7 @@
             this.bookReqLevelNumeric.Name = "bookReqLevelNumeric";
             this.bookReqLevelNumeric.Size = new System.Drawing.Size(111, 20);
             this.bookReqLevelNumeric.TabIndex = 33;
+            this.bookReqLevelNumeric.ValueChanged += new System.EventHandler(this.bookReqLevelNumeric_ValueChanged);
             // 
             // bookIdTextBox
             // 
@@ -168,6 +169,7 @@
             this.bookIdTextBox.Name = "bookIdTextBox";
             this.bookIdTextBox.Size = new System.Drawing.Size(111, 20);
             this.bookIdTextBox.TabIndex = 31;
+            this.bookIdTextBox.TextChanged += new System.EventHandler(this.bookIdTextBox_TextChanged);
             // 
             // label16
             // 
@@ -186,6 +188,7 @@
             this.deleteBook.TabIndex = 38;
             this.deleteBook.Text = "Delete";
             this.deleteBook.UseVisualStyleBackColor = true;
+            this.deleteBook.Click += new System.EventHandler(this.deleteBook_Click);
             // 
             // newBook
             // 
@@ -195,6 +198,7 @@
             this.newBook.TabIndex = 37;
             this.newBook.Text = "New";
             this.newBook.UseVisualStyleBackColor = true;
+            this.newBook.Click += new System.EventHandler(this.newBook_Click);
             // 
             // booksListBox
             // 
@@ -203,6 +207,7 @@
             this.booksListBox.Name = "booksListBox";
             this.booksListBox.Size = new System.Drawing.Size(120, 108);
             this.booksListBox.TabIndex = 36;
+            this.booksListBox.SelectedIndexChanged += new System.EventHandler(this.booksListBox_SelectedIndexChanged);
             // 
             // label14
             // 

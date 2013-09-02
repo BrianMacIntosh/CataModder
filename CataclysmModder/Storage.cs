@@ -19,6 +19,11 @@ namespace CataclysmModder
         {
             Modified = true;
 
+            if (key.Equals("id_suffix"))
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("Display"));
+                return;
+            }
             foreach (string s in DisplayMembers)
                 if (s.Equals(key))
                 {
@@ -39,9 +44,12 @@ namespace CataclysmModder
         {
             get
             {
+                string suffix = "";
+                if (data.ContainsKey("id_suffix"))
+                    suffix = (string)data["id_suffix"];
                 foreach (string s in DisplayMembers)
                     if (data.ContainsKey(s))
-                        return (string)data[s];
+                        return (string)data[s] + suffix;
                 return "[item]";
             }
         }
@@ -171,6 +179,7 @@ namespace CataclysmModder
         public static object[] CraftCategories;
 
         public static AutoCompleteStringCollection AutocompleteItemSource = new AutoCompleteStringCollection();
+        public static AutoCompleteStringCollection AutocompleteBookSource = new AutoCompleteStringCollection();
 
 
         static Storage()
@@ -199,21 +208,33 @@ namespace CataclysmModder
                 //case ListChangedType.ItemChanged:
                 case ListChangedType.ItemDeleted:
                     //Rebuild autocomplete list
+                    ItemDataWrapper added;
                     AutocompleteItemSource.Clear();
+                    AutocompleteBookSource.Clear();
                     for (int c = 0; c < openItems.Count; c++)
                     {
                         if (FileIsItems(openFiles[c])
                             || Path.GetFileName(openFiles[c]).Equals("bionics.json"))
                         {
                             for (int d = 0; d < openItems[c].Count; d++)
-                                AutocompleteItemSource.Add(openItems[c][d].Display);
+                            {
+                                added = openItems[c][d];
+                                if (added.data.ContainsKey("type")
+                                    && added.data["type"].ToString().ToLower() == "book")
+                                    AutocompleteBookSource.Add(added.Display);
+                                AutocompleteItemSource.Add(added.Display);
+                            }
                         }
                     }
                     break;
 
                 case ListChangedType.ItemAdded:
                     //Update autocomplete list
-                    AutocompleteItemSource.Add(((BindingList<ItemDataWrapper>)sender)[e.NewIndex].Display);
+                    added = ((BindingList<ItemDataWrapper>)sender)[e.NewIndex];
+                    if (added.data.ContainsKey("type")
+                        && added.data["type"].ToString().ToLower() == "book")
+                        AutocompleteBookSource.Add(added.Display);
+                    AutocompleteItemSource.Add(added.Display);
                     break;
             }
         }
@@ -615,7 +636,10 @@ namespace CataclysmModder
         /// </summary>
         public static void ItemApplyValue(string key, object value, bool mandatory)
         {
-            if (!mandatory && value.Equals(""))
+            if (!mandatory &&
+                (value.Equals("") ||
+                value == null ||
+                (value is object[] && ((object[])value).Length == 0)))
             {
                 if (CurrentItemData.ContainsKey(key))
                     CurrentItemData.Remove(key);

@@ -11,57 +11,6 @@ namespace CataclysmModder
 {
     public partial class ItemGroupValues : UserControl
     {
-        private class ItemGroupLine : INotifyPropertyChanged
-        {
-            public object[] data;
-
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            public static explicit operator object[](ItemGroupLine item)
-            {
-                return item.data;
-            }
-
-            public string Id
-            {
-                get { return (string)data[0]; }
-                set
-                {
-                    data[0] = value;
-                    if (PropertyChanged != null)
-                        PropertyChanged(this, new PropertyChangedEventArgs("Display"));
-                }
-            }
-            public int Freq
-            {
-                get { return (int)data[1]; }
-                set
-                {
-                    data[1] = value;
-                    if (PropertyChanged != null)
-                        PropertyChanged(this, new PropertyChangedEventArgs("Display"));
-                }
-            }
-
-            public string Display
-            {
-                get
-                {
-                    return Id + " (" + Freq + ")";
-                }
-            }
-
-            public ItemGroupLine()
-            {
-                this.data = new object[] { "null", 0 };
-            }
-
-            public ItemGroupLine(object[] data)
-            {
-                this.data = data;
-            }
-        }
-
         private BindingList<ItemGroupLine> items = new BindingList<ItemGroupLine>();
 
         public ItemGroupValues()
@@ -110,6 +59,12 @@ namespace CataclysmModder
             if (dict.ContainsKey("items"))
                 foreach (object[] data in (object[])dict["items"])
                     items.Add(new ItemGroupLine(data));
+
+            if (items.Count > 0)
+            {
+                itemsListBox.SelectedIndex = 0;
+                itemsListBox_SelectedIndexChanged(null, null);
+            }
         }
 
         private void newButton_Click(object sender, EventArgs e)
@@ -130,12 +85,13 @@ namespace CataclysmModder
 
         private void itemsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            WinformsUtil.Resetting++;
             if (itemsListBox.SelectedItem != null)
             {
                 //Fill fields
                 itemidTextBox.Text = ((ItemGroupLine)itemsListBox.SelectedItem).Id;
                 itemidTextBox.Enabled = true;
-                freqNumeric.Value = ((ItemGroupLine)itemsListBox.SelectedItem).Freq;
+                freqNumeric.Value = ((ItemGroupLine)itemsListBox.SelectedItem).Value;
                 freqNumeric.Enabled = true;
             }
             else if (!changing)
@@ -145,6 +101,7 @@ namespace CataclysmModder
                 freqNumeric.Value = 0;
                 freqNumeric.Enabled = false;
             }
+            WinformsUtil.Resetting--;
         }
 
         private bool changing = false;
@@ -164,21 +121,14 @@ namespace CataclysmModder
             if (WinformsUtil.Resetting > 0) return;
 
             changing = true;
-            ((ItemGroupLine)itemsListBox.SelectedItem).Freq = (int)freqNumeric.Value;
+            ((ItemGroupLine)itemsListBox.SelectedItem).Value = (int)freqNumeric.Value;
             changing = false;
             SaveItemlistToStorage();
         }
 
         private void SaveItemlistToStorage()
         {
-            object[] iobj = new object[items.Count];
-            int c = 0;
-            foreach (ItemGroupLine ig in items)
-            {
-                iobj[c] = ig.data;
-                c++;
-            }
-            Storage.ItemApplyValue("items", iobj, true);
+            WinformsUtil.ApplyItemGroupLines("items", items, true);
         }
     }
 }
