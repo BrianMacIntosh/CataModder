@@ -22,6 +22,9 @@ namespace CataclysmModder
             flagsHelp.Add(new JsonFormTag.HelpItem("POCKETS", "This clothing gives hand warmth if hands are cold and player isn't wielding anything."));
             flagsHelp.Add(new JsonFormTag.HelpItem("WATCH", "This clothing allows the player to know the current time."));
             flagsHelp.Add(new JsonFormTag.HelpItem("ALARM", "This item has an alarm clock feature (not implemented)."));
+            flagsHelp.Add(new JsonFormTag.HelpItem("MALE_TYPICAL", "This clothing is typically worn only by males."));
+            flagsHelp.Add(new JsonFormTag.HelpItem("FEMALE_TYPICAL", "This clothing is typically worn only by females."));
+            flagsHelp.Add(new JsonFormTag.HelpItem("USE_EAT_VERB", "Use the 'eat' verb for this comestible, even if it's a liquid (e.g. soup)."));
             flagsHelp.Add(new JsonFormTag.HelpItem("SEALS", "This container can safely contain liquids."));
             flagsHelp.Add(new JsonFormTag.HelpItem("RIGID", "This container has hard walls (not implemented)."));
             flagsHelp.Add(new JsonFormTag.HelpItem("WATERTIGHT", "This container can hold liquids."));

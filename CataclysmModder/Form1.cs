@@ -206,9 +206,12 @@ namespace CataclysmModder
             entriesListBox.DisplayMember = "Display";
 
             //Load first item
-            entriesListBox.SelectedIndex = 0;
             HideItemExtensions();
-            Storage.LoadItem(entriesListBox.SelectedIndex);
+            if (entriesListBox.Items.Count > 0)
+            {
+                entriesListBox.SelectedIndex = 0;
+                Storage.LoadItem(entriesListBox.SelectedIndex);
+            }
         }
 
         public void HideItemExtensions()
