@@ -73,6 +73,7 @@
     <Compile Include="BookValues.Designer.cs">
       <DependentUpon>BookValues.cs</DependentUpon>
     </Compile>
+    <Compile Include="CataFile.cs" />
     <Compile Include="ComestibleValues.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -219,6 +220,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="schemas\recipes.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="schemas\professions.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

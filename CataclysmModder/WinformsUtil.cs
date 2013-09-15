@@ -6,6 +6,9 @@ using System.IO;
 
 namespace CataclysmModder
 {
+    /// <summary>
+    /// Set the Tag property on a control to one of these to control some automatic behavior.
+    /// </summary>
     class JsonFormTag
     {
         public class HelpItem
@@ -397,7 +400,7 @@ namespace CataclysmModder
                     else
                         c.TextChanged += TextValueChanged;
                 }
-                else if (c.Controls.Count > 0)
+                if (c.Controls.Count > 0)
                 {
                     ControlsAttachHooks(c);
                 }
@@ -427,16 +430,32 @@ namespace CataclysmModder
                             tag.def = "";
                     }
                 }
+                if (c.Controls.Count > 0)
+                {
+                    TagsSetDefaults(c);
+                }
             }
         }
 
         public static void ControlsLoadItem(Control control, object item)
         {
-            ControlsResetValues(control);
             Resetting++;
+
+            ControlSetValues(control, item);
+
+            if (OnLoadItem != null)
+                OnLoadItem(item);
+
+            Resetting--;
+        }
+
+        private static void ControlSetValues(Control control, object item)
+        {
+            ControlsResetValues(control);
 
             Dictionary<string, object> itemValues = (Dictionary<string, object>)item;
 
+            //TODO: displaymember?
             string id = "-null-";
             if (itemValues.ContainsKey("id"))
                 id = (string)itemValues["id"];
@@ -458,17 +477,25 @@ namespace CataclysmModder
                             SetString(itemValues, tag.key, c, id, tag.mandatory);
                     }
                 }
+                if (c.Controls.Count > 0)
+                {
+                    ControlSetValues(c, item);
+                }
             }
-
-            if (OnLoadItem != null) OnLoadItem(item);
-
-            Resetting--;
         }
 
         public static void ControlsResetValues(Control control)
         {
             Resetting++;
             if (OnReset != null) OnReset();
+
+            ControlResetValues(control);
+
+            Resetting--;
+        }
+
+        private static void ControlResetValues(Control control)
+        {
             foreach (Control c in control.Controls)
             {
                 if (c.Tag is JsonFormTag)
@@ -497,8 +524,11 @@ namespace CataclysmModder
                             c.Text = "";
                     }
                 }
+                if (c.Controls.Count > 0)
+                {
+                    ControlResetValues(c);
+                }
             }
-            Resetting--;
         }
     }
 }

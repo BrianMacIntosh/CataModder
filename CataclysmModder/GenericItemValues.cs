@@ -142,8 +142,8 @@ namespace CataclysmModder
                 "A game function to call when the item is applied or used.",
                 false);
 
-            WinformsUtil.ControlsAttachHooks(Controls[0]);
-            WinformsUtil.TagsSetDefaults(Controls[0]);
+            WinformsUtil.ControlsAttachHooks(this);
+            WinformsUtil.TagsSetDefaults(this);
 
             //TODO: warning on load if symbol length > 1
 
@@ -169,7 +169,7 @@ namespace CataclysmModder
                         typeComboBox.Text, StringComparison.InvariantCultureIgnoreCase))
                 {
                     c.Visible = true;
-                    WinformsUtil.ControlsLoadItem(c.Controls[0], Storage.CurrentItemData);
+                    WinformsUtil.ControlsLoadItem(c, Storage.CurrentItemData);
                 }
             }
 
@@ -178,17 +178,26 @@ namespace CataclysmModder
             {
                 if (c.Tag is DataFormTag && c.Visible)
                 {
-                    foreach (Control d in c.Controls[0].Controls)
-                    {
-                        if (d.Tag is JsonFormTag)
-                        {
-                            string key = ((JsonFormTag)d.Tag).key;
-                            if (!string.IsNullOrEmpty(key)
-                                && !Storage.CurrentItemData.ContainsKey(key)
-                                && ((JsonFormTag)d.Tag).mandatory)
-                                Storage.CurrentItemData[key] = ((JsonFormTag)d.Tag).def;
-                        }
-                    }
+                    ControlSetDefaults(c);
+                }
+            }
+        }
+
+        private void ControlSetDefaults(Control c)
+        {
+            foreach (Control d in c.Controls)
+            {
+                if (d.Tag is JsonFormTag)
+                {
+                    string key = ((JsonFormTag)d.Tag).key;
+                    if (!string.IsNullOrEmpty(key)
+                        && !Storage.CurrentItemData.ContainsKey(key)
+                        && ((JsonFormTag)d.Tag).mandatory)
+                        Storage.CurrentItemData[key] = ((JsonFormTag)d.Tag).def;
+                }
+                if (d.Controls.Count > 0)
+                {
+                    ControlSetDefaults(d);
                 }
             }
         }

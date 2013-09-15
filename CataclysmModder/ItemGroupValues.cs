@@ -31,8 +31,8 @@ namespace CataclysmModder
                 null,
                 "The list of items in this group and their relative frequencies.");
 
-            WinformsUtil.ControlsAttachHooks(Controls[0]);
-            WinformsUtil.TagsSetDefaults(Controls[0]);
+            WinformsUtil.ControlsAttachHooks(this);
+            WinformsUtil.TagsSetDefaults(this);
 
             itemsListBox.DataSource = items;
             itemsListBox.DisplayMember = "Display";

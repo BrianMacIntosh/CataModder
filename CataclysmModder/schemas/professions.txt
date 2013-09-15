@@ -1,0 +1,8 @@
+﻿ident
+name
+description
+points
+items
+<addictions>
+<skills>
+<flags>

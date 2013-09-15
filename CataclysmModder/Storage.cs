@@ -9,55 +9,71 @@ using System.Windows.Forms;
 namespace CataclysmModder
 {
     /// <summary>
-    /// Wraps data loaded from a JSON item for display in a listbox.
+    /// Wraps data loaded from one JSON item for display in a listbox.
     /// </summary>
     class ItemDataWrapper : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Reference to the openfiles array.
+        /// </summary>
+        public int memberOf;
+
+        private CataFile MemberOf
+        {
+            get { return Storage.GetFileDefForOpenFile(memberOf); }
+        }
+
         public void NotifyKeyChanged(string key)
         {
             Modified = true;
 
-            if (key.Equals("id_suffix"))
-            {
+            if (key.Equals(MemberOf.displayMember) || key.Equals(MemberOf.displaySuffix))
                 PropertyChanged(this, new PropertyChangedEventArgs("Display"));
-                return;
-            }
-            foreach (string s in DisplayMembers)
-                if (s.Equals(key))
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("Display"));
-                    return;
-                }
         }
 
-        public static string[] DisplayMembers = new string[] { "id", "ident", "name", "result" };
-
+        /// <summary>
+        /// Get the list of keys from this item.
+        /// </summary>
         public Dictionary<string, object> data
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Get the listbox display name of this item
+        /// </summary>
         public string Display
         {
             get
             {
                 string suffix = "";
-                if (data.ContainsKey("id_suffix"))
-                    suffix = (string)data["id_suffix"];
-                foreach (string s in DisplayMembers)
-                    if (data.ContainsKey(s))
-                        return (string)data[s] + suffix;
-                return "[item]";
+                if (data.ContainsKey(MemberOf.displaySuffix))
+                    suffix = (string)data[MemberOf.displaySuffix];
+
+                if (data.ContainsKey(MemberOf.displayMember))
+                    return (string)data[MemberOf.displayMember] + suffix;
+                else
+                    return "[item]";
             }
         }
 
+        /// <summary>
+        /// Tracks whether this item has unsaved changes.
+        /// </summary>
         public bool Modified = false;
 
+
+        /// <summary>
+        /// Create a new item with data copied from the specified item.
+        /// </summary>
+        /// <param name="copy"></param>
         public ItemDataWrapper(ItemDataWrapper copy)
         {
+            this.memberOf = copy.memberOf;
+
             data = new Dictionary<string, object>(copy.data);
             int lastitem = 0;
             foreach (ItemDataWrapper i in Storage.OpenItems)
@@ -73,17 +89,28 @@ namespace CataclysmModder
                     }
                 }
 
-            //TODO: might need a different display member
-            data["id"] = copy.Display + (lastitem + 1);
+            data[MemberOf.displayMember] = copy.Display + (lastitem + 1);
         }
 
-        public ItemDataWrapper(Dictionary<string, object> data)
+        /// <summary>
+        /// Create a new item from loaded data.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="memberOf"></param>
+        public ItemDataWrapper(Dictionary<string, object> data, int memberOf)
         {
+            this.memberOf = memberOf;
             this.data = data;
         }
 
-        public ItemDataWrapper()
+        /// <summary>
+        /// Create a new, empty item.
+        /// </summary>
+        /// <param name="memberOf"></param>
+        public ItemDataWrapper(int memberOf)
         {
+            this.memberOf = memberOf;
+
             data = new Dictionary<string, object>();
             int lastitem = 0;
             foreach (ItemDataWrapper i in Storage.OpenItems)
@@ -99,21 +126,21 @@ namespace CataclysmModder
                     }
                 }
 
-            //TODO: might need a different display member
-            data["id"] = "newitem" + (lastitem + 1);
+            data[MemberOf.displayMember] = "newitem" + (lastitem + 1);
         }
     }
 
+
+    /// <summary>
+    /// This class holds the backing data for all loaded items and handles reading and writing JSON.
+    /// </summary>
     static class Storage
     {
-        private static JsonSchema itemSchema;
-        private static JsonSchema itemgroupSchema;
-        private static JsonSchema recipesSchema;
-
         private static bool unsavedChanges = false;
         public static bool UnsavedChanges { get { return unsavedChanges; } }
         
         private static string workspacePath = "";
+
         private static int currentFileIndex = -1;
         public static string CurrentFileName
         {
@@ -122,9 +149,17 @@ namespace CataclysmModder
                 if (currentFileIndex >= 0)
                     return openFiles[currentFileIndex];
                 else
-                    return "";
+                    return string.Empty;
             }
         }
+        public static int CurrentFileIndex
+        {
+            get
+            {
+                return currentFileIndex;
+            }
+        }
+
         private static int currentItemIndex = -1;
         public static int CurrentItemIndex { get { return currentItemIndex; } }
         public static Dictionary<string, object> CurrentItemData
@@ -138,18 +173,44 @@ namespace CataclysmModder
             }
         }
 
-        public static bool CurrentFileIsItems
+        public static CataFile GetFileDefForCurrentFile()
         {
-            get { return FileIsItems(CurrentFileName); }
+            return fileDef[(int)GetFileTypeForCurrentFile()];
         }
 
-        public static bool FileIsItems(string name)
+        public static CataFile GetFileDefForOpenFile(int index)
         {
-            string[] bits = name.Split('\\');
-            foreach (string s in bits)
-                if (s.Equals("items", StringComparison.InvariantCultureIgnoreCase))
-                    return true;
-            return false;
+            return fileDef[(int)GetFileTypeForOpenFile(index)];
+        }
+
+        public static FileType GetFileTypeForCurrentFile()
+        {
+            return GetFileTypeForOpenFile(currentFileIndex);
+        }
+
+        public static FileType GetFileTypeForOpenFile(int index)
+        {
+            if (index < 0 || index >= openFiles.Length)
+                return FileType.NONE;
+            else
+                return GetFileType(openFiles[index]);
+        }
+
+        public static FileType GetFileType(string name)
+        {
+            string filename = Path.GetFileName(name);
+            string[] filedirs = name.Split(Path.DirectorySeparatorChar);
+            if (filedirs.Length > 1 && filedirs[filedirs.Length - 2].Equals("items"))
+                return FileType.ITEMS;
+            else if (filename.Equals("item_groups.json"))
+                return FileType.ITEM_GROUPS;
+            else if (filename.Equals("professions.json"))
+                return FileType.PROFESSIONS;
+            else if (filename.Equals("recipes.json"))
+                return FileType.RECIPES;
+            else if (filename.Equals("bionics.json"))
+                return FileType.BIONICS;
+            return FileType.NONE;
         }
 
         /// <summary>
@@ -182,12 +243,77 @@ namespace CataclysmModder
         public static AutoCompleteStringCollection AutocompleteBookSource = new AutoCompleteStringCollection();
 
 
-        static Storage()
+        public enum FileType
         {
-            //Load schemas
-            itemSchema = new JsonSchema("CataclysmModder.schemas.items.txt");
-            itemgroupSchema = new JsonSchema("CataclysmModder.schemas.item_group.txt");
-            recipesSchema = new JsonSchema("CataclysmModder.schemas.recipes.txt");
+            ITEMS,
+            ITEM_GROUPS,
+            RECIPES,
+            PROFESSIONS,
+            BIONICS,
+            NONE,
+
+            COUNT
+        }
+
+        /// <summary>
+        /// Contains information about the structure of different files.
+        /// </summary>
+        private static CataFile[] fileDef = new CataFile[(int)FileType.COUNT];
+
+        //HACK: placement
+        public static void HideAllControls()
+        {
+            foreach (CataFile f in fileDef)
+            {
+                if (f != null && f.control != null)
+                    f.control.Visible = false;
+            }
+        }
+
+
+        public static void InitializeFileDefs()
+        {
+            //Editing control needs to be set in Form1 ctor using FileDefSetControl
+
+            //Items
+            CataFile buffer = new CataFile();
+            buffer.displayMember = "id";
+            buffer.schema = new JsonSchema("CataclysmModder.schemas.items.txt");
+            fileDef[(int)FileType.ITEMS] = buffer;
+
+            //Item groups
+            buffer = new CataFile();
+            buffer.displayMember = "id";
+            buffer.schema = new JsonSchema("CataclysmModder.schemas.item_group.txt");
+            fileDef[(int)FileType.ITEM_GROUPS] = buffer;
+
+            //Recipes
+            buffer = new CataFile();
+            buffer.displayMember = "result";
+            buffer.displaySuffix = "id_suffix";
+            buffer.schema = new JsonSchema("CataclysmModder.schemas.recipes.txt");
+            fileDef[(int)FileType.RECIPES] = buffer;
+
+            //Professions
+            buffer = new CataFile();
+            buffer.displayMember = "ident";
+            buffer.schema = new JsonSchema("CataclysmModder.schemas.professions.txt");
+            fileDef[(int)FileType.PROFESSIONS] = buffer;
+
+            //Bionics
+            buffer = new CataFile();
+            buffer.displayMember = "id";
+            buffer.schema = null;
+            fileDef[(int)FileType.BIONICS] = buffer;
+
+
+            //Default
+            //NONE is null indicating not supported
+        }
+
+        public static void FileDefSetControl(FileType type, Control control)
+        {
+            fileDef[(int)type].control = control;
         }
 
         public static void FileChanged()
@@ -213,8 +339,8 @@ namespace CataclysmModder
                     AutocompleteBookSource.Clear();
                     for (int c = 0; c < openItems.Count; c++)
                     {
-                        if (FileIsItems(openFiles[c])
-                            || Path.GetFileName(openFiles[c]).Equals("bionics.json"))
+                        if (GetFileTypeForOpenFile(currentFileIndex) == FileType.ITEMS
+                            || GetFileTypeForOpenFile(currentFileIndex) == FileType.BIONICS)
                         {
                             for (int d = 0; d < openItems[c].Count; d++)
                             {
@@ -256,7 +382,7 @@ namespace CataclysmModder
             for (int c = 0; c < openFiles.Length; c++)
             {
                 openFiles[c] = openFiles[c].Substring(workspacePath.Length + 1);
-                LoadFile(openFiles[c]);
+                LoadFile(c);
             }
         }
 
@@ -268,41 +394,37 @@ namespace CataclysmModder
         /// <summary>
         /// Load up items from a specified game file.
         /// </summary>
-        public static void LoadFile(string path)
+        public static void LoadFile(int index)
         {
+            BindingList<ItemDataWrapper> newItems = new BindingList<ItemDataWrapper>();
+            openItems.Add(newItems);
+
             //Load up contents of the file
+            string path = openFiles[index];
             object json = LoadJson(path);
             if (json == null)
                 return;
-            
-            BindingList<ItemDataWrapper> newItems = new BindingList<ItemDataWrapper>();
-            openItems.Add(newItems);
-            string ffilename = Path.GetFileName(path);
 
-            //Parse different formats
-            if (FileIsItems(path)
-                || ffilename.Equals("bionics.json")
-                || ffilename.Equals("item_groups.json")
-                || ffilename.Equals("materials.json")
-                || ffilename.Equals("monstergroups.json")
-                || ffilename.Equals("names.json")
-                || ffilename.Equals("professions.json"))
+            FileType ftype = GetFileType(path);
+            if (ftype == FileType.RECIPES)
             {
-                foreach (Dictionary<string, object> item in (object[])json)
-                    newItems.Add(new ItemDataWrapper(item));
-            }
-            else if (ffilename.Equals("recipes.json"))
-            {
+                //Recipes parsed specially
                 foreach (Dictionary<string, object> recipe in (object[])((Dictionary<string, object>)json)["recipes"])
-                    newItems.Add(new ItemDataWrapper(recipe));
+                    newItems.Add(new ItemDataWrapper(recipe, index));
 
                 //Also load cats
                 CraftCategories = (object[])((Dictionary<string, object>)json)["categories"];
             }
+            else if (ftype != FileType.NONE)
+            {
+                //Default parsing
+                foreach (Dictionary<string, object> item in (object[])json)
+                    newItems.Add(new ItemDataWrapper(item, index));
+            }
 
             //Subscribe to events
-            if (FileIsItems(path)
-                || ffilename.Equals("bionics.json"))
+            if (GetFileTypeForOpenFile(index) == FileType.ITEMS
+                || GetFileTypeForOpenFile(index) == FileType.BIONICS)
                 newItems.ListChanged += AutocompleteNeedsModified;
 
             //Rebuild autocomplete
@@ -342,7 +464,7 @@ namespace CataclysmModder
 
         public static void SaveJsonItem(string file, object obj, JsonSchema schema, string pivotKey, int bracketBlockLevel = 1)
         {
-            StreamWriter write = new StreamWriter(new FileStream(file, FileMode.Create));
+            StreamWriter write = new StreamWriter(new FileStream(Path.Combine(workspacePath, file), FileMode.Create));
             try
             {
                 StringBuilder sb = new StringBuilder("[");
@@ -375,7 +497,7 @@ namespace CataclysmModder
 
         public static void SaveJsonRecipes(string file, object obj, JsonSchema schema, string pivotKey, int bracketBlockLevel = 3)
         {
-            StreamWriter write = new StreamWriter(new FileStream(file, FileMode.Create));
+            StreamWriter write = new StreamWriter(new FileStream(Path.Combine(workspacePath, file), FileMode.Create));
             try
             {
                 StringBuilder sb = new StringBuilder("{\"categories\":[");
@@ -497,13 +619,9 @@ namespace CataclysmModder
 
             currentItemIndex = index;
 
-            string ffilename = Path.GetFileName(CurrentFileName);
-            if (CurrentFileIsItems)
-                WinformsUtil.ControlsLoadItem(Form1.Instance.GenericItemControl.Controls[0], CurrentItemData);
-            else if (ffilename.Equals("item_groups.json"))
-                WinformsUtil.ControlsLoadItem(Form1.Instance.ItemGroupControl.Controls[0], CurrentItemData);
-            else if (ffilename.Equals("recipes.json"))
-                WinformsUtil.ControlsLoadItem(Form1.Instance.RecipeControl.Controls[0], CurrentItemData);
+            CataFile fileDef = GetFileDefForOpenFile(currentFileIndex);
+            if (fileDef != null && fileDef.control != null)
+                WinformsUtil.ControlsLoadItem(fileDef.control, CurrentItemData);
         }
 
         public static void SaveOpenFiles()
@@ -516,41 +634,17 @@ namespace CataclysmModder
 
         public static void ExportFile(string file, int[] indices)
         {
-            string ffilename = Path.GetFileName(CurrentFileName);
-            if (FileIsItems(CurrentFileName))
+            FileType ftype = GetFileTypeForOpenFile(currentFileIndex);
+
+            object[] serialData = new object[indices.Length];
+            int c = 0;
+            foreach (int i in indices)
             {
-                object[] serialData = new object[indices.Length];
-                int c = 0;
-                foreach (int i in indices)
-                {
-                    serialData[c] = OpenItems[i].data;
-                    c++;
-                }
-                SaveJsonItem(file, serialData, itemSchema, "type");
+                serialData[c] = OpenItems[i].data;
+                c++;
             }
-            else if (ffilename.Equals("item_groups.json"))
-            {
-                object[] serialData = new object[indices.Length];
-                int c = 0;
-                foreach (int i in indices)
-                {
-                    serialData[c] = OpenItems[i].data;
-                    c++;
-                }
-                SaveJsonItem(file, serialData, itemgroupSchema, "", 2);
-            }
-            else if (ffilename.Equals("recipes.json"))
-            {
-                object[] serialData = new object[indices.Length];
-                int c = 0;
-                foreach (int i in indices)
-                {
-                    serialData[c] = OpenItems[i].data;
-                    c++;
-                }
-                SaveJsonRecipes(file, serialData, recipesSchema, "");
-            }
-            else
+
+            if (!Serialize(serialData, file, ftype))
             {
                 MessageBox.Show("Serializing this file is not supported.", "Error", MessageBoxButtons.OK);
                 return;
@@ -571,42 +665,18 @@ namespace CataclysmModder
                 //TODO: error
                 return;
             }
+            FileType ftype = GetFileTypeForOpenFile(fileIndex);
 
-            string ffilename = Path.GetFileName(file);
-            if (FileIsItems(file))
+            //Put data into serializable format
+            object[] serialData = new object[openItems[fileIndex].Count];
+            int d = 0;
+            foreach (ItemDataWrapper v in openItems[fileIndex])
             {
-                object[] serialData = new object[openItems[fileIndex].Count];
-                int c = 0;
-                foreach (ItemDataWrapper v in openItems[fileIndex])
-                {
-                    serialData[c] = v.data;
-                    c++;
-                }
-                SaveJsonItem(Path.Combine(workspacePath, file), serialData, itemSchema, "type");
+                serialData[d] = v.data;
+                d++;
             }
-            else if (ffilename.Equals("item_groups.json"))
-            {
-                object[] serialData = new object[openItems[fileIndex].Count];
-                int c = 0;
-                foreach (ItemDataWrapper v in openItems[fileIndex])
-                {
-                    serialData[c] = v.data;
-                    c++;
-                }
-                SaveJsonItem(Path.Combine(workspacePath, file), serialData, itemgroupSchema, "", 2);
-            }
-            else if (ffilename.Equals("recipes.json"))
-            {
-                object[] serialData = new object[openItems[fileIndex].Count];
-                int c = 0;
-                foreach (ItemDataWrapper v in openItems[fileIndex])
-                {
-                    serialData[c] = v.data;
-                    c++;
-                }
-                SaveJsonRecipes(Path.Combine(workspacePath, file), serialData, recipesSchema, "");
-            }
-            else
+
+            if (!Serialize(serialData, file, ftype))
             {
                 if (standalone)
                     MessageBox.Show("Serializing this file is not supported.", "Error", MessageBoxButtons.OK);
@@ -629,6 +699,27 @@ namespace CataclysmModder
                             return;
                 unsavedChanges = false;
             }
+        }
+
+        private static bool Serialize(object[] serialData, string file, FileType ftype)
+        {
+            if (ftype == FileType.RECIPES)
+            {
+                SaveJsonRecipes(file, serialData, fileDef[(int)ftype].schema, "");
+            }
+            else if (ftype == FileType.ITEMS)
+            {
+                SaveJsonItem(file, serialData, fileDef[(int)ftype].schema, "type");
+            }
+            else if (ftype != FileType.NONE && fileDef[(int)ftype].schema != null)
+            {
+                SaveJsonItem(file, serialData, fileDef[(int)ftype].schema, "");
+            }
+            else
+            {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -718,10 +809,9 @@ namespace CataclysmModder
         public static void LoadCraftCategories(ComboBox box)
         {
             box.Items.Clear();
-            foreach (string cc in CraftCategories)
-            {
-                box.Items.Add(cc);
-            }
+            if (CraftCategories != null)
+                foreach (string cc in CraftCategories)
+                    box.Items.Add(cc);
         }
     }
 }

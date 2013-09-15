@@ -13,7 +13,6 @@ namespace CataclysmModder
 
         public static Form1 Instance { get; private set; }
 
-        public GenericItemValues GenericItemControl;
         public GunmodValues GunModControl;
         public ComestibleValues ComestibleControl;
         public GunValues GunControl;
@@ -23,10 +22,6 @@ namespace CataclysmModder
         public BookValues BookControl;
         public ContainValues ContainControl;
 
-        public ItemGroupValues ItemGroupControl;
-
-        public RecipeControl RecipeControl;
-
         Point itemExtensionLocation;
         Point mainPanelLocation;
 
@@ -34,18 +29,20 @@ namespace CataclysmModder
         public Form1()
         {
             Instance = this;
+            Storage.InitializeFileDefs();
 
             InitializeComponent();
 
             mainPanelLocation = new Point(150, 20);
 
-            GenericItemControl = new GenericItemValues();
-            GenericItemControl.Tag = new DataFormTag();
-            GenericItemControl.Location = mainPanelLocation;
-            GenericItemControl.Visible = false;
-            Controls.Add(GenericItemControl);
+            Control itemControl = new GenericItemValues();
+            itemControl.Tag = new DataFormTag();
+            itemControl.Location = mainPanelLocation;
+            itemControl.Visible = false;
+            Controls.Add(itemControl);
+            Storage.FileDefSetControl(Storage.FileType.ITEMS, itemControl);
 
-            itemExtensionLocation = new Point(150, GenericItemControl.Bottom);
+            itemExtensionLocation = new Point(150, itemControl.Bottom);
 
             GunModControl = new GunmodValues();
             GunModControl.Tag = new ItemExtensionFormTag("GUNMOD");
@@ -89,17 +86,19 @@ namespace CataclysmModder
 
             HideItemExtensions();
 
-            ItemGroupControl = new ItemGroupValues();
-            ItemGroupControl.Tag = new DataFormTag();
-            ItemGroupControl.Location = mainPanelLocation;
-            ItemGroupControl.Visible = false;
-            Controls.Add(ItemGroupControl);
+            Control itemGroupControl = new ItemGroupValues();
+            itemGroupControl.Tag = new DataFormTag();
+            itemGroupControl.Location = mainPanelLocation;
+            itemGroupControl.Visible = false;
+            Controls.Add(itemGroupControl);
+            Storage.FileDefSetControl(Storage.FileType.ITEM_GROUPS, itemGroupControl);
 
-            RecipeControl = new RecipeControl();
-            RecipeControl.Tag = new DataFormTag();
-            RecipeControl.Location = mainPanelLocation;
-            RecipeControl.Visible = false;
-            Controls.Add(RecipeControl);
+            Control recipeControl = new RecipeControl();
+            recipeControl.Tag = new DataFormTag();
+            recipeControl.Location = mainPanelLocation;
+            recipeControl.Visible = false;
+            Controls.Add(recipeControl);
+            Storage.FileDefSetControl(Storage.FileType.RECIPES, recipeControl);
 
             //Load previous workspace
             if (File.Exists(".conf"))
@@ -179,25 +178,18 @@ namespace CataclysmModder
             Storage.SelectFile(filesComboBox.SelectedIndex);
 
             //Hide all forms
-            ItemGroupControl.Visible = false;
-            GenericItemControl.Visible = false;
-            RecipeControl.Visible = false;
+            Storage.HideAllControls();
             HideItemExtensions();
 
             //Show appropriate forms
-            string ffilename = Path.GetFileName(Storage.CurrentFileName);
-            if (Storage.CurrentFileIsItems)
+            CataFile fdef = Storage.GetFileDefForCurrentFile();
+            if (fdef != null)
             {
-                WinformsUtil.ControlsResetValues(GenericItemControl.Controls[0]);
-                GenericItemControl.Visible = true;
-            }
-            else if (ffilename.Equals("item_groups.json"))
-            {
-                ItemGroupControl.Visible = true;
-            }
-            else if (ffilename.Equals("recipes.json"))
-            {
-                RecipeControl.Visible = true;
+                if (fdef.control != null)
+                {
+                    WinformsUtil.ControlsResetValues(fdef.control);
+                    fdef.control.Visible = true;
+                }
             }
 
             //Prepare item box
@@ -238,7 +230,7 @@ namespace CataclysmModder
 
         private void newItemButton_Click(object sender, EventArgs e)
         {
-            ItemDataWrapper newitem = new ItemDataWrapper();
+            ItemDataWrapper newitem = new ItemDataWrapper(Storage.CurrentFileIndex);
             Storage.OpenItems.Add(newitem);
             entriesListBox.SelectedIndex = Storage.OpenItems.Count - 1;
 
@@ -247,20 +239,29 @@ namespace CataclysmModder
             {
                 if (c.Visible && c.Tag is DataFormTag)
                 {
-                    foreach (Control d in c.Controls[0].Controls)
-                    {
-                        if (d.Tag is JsonFormTag
-                            && !string.IsNullOrEmpty(((JsonFormTag)d.Tag).key)
-                            && ((JsonFormTag)d.Tag).mandatory
-                            && !newitem.data.ContainsKey(((JsonFormTag)d.Tag).key))
-                        {
-                            newitem.data[((JsonFormTag)d.Tag).key] = ((JsonFormTag)d.Tag).def;
-                        }
-                    }
+                    ControlSetDefaults(c, newitem);
                 }
             }
 
             Storage.FileChanged();
+        }
+
+        private void ControlSetDefaults(Control c, ItemDataWrapper newitem)
+        {
+            foreach (Control d in c.Controls)
+            {
+                if (d.Tag is JsonFormTag
+                    && !string.IsNullOrEmpty(((JsonFormTag)d.Tag).key)
+                    && ((JsonFormTag)d.Tag).mandatory
+                    && !newitem.data.ContainsKey(((JsonFormTag)d.Tag).key))
+                {
+                    newitem.data[((JsonFormTag)d.Tag).key] = ((JsonFormTag)d.Tag).def;
+                }
+                if (d.Controls.Count > 0)
+                {
+                    ControlSetDefaults(d, newitem);
+                }
+            }
         }
 
         private void deleteButton_Click(object sender, EventArgs e)

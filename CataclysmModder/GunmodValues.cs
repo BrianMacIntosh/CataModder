@@ -36,8 +36,8 @@ namespace CataclysmModder
                 "mod_targets",
                 "This mod can only be equipped to weapon types specified here.");
 
-            WinformsUtil.ControlsAttachHooks(Controls[0]);
-            WinformsUtil.TagsSetDefaults(Controls[0]);
+            WinformsUtil.ControlsAttachHooks(this);
+            WinformsUtil.TagsSetDefaults(this);
         }
     }
 }

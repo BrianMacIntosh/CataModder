@@ -150,8 +150,8 @@ namespace CataclysmModder
                 null,
                 "The level required before this recipe can be learned from this book.");
 
-            WinformsUtil.ControlsAttachHooks(Controls[0]);
-            WinformsUtil.TagsSetDefaults(Controls[0]);
+            WinformsUtil.ControlsAttachHooks(this);
+            WinformsUtil.TagsSetDefaults(this);
 
             toolsListBox.DataSource = toolGroups;
             toolsListBox.DisplayMember = "Display";

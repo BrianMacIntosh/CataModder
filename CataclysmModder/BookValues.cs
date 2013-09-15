@@ -29,8 +29,8 @@ namespace CataclysmModder
                 "time",
                 "Time in minutes on reading session on this book takes.");
 
-            WinformsUtil.ControlsAttachHooks(Controls[0]);
-            WinformsUtil.TagsSetDefaults(Controls[0]);
+            WinformsUtil.ControlsAttachHooks(this);
+            WinformsUtil.TagsSetDefaults(this);
 
             Form1.Instance.ReloadLists += LoadSkills;
         }
