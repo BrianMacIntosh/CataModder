@@ -84,7 +84,7 @@ namespace CataclysmModder
             resultTextBox.Tag = new JsonFormTag(
                 "result",
                 "The id of the item this recipe produces.");
-            ((JsonFormTag)resultTextBox.Tag).isItemId = true;
+            ((JsonFormTag)resultTextBox.Tag).dataSource = JsonFormTag.DataSourceType.ITEMS;
             suffixTextBox.Tag = new JsonFormTag(
                 "id_suffix",
                 "You need to set this to a unique value if multiple recipes produce the same item.",
@@ -93,10 +93,12 @@ namespace CataclysmModder
                 "skill_pri",
                 "The main skill used in crafting this recipe.",
                 false);
+            ((JsonFormTag)skill1ComboBox.Tag).dataSource = JsonFormTag.DataSourceType.SKILLS;
             skill2ComboBox.Tag = new JsonFormTag(
                 "skill_sec",
                 "A secondary skill used in crafting this recipe.",
                 false);
+            ((JsonFormTag)skill2ComboBox.Tag).dataSource = JsonFormTag.DataSourceType.SKILLS;
             diffNumeric.Tag = new JsonFormTag(
                 "difficulty",
                 "The skill level required to craft this recipe.");
@@ -106,6 +108,7 @@ namespace CataclysmModder
             categoryComboBox.Tag = new JsonFormTag(
                 "category",
                 "The tab this recipe appears under in the crafting menu.");
+            ((JsonFormTag)categoryComboBox.Tag).dataSource = JsonFormTag.DataSourceType.CRAFT_CATEGORIES;
             autolearnCheckBox.Tag = new JsonFormTag(
                 "autolearn",
                 "Is this recipe automatically learned at the appropriate skill level?",
@@ -135,7 +138,7 @@ namespace CataclysmModder
             itemIdTextField.Tag = new JsonFormTag(
                 null,
                 "The string id of this item.");
-            ((JsonFormTag)itemIdTextField.Tag).isItemId = true;
+            ((JsonFormTag)itemIdTextField.Tag).dataSource = JsonFormTag.DataSourceType.ITEMS;
             quantityNumeric.Tag = new JsonFormTag(
                 null,
                 "For components, the quantity used. For tools, the number of charges used (-1 for no charges).");
@@ -145,7 +148,7 @@ namespace CataclysmModder
             bookIdTextBox.Tag = new JsonFormTag(
                 null,
                 "The string id of the book.");
-            ((JsonFormTag)bookIdTextBox.Tag).isBookId = true;
+            ((JsonFormTag)bookIdTextBox.Tag).dataSource = JsonFormTag.DataSourceType.BOOKS;
             bookReqLevelNumeric.Tag = new JsonFormTag(
                 null,
                 "The level required before this recipe can be learned from this book.");
@@ -162,16 +165,8 @@ namespace CataclysmModder
             booksListBox.DataSource = bookGroup;
             booksListBox.DisplayMember = "Display";
 
-            Form1.Instance.ReloadLists += LoadLists;
             WinformsUtil.OnReset += Reset;
             WinformsUtil.OnLoadItem += LoadItem;
-        }
-
-        private void LoadLists()
-        {
-            Storage.LoadCraftCategories(categoryComboBox);
-            Storage.LoadSkills(skill1ComboBox);
-            Storage.LoadSkills(skill2ComboBox);
         }
 
         private void Reset()
@@ -188,6 +183,9 @@ namespace CataclysmModder
 
         private void LoadItem(object item)
         {
+            if (!Visible)
+                return;
+
             Dictionary<string, object> dict = (Dictionary<string, object>)item;
 
             //Load tools

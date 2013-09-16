@@ -14,6 +14,7 @@ namespace CataclysmModder
             skillComboBox.Tag = new JsonFormTag(
                 "skill",
                 "The skill used and trained when firing this weapon.");
+            ((JsonFormTag)skillComboBox.Tag).dataSource = JsonFormTag.DataSourceType.GUN_SKILLS;
             damageNumeric.Tag = new JsonFormTag(
                 "ranged_damage",
                 "Base damage dealt by this weapon.");
@@ -41,13 +42,6 @@ namespace CataclysmModder
 
             WinformsUtil.ControlsAttachHooks(this);
             WinformsUtil.TagsSetDefaults(this);
-
-            Form1.Instance.ReloadLists += LoadGunSkills;
-        }
-
-        private void LoadGunSkills()
-        {
-            Storage.LoadGunSkills(skillComboBox);
         }
     }
 }

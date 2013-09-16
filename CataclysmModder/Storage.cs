@@ -89,6 +89,7 @@ namespace CataclysmModder
                     }
                 }
 
+            //TODO: support raw arrays (skills)
             data[MemberOf.displayMember] = copy.Display + (lastitem + 1);
         }
 
@@ -126,6 +127,7 @@ namespace CataclysmModder
                     }
                 }
 
+            //TODO: support raw arrays (skills)
             data[MemberOf.displayMember] = "newitem" + (lastitem + 1);
         }
     }
@@ -202,14 +204,24 @@ namespace CataclysmModder
             string[] filedirs = name.Split(Path.DirectorySeparatorChar);
             if (filedirs.Length > 1 && filedirs[filedirs.Length - 2].Equals("items"))
                 return FileType.ITEMS;
+            else if (filename.Equals("bionics.json"))
+                return FileType.BIONICS;
             else if (filename.Equals("item_groups.json"))
                 return FileType.ITEM_GROUPS;
+            else if (filename.Equals("materials.json"))
+                return FileType.MATERIALS;
+            else if (filename.Equals("monstergroups.json"))
+                return FileType.MONSTER_GROUPS;
+            else if (filename.Equals("names.json"))
+                return FileType.NAMES;
             else if (filename.Equals("professions.json"))
                 return FileType.PROFESSIONS;
             else if (filename.Equals("recipes.json"))
                 return FileType.RECIPES;
-            else if (filename.Equals("bionics.json"))
-                return FileType.BIONICS;
+            else if (filename.Equals("skills.json"))
+                return FileType.SKILLS;
+            else if (filename.Equals("snippets.json"))
+                return FileType.SNIPPETS;
             return FileType.NONE;
         }
 
@@ -246,10 +258,15 @@ namespace CataclysmModder
         public enum FileType
         {
             ITEMS,
-            ITEM_GROUPS,
-            RECIPES,
-            PROFESSIONS,
             BIONICS,
+            ITEM_GROUPS,
+            MATERIALS,
+            MONSTER_GROUPS,
+            NAMES,
+            PROFESSIONS,
+            RECIPES,
+            SKILLS,
+            SNIPPETS,
             NONE,
 
             COUNT
@@ -271,44 +288,33 @@ namespace CataclysmModder
         }
 
 
+        /// <summary>
+        /// Initialize structures that describe how each different type of file should be read.
+        /// </summary>
         public static void InitializeFileDefs()
         {
             //Editing control needs to be set in Form1 ctor using FileDefSetControl
 
-            //Items
-            CataFile buffer = new CataFile();
-            buffer.displayMember = "id";
-            buffer.schema = new JsonSchema("CataclysmModder.schemas.items.txt");
-            fileDef[(int)FileType.ITEMS] = buffer;
-
-            //Item groups
-            buffer = new CataFile();
-            buffer.displayMember = "id";
-            buffer.schema = new JsonSchema("CataclysmModder.schemas.item_group.txt");
-            fileDef[(int)FileType.ITEM_GROUPS] = buffer;
-
-            //Recipes
-            buffer = new CataFile();
-            buffer.displayMember = "result";
-            buffer.displaySuffix = "id_suffix";
-            buffer.schema = new JsonSchema("CataclysmModder.schemas.recipes.txt");
-            fileDef[(int)FileType.RECIPES] = buffer;
-
-            //Professions
-            buffer = new CataFile();
-            buffer.displayMember = "ident";
-            buffer.schema = new JsonSchema("CataclysmModder.schemas.professions.txt");
-            fileDef[(int)FileType.PROFESSIONS] = buffer;
-
-            //Bionics
-            buffer = new CataFile();
-            buffer.displayMember = "id";
-            buffer.schema = null;
-            fileDef[(int)FileType.BIONICS] = buffer;
-
-
-            //Default
-            //NONE is null indicating not supported
+            fileDef[(int)FileType.ITEMS] = new CataFile(
+                "id",
+                new JsonSchema("CataclysmModder.schemas.items.txt"));
+            fileDef[(int)FileType.BIONICS] = new CataFile("id");
+            fileDef[(int)FileType.ITEM_GROUPS] = new CataFile(
+                "id",
+                new JsonSchema("CataclysmModder.schemas.item_group.txt"));
+            fileDef[(int)FileType.MATERIALS] = new CataFile("ident");
+            fileDef[(int)FileType.MONSTER_GROUPS] = new CataFile("name");
+            fileDef[(int)FileType.NAMES] = new CataFile("name");
+            fileDef[(int)FileType.PROFESSIONS] = new CataFile(
+                "ident",
+                new JsonSchema("CataclysmModder.schemas.professions.txt"));
+            fileDef[(int)FileType.RECIPES] = new CataFile(
+                "result",
+                "id_suffix",
+                new JsonSchema("CataclysmModder.schemas.recipes.txt"));
+            fileDef[(int)FileType.SKILLS] = null;
+            fileDef[(int)FileType.SNIPPETS] = null;
+            fileDef[(int)FileType.NONE] = null;
         }
 
         public static void FileDefSetControl(FileType type, Control control)
@@ -339,8 +345,8 @@ namespace CataclysmModder
                     AutocompleteBookSource.Clear();
                     for (int c = 0; c < openItems.Count; c++)
                     {
-                        if (GetFileTypeForOpenFile(currentFileIndex) == FileType.ITEMS
-                            || GetFileTypeForOpenFile(currentFileIndex) == FileType.BIONICS)
+                        if (GetFileTypeForOpenFile(c) == FileType.ITEMS
+                            || GetFileTypeForOpenFile(c) == FileType.BIONICS)
                         {
                             for (int d = 0; d < openItems[c].Count; d++)
                             {
@@ -414,6 +420,11 @@ namespace CataclysmModder
 
                 //Also load cats
                 CraftCategories = (object[])((Dictionary<string, object>)json)["categories"];
+            }
+            else if (fileDef[(int)ftype] == null)
+            {
+                //Not supported
+
             }
             else if (ftype != FileType.NONE)
             {
@@ -634,7 +645,7 @@ namespace CataclysmModder
 
         public static void ExportFile(string file, int[] indices)
         {
-            FileType ftype = GetFileTypeForOpenFile(currentFileIndex);
+            FileType ftype = GetFileTypeForCurrentFile();
 
             object[] serialData = new object[indices.Length];
             int c = 0;
@@ -711,7 +722,8 @@ namespace CataclysmModder
             {
                 SaveJsonItem(file, serialData, fileDef[(int)ftype].schema, "type");
             }
-            else if (ftype != FileType.NONE && fileDef[(int)ftype].schema != null)
+            else if (ftype != FileType.NONE
+                && fileDef[(int)ftype] != null && fileDef[(int)ftype].schema != null)
             {
                 SaveJsonItem(file, serialData, fileDef[(int)ftype].schema, "");
             }
@@ -744,74 +756,92 @@ namespace CataclysmModder
             openItems[currentFileIndex][currentItemIndex].NotifyKeyChanged(key);
         }
 
-        public static void LoadMaterials(ListBox box)
+        #region Data Source Getters
+
+        public static string[] GetMaterialNames()
         {
-            box.Items.Clear();
             for (int c = 0; c < openFiles.Length; c++)
             {
                 if (Path.GetFileName(openFiles[c]).Equals("materials.json"))
                 {
-                    foreach (ItemDataWrapper item in openItems[c])
-                    {
-                        box.Items.Add(item.data["ident"]);
-                    }
-                    return;
+                    string[] ret = new string[openItems[c].Count];
+                    for (int d = 0; d < openItems[c].Count; d++)
+                        ret[d] = (string)openItems[c][d].data["ident"];
+                    return ret;
                 }
             }
+            return new string[0];
         }
 
-        public static void LoadSkills(ComboBox box)
+        public static string[] GetSkills()
         {
-            //TODO: don't reload these files all the time
-            box.Items.Clear();
-            box.Items.Add("none");
             foreach (string s in openFiles)
             {
                 if (Path.GetFileName(s).Equals("skills.json"))
                 {
-                    object json = LoadJson(s);
-                    if (json == null)
-                        return;
-                    foreach (object[] item in (object[])json)
-                    {
-                        box.Items.Add(item[0]);
-                    }
-                    return;
+                    object[] json = LoadJson(s) as object[];
+                    if (json == null) break;
+
+                    string[] ret = new string[json.Length + 1];
+                    ret[0] = "none";
+                    for (int c = 0; c < json.Length; c++)
+                        ret[c + 1] = (string)((object[])json[c])[0];
+                    return ret;
                 }
             }
+            return new string[0];
         }
 
-        public static void LoadGunSkills(ComboBox box)
+        public static string[] GetGunSkills()
         {
-            //TODO: don't reload these files all the time
-            box.Items.Clear();
             foreach (string s in openFiles)
             {
                 if (Path.GetFileName(s).Equals("skills.json"))
                 {
-                    object json = LoadJson(s);
-                    if (json == null)
-                        return;
-                    foreach (object[] item in (object[])json)
+                    object[] json = LoadJson(s) as object[];
+                    if (json == null) break;
+
+                    List<string> ret = new List<string>();
+                    ret.Add("none");
+                    foreach (object[] arr in json)
                     {
-                        foreach (string f in (object[])item[3])
+                        foreach (string f in (object[])arr[3])
+                        {
                             if (f.Equals("gun_type"))
                             {
-                                box.Items.Add(item[0]);
+                                ret.Add((string)arr[0]);
                                 break;
                             }
+                        }
                     }
-                    return;
+                    return ret.ToArray();
                 }
             }
+            return new string[0];
         }
 
-        public static void LoadCraftCategories(ComboBox box)
+        public static string[] GetCraftCategories()
         {
-            box.Items.Clear();
-            if (CraftCategories != null)
-                foreach (string cc in CraftCategories)
-                    box.Items.Add(cc);
+            string[] ret = new string[CraftCategories.Length];
+            CraftCategories.CopyTo(ret, 0);
+            return ret;
         }
+
+        public static string[] GetAddictions()
+        {
+            //TODO: load from game data
+            string[] ret = new string[8];
+            ret[0] = "nicotine";
+            ret[1] = "caffeine";
+            ret[2] = "alcohol";
+            ret[3] = "sleeping pill";
+            ret[4] = "opiate";
+            ret[5] = "amphetamine";
+            ret[6] = "cocaine";
+            ret[7] = "crack";
+            return ret;
+        }
+
+        #endregion
     }
 }

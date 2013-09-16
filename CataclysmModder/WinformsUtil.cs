@@ -45,12 +45,39 @@ namespace CataclysmModder
             }
         }
 
+        public enum DataSourceType
+        {
+            NONE,
+            MATERIALS,
+            SKILLS,
+            GUN_SKILLS,
+            CRAFT_CATEGORIES,
+            ADDICTION_TYPES,
+            ITEMS,
+            BOOKS
+        }
+
+        /// <summary>
+        /// The json key this control reads and writes.
+        /// </summary>
         public string key;
+
+        /// <summary>
+        /// Help text to display when mousing over this control.
+        /// </summary>
         public string help;
+
+        /// <summary>
+        /// The default value of this control.
+        /// </summary>
         public object def;
+
         public bool mandatory = true;
-        public bool isItemId = false;
-        public bool isBookId = false;
+
+        /// <summary>
+        /// If set, this control has a list of values loaded from the specified source.
+        /// </summary>
+        public DataSourceType dataSource = DataSourceType.NONE;
 
         public JsonFormTag(string key, string help)
             : this(key, help, true)
@@ -137,6 +164,8 @@ namespace CataclysmModder
 
         public delegate void Reset();
         public static Reset OnReset;
+
+        private static List<Control> dataSourcedControls = new List<Control>();
 
 
         public static void ResetCheckedListBox(CheckedListBox box)
@@ -369,22 +398,34 @@ namespace CataclysmModder
                 {
                     c.Enter += DisplayHelp;
 
-                    //Set up autocompleting text fields
-                    if (((JsonFormTag)c.Tag).isItemId)
+                    //Handle data source hooks
+                    switch (((JsonFormTag)c.Tag).dataSource)
                     {
-                        TextBox c1 = (TextBox)c;
-                        c1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                        c1.AutoCompleteSource = AutoCompleteSource.CustomSource;
-                        c1.AutoCompleteCustomSource = Storage.AutocompleteItemSource;
+                        case JsonFormTag.DataSourceType.ITEMS:
+                            if (!(c is TextBox))
+                                throw new InvalidCastException("Item or Book Data Source is only allowed on TextBox controls.");
+                            TextBox tb1 = (TextBox)c;
+                            tb1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                            tb1.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                            tb1.AutoCompleteCustomSource = Storage.AutocompleteItemSource;
+                            break;
+                        case JsonFormTag.DataSourceType.BOOKS:
+                            if (!(c is TextBox))
+                                throw new InvalidCastException("Item or Book Data Source is only allowed on TextBox controls.");
+                            TextBox tb2 = (TextBox)c;
+                            tb2.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                            tb2.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                            tb2.AutoCompleteCustomSource = Storage.AutocompleteBookSource;
+                            break;
+                        case JsonFormTag.DataSourceType.NONE:
+
+                            break;
+                        default:
+                            dataSourcedControls.Add(c);
+                            break;
                     }
-                    else if (((JsonFormTag)c.Tag).isBookId)
-                    {
-                        TextBox c1 = (TextBox)c;
-                        c1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                        c1.AutoCompleteSource = AutoCompleteSource.CustomSource;
-                        c1.AutoCompleteCustomSource = Storage.AutocompleteBookSource;
-                    }
-                    else if (c is ComboBox)
+                    
+                    if (c is ComboBox)
                     {
                         ComboBox c1 = (ComboBox)c;
                         c1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
@@ -433,6 +474,62 @@ namespace CataclysmModder
                 if (c.Controls.Count > 0)
                 {
                     TagsSetDefaults(c);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tells combo and list boxes pulling from data sources to reload them.
+        /// </summary>
+        public static void RefreshDataSources()
+        {
+            foreach (Control c in dataSourcedControls)
+            {
+                //Clear old data
+                if (c is ListBox)
+                    ((ListBox)c).Items.Clear();
+                else if (c is ComboBox)
+                    ((ComboBox)c).Items.Clear();
+                else
+                    throw new InvalidCastException("Data Sources that load lists are only permitted " +
+                        "on ListBox and ComboBox controls");
+
+                //Load new data
+                string[] dataSource = null;
+                switch (((JsonFormTag)c.Tag).dataSource)
+                {
+                    case JsonFormTag.DataSourceType.ADDICTION_TYPES:
+                        dataSource = Storage.GetAddictions();
+                        break;
+                    case JsonFormTag.DataSourceType.CRAFT_CATEGORIES:
+                        dataSource = Storage.GetCraftCategories();
+                        break;
+                    case JsonFormTag.DataSourceType.GUN_SKILLS:
+                        dataSource = Storage.GetGunSkills();
+                        break;
+                    case JsonFormTag.DataSourceType.MATERIALS:
+                        dataSource = Storage.GetMaterialNames();
+                        break;
+                    case JsonFormTag.DataSourceType.SKILLS:
+                        dataSource = Storage.GetSkills();
+                        break;
+                }
+
+                if (dataSource == null || dataSource.Length <= 0)
+                    continue;
+
+                //Populate new data
+                if (c is ListBox)
+                {
+                    ListBox c1 = (ListBox)c;
+                    foreach (string s in dataSource)
+                        c1.Items.Add(s);
+                }
+                else if (c is ComboBox)
+                {
+                    ComboBox c1 = (ComboBox)c;
+                    foreach (string s in dataSource)
+                        c1.Items.Add(s);
                 }
             }
         }

@@ -101,6 +101,7 @@ namespace CataclysmModder
                 "material",
                 "The materials making up this item (max 2).",
                 false);
+            ((JsonFormTag)materialsCheckedListBox.Tag).dataSource = JsonFormTag.DataSourceType.MATERIALS;
             descriptionTextBox.Tag = new JsonFormTag(
                 "description",
                 "The displayed description of the item.");
@@ -146,13 +147,6 @@ namespace CataclysmModder
             WinformsUtil.TagsSetDefaults(this);
 
             //TODO: warning on load if symbol length > 1
-
-            Form1.Instance.ReloadLists += LoadMaterials;
-        }
-
-        private void LoadMaterials()
-        {
-            Storage.LoadMaterials(materialsCheckedListBox);
         }
 
         private void typeComboBox_TextChanged(object sender, EventArgs e)

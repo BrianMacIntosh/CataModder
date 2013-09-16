@@ -18,7 +18,7 @@ namespace CataclysmModder
                 "The item ID of the item to revert to when this item runs out of charges.",
                 true,
                 "null");
-            ((JsonFormTag)revertsTextBox.Tag).isItemId = true;
+            ((JsonFormTag)revertsTextBox.Tag).dataSource = JsonFormTag.DataSourceType.ITEMS;
             maxChargesNumeric.Tag = new JsonFormTag(
                 "max_charges",
                 "The maximum number of charges this tool can hold at once.");

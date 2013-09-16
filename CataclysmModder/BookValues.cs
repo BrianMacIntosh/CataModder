@@ -13,6 +13,7 @@ namespace CataclysmModder
                 "The skill this book trains.",
                 true,
                 "none");
+            ((JsonFormTag)skillComboBox.Tag).dataSource = JsonFormTag.DataSourceType.SKILLS;
             reqlevelNumeric.Tag = new JsonFormTag(
                 "required_level",
                 "The minimum skill level needed to understand this book.");
@@ -31,13 +32,6 @@ namespace CataclysmModder
 
             WinformsUtil.ControlsAttachHooks(this);
             WinformsUtil.TagsSetDefaults(this);
-
-            Form1.Instance.ReloadLists += LoadSkills;
-        }
-
-        private void LoadSkills()
-        {
-            Storage.LoadSkills(skillComboBox);
         }
     }
 }

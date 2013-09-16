@@ -8,9 +8,6 @@ namespace CataclysmModder
 {
     public partial class Form1 : Form
     {
-        public delegate void ReloadEvent();
-        public ReloadEvent ReloadLists;
-
         public static Form1 Instance { get; private set; }
 
         public GunmodValues GunModControl;
@@ -100,6 +97,13 @@ namespace CataclysmModder
             Controls.Add(recipeControl);
             Storage.FileDefSetControl(Storage.FileType.RECIPES, recipeControl);
 
+            Control professionControl = new ProfessionValues();
+            professionControl.Tag = new DataFormTag();
+            professionControl.Location = mainPanelLocation;
+            professionControl.Visible = false;
+            Controls.Add(professionControl);
+            Storage.FileDefSetControl(Storage.FileType.PROFESSIONS, professionControl);
+
             //Load previous workspace
             if (File.Exists(".conf"))
             {
@@ -144,8 +148,7 @@ namespace CataclysmModder
             if (Storage.OpenFiles.Length > 0)
                 filesComboBox.SelectedItem = Storage.OpenFiles[0];
 
-            if (ReloadLists != null)
-                ReloadLists();
+            WinformsUtil.RefreshDataSources();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

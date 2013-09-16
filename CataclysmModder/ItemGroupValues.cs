@@ -23,7 +23,7 @@ namespace CataclysmModder
             itemidTextBox.Tag = new JsonFormTag(
                 null,
                 "The id of the item to spawn.");
-            ((JsonFormTag)itemidTextBox.Tag).isItemId = true;
+            ((JsonFormTag)itemidTextBox.Tag).dataSource = JsonFormTag.DataSourceType.ITEMS;
             freqNumeric.Tag = new JsonFormTag(
                 null,
                 "The relative frequency of this item to spawn.");
@@ -52,6 +52,9 @@ namespace CataclysmModder
 
         private void LoadItem(object item)
         {
+            if (!Visible)
+                return;
+
             //Wrap items into the list
             items.Clear();
 
