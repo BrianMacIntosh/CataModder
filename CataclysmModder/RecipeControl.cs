@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace CataclysmModder
@@ -13,7 +9,7 @@ namespace CataclysmModder
     {
         private class ComponentGroup : INotifyPropertyChanged
         {
-            public BindingList<ItemGroupLine> items = new BindingList<ItemGroupLine>();
+            public BindingList<GroupedData> items = new BindingList<GroupedData>();
 
             public event PropertyChangedEventHandler PropertyChanged;
 
@@ -47,14 +43,14 @@ namespace CataclysmModder
             {
                 foreach (object[] data in inItems)
                 {
-                    items.Add(new ItemGroupLine(data));
+                    items.Add(new GroupedData(data));
                     items[items.Count - 1].PropertyChanged += NotifyItemChanged;
                 }
             }
 
             public void AddNew()
             {
-                items.Add(new ItemGroupLine());
+                items.Add(new GroupedData(new object[] { "null", 0 }));
                 items[items.Count - 1].PropertyChanged += NotifyItemChanged;
             }
         }
@@ -75,7 +71,7 @@ namespace CataclysmModder
         private BindingList<ComponentGroup> toolGroups = new BindingList<ComponentGroup>();
         private BindingList<ComponentGroup> componentGroups = new BindingList<ComponentGroup>();
 
-        private BindingList<ItemGroupLine> bookGroup = new BindingList<ItemGroupLine>();
+        private BindingList<GroupedData> bookGroup = new BindingList<GroupedData>();
 
         public RecipeControl()
         {
@@ -143,8 +139,9 @@ namespace CataclysmModder
                 null,
                 "For components, the quantity used. For tools, the number of charges used (-1 for no charges).");
             booksListBox.Tag = new JsonFormTag(
-                null,
+                "book_learn",
                 "A list of books that this recipe might be learned from.");
+            ((JsonFormTag)booksListBox.Tag).backingList = bookGroup;
             bookIdTextBox.Tag = new JsonFormTag(
                 null,
                 "The string id of the book.");
@@ -162,9 +159,6 @@ namespace CataclysmModder
             componentsListBox.DataSource = componentGroups;
             componentsListBox.DisplayMember = "Display";
 
-            booksListBox.DataSource = bookGroup;
-            booksListBox.DisplayMember = "Display";
-
             WinformsUtil.OnReset += Reset;
             WinformsUtil.OnLoadItem += LoadItem;
         }
@@ -172,11 +166,8 @@ namespace CataclysmModder
         private void Reset()
         {
             WinformsUtil.Resetting++;
-            itemIdTextField.Text = "";
-            quantityNumeric.Value = 0;
             toolGroups.Clear();
             componentGroups.Clear();
-            bookGroup.Clear();
             itemsListBox.DataSource = null;
             WinformsUtil.Resetting--;
         }
@@ -200,16 +191,9 @@ namespace CataclysmModder
                 foreach (object[] data in (object[])dict["components"])
                     componentGroups.Add(new ComponentGroup(data));
 
-            //Load books
-            bookGroup.Clear();
-            if (dict.ContainsKey("book_learn"))
-                foreach (object[] data in (object[])dict["book_learn"])
-                    bookGroup.Add(new ItemGroupLine(data));
-
             //Select none
             toolsListBox.SelectedIndex = -1;
             componentsListBox.SelectedIndex = -1;
-            booksListBox.SelectedIndex = -1;
         }
 
         private void toolsListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -221,6 +205,12 @@ namespace CataclysmModder
 
                 itemsListBox.DataSource = ((ComponentGroup)toolsListBox.SelectedItem).items;
                 itemsListBox.DisplayMember = "Display";
+
+                deleteToolButton.Enabled = true;
+            }
+            else
+            {
+                deleteToolButton.Enabled = false;
             }
         }
 
@@ -233,6 +223,12 @@ namespace CataclysmModder
 
                 itemsListBox.DataSource = ((ComponentGroup)componentsListBox.SelectedItem).items;
                 itemsListBox.DisplayMember = "Display";
+
+                deleteComponentButton.Enabled = true;
+            }
+            else
+            {
+                deleteComponentButton.Enabled = false;
             }
         }
 
@@ -245,8 +241,10 @@ namespace CataclysmModder
             {
                 itemIdTextField.Enabled = true;
                 quantityNumeric.Enabled = true;
-                itemIdTextField.Text = ((ItemGroupLine)itemsListBox.SelectedItem).Id;
-                quantityNumeric.Value = ((ItemGroupLine)itemsListBox.SelectedItem).Value;
+                itemIdTextField.Text = ((GroupedData)itemsListBox.SelectedItem).Id;
+                quantityNumeric.Value = ((GroupedData)itemsListBox.SelectedItem).Value;
+
+                deleteItemButton.Enabled = true;
             }
             else if (!changing)
             {
@@ -259,6 +257,7 @@ namespace CataclysmModder
         {
             itemIdTextField.Enabled = false;
             quantityNumeric.Enabled = false;
+            deleteItemButton.Enabled = false;
             WinformsUtil.Resetting++;
             itemIdTextField.Text = "";
             quantityNumeric.Value = 0;
@@ -286,9 +285,9 @@ namespace CataclysmModder
             {
                 object[] cgroup = new object[cg.items.Count];
                 int d = 0;
-                foreach (ItemGroupLine cgi in cg.items)
+                foreach (GroupedData cgi in cg.items)
                 {
-                    cgroup[d] = (object[])cgi;
+                    cgroup[d] = cgi.data;
                     d++;
                 }
                 cgroups[c] = cgroup;
@@ -305,9 +304,9 @@ namespace CataclysmModder
             {
                 object[] cgroup = new object[cg.items.Count];
                 int d = 0;
-                foreach (ItemGroupLine cgi in cg.items)
+                foreach (GroupedData cgi in cg.items)
                 {
-                    cgroup[d] = (object[])cgi;
+                    cgroup[d] = cgi.data;
                     d++;
                 }
                 cgroups[c] = cgroup;
@@ -321,7 +320,7 @@ namespace CataclysmModder
             if (WinformsUtil.Resetting > 0) return;
 
             changing = true;
-            ((ItemGroupLine)itemsListBox.SelectedItem).Id = itemIdTextField.Text;
+            ((GroupedData)itemsListBox.SelectedItem).Id = itemIdTextField.Text;
             changing = false;
             SaveItemlistToStorage();
         }
@@ -331,7 +330,7 @@ namespace CataclysmModder
             if (WinformsUtil.Resetting > 0) return;
 
             changing = true;
-            ((ItemGroupLine)itemsListBox.SelectedItem).Value = (int)quantityNumeric.Value;
+            ((GroupedData)itemsListBox.SelectedItem).Value = (int)quantityNumeric.Value;
             changing = false;
             SaveItemlistToStorage();
         }
@@ -409,8 +408,10 @@ namespace CataclysmModder
             {
                 bookIdTextBox.Enabled = true;
                 bookReqLevelNumeric.Enabled = true;
-                bookIdTextBox.Text = ((ItemGroupLine)booksListBox.SelectedItem).Id;
-                bookReqLevelNumeric.Value = ((ItemGroupLine)booksListBox.SelectedItem).Value;
+                bookIdTextBox.Text = ((GroupedData)booksListBox.SelectedItem).Id;
+                bookReqLevelNumeric.Value = ((GroupedData)booksListBox.SelectedItem).Value;
+
+                deleteBook.Enabled = true;
             }
             else if (!changing)
             {
@@ -418,26 +419,22 @@ namespace CataclysmModder
                 bookReqLevelNumeric.Enabled = false;
                 bookIdTextBox.Text = "";
                 bookReqLevelNumeric.Value = 0;
+
+                deleteBook.Enabled = false;
             }
             WinformsUtil.Resetting--;
         }
 
         private void newBook_Click(object sender, EventArgs e)
         {
-            bookGroup.Add(new ItemGroupLine());
+            bookGroup.Add(new GroupedData(new object[] { "null", 0 }));
             booksListBox.SelectedIndex = booksListBox.Items.Count - 1;
-            booksListBox_SelectedIndexChanged(null, null);
-            SaveBookListToStorage();
         }
 
         private void deleteBook_Click(object sender, EventArgs e)
         {
             if (booksListBox.SelectedItem != null)
-            {
-                bookGroup.Remove((ItemGroupLine)booksListBox.SelectedItem);
-                booksListBox_SelectedIndexChanged(null, null);
-                SaveBookListToStorage();
-            }
+                bookGroup.Remove((GroupedData)booksListBox.SelectedItem);
         }
 
         private void bookIdTextBox_TextChanged(object sender, EventArgs e)
@@ -445,9 +442,8 @@ namespace CataclysmModder
             if (WinformsUtil.Resetting > 0) return;
 
             changing = true;
-            ((ItemGroupLine)booksListBox.SelectedItem).Id = bookIdTextBox.Text;
+            ((GroupedData)booksListBox.SelectedItem).Id = bookIdTextBox.Text;
             changing = false;
-            SaveItemlistToStorage();
         }
 
         private void bookReqLevelNumeric_ValueChanged(object sender, EventArgs e)
@@ -455,14 +451,8 @@ namespace CataclysmModder
             if (WinformsUtil.Resetting > 0) return;
 
             changing = true;
-            ((ItemGroupLine)booksListBox.SelectedItem).Value = (int)bookReqLevelNumeric.Value;
+            ((GroupedData)booksListBox.SelectedItem).Value = (int)bookReqLevelNumeric.Value;
             changing = false;
-            SaveItemlistToStorage();
-        }
-
-        private void SaveBookListToStorage()
-        {
-            WinformsUtil.ApplyItemGroupLines("book_learn", bookGroup, false);
         }
     }
 }

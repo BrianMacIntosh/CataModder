@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
-using System.IO;
 
 namespace CataclysmModder
 {
@@ -79,6 +78,12 @@ namespace CataclysmModder
         /// </summary>
         public DataSourceType dataSource = DataSourceType.NONE;
 
+        /// <summary>
+        /// For listbox controls, the backing list of data items.
+        /// </summary>
+        public BindingList<GroupedData> backingList = null;
+
+
         public JsonFormTag(string key, string help)
             : this(key, help, true)
         {
@@ -100,57 +105,10 @@ namespace CataclysmModder
         }
     }
 
-    public class ItemGroupLine : INotifyPropertyChanged
-    {
-        public object[] data;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public static explicit operator object[](ItemGroupLine item)
-        {
-            return item.data;
-        }
-
-        public string Id
-        {
-            get { return (string)data[0]; }
-            set
-            {
-                data[0] = value;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("Display"));
-            }
-        }
-        public int Value
-        {
-            get { return (int)data[1]; }
-            set
-            {
-                data[1] = value;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("Display"));
-            }
-        }
-
-        public string Display
-        {
-            get
-            {
-                return Id + " (" + Value + ")";
-            }
-        }
-
-        public ItemGroupLine()
-        {
-            this.data = new object[] { "null", 0 };
-        }
-
-        public ItemGroupLine(object[] data)
-        {
-            this.data = data;
-        }
-    }
-
+    /// <summary>
+    /// This class sets up and manages the event-driven craziness that is the JSON-Winforms interface.
+    /// </summary>
     static class WinformsUtil
     {
         /// <summary>
@@ -309,6 +267,33 @@ namespace CataclysmModder
             }
         }
 
+        public static void SetList(Dictionary<string, object> itemValues, string key, ListBox box, BindingList<GroupedData> field,
+            string id, bool mandatory)
+        {
+            if (itemValues.ContainsKey(key))
+            {
+                try
+                {
+                    foreach (object obj in (object[])itemValues[key])
+                        field.Add(new GroupedData(obj));
+
+                    if (box.Items.Count > 0)
+                        box.SelectedIndex = 0; //TODO: THIS MIGHT NOT CALLBACK
+                }
+                catch (InvalidCastException)
+                {
+                    MessageBox.Show("Expected 'object[]' for key '" + key + "' but got '" + itemValues[key].GetType().ToString() + "'",
+                        "Data Error", MessageBoxButtons.OK);
+                }
+            }
+            else if (mandatory)
+            {
+                IssueTracker.PostIssue(
+                    "Item '" + id + "': missing mandatory value for '" + key + "'.",
+                    IssueTracker.IssueLevel.ERROR);
+            }
+        }
+
         /// <summary>
         /// Final call, sends value application to storage backend
         /// </summary>
@@ -345,13 +330,15 @@ namespace CataclysmModder
                 ApplyValue(key, vals, ((JsonFormTag)box.Tag).mandatory);
         }
 
-        public static void ApplyItemGroupLines(string key, IList<ItemGroupLine> box, bool mandatory)
+        public static void ApplyList(string key, BindingList<GroupedData> list, bool mandatory)
         {
-            object[] iobj = new object[box.Count];
+            if (Resetting > 0) return;
+
+            object[] iobj = new object[list.Count];
             int c = 0;
-            foreach (ItemGroupLine ig in box)
+            foreach (GroupedData group in list)
             {
-                iobj[c] = ig.data;
+                iobj[c] = group.data;
                 c++;
             }
             ApplyValue(key, iobj, mandatory);
@@ -385,10 +372,24 @@ namespace CataclysmModder
                 ApplyValue(((JsonFormTag)num.Tag).key, num.Checked, ((JsonFormTag)num.Tag).mandatory);
         }
 
+        public static void ListChanged(object sender, EventArgs e)
+        {
+            BindingList<GroupedData> list = (BindingList<GroupedData>)sender;
+            JsonFormTag tag = listTags[list];
+            if (!string.IsNullOrEmpty(tag.key))
+                ApplyList(tag.key, list, tag.mandatory);
+        }
+
         public static void DisplayHelp(object sender, EventArgs e)
         {
             Form1.Instance.SetHelpText(((JsonFormTag)((Control)sender).Tag).help);
         }
+
+        /// <summary>
+        /// Remembers tags for BindingList controls, because they don't pass the control through the event.
+        /// </summary>
+        private static Dictionary<BindingList<GroupedData>, JsonFormTag> listTags =
+            new Dictionary<BindingList<GroupedData>, JsonFormTag>();
 
         public static void ControlsAttachHooks(Control control)
         {
@@ -396,14 +397,16 @@ namespace CataclysmModder
             {
                 if (c.Tag is JsonFormTag)
                 {
+                    JsonFormTag tag = (JsonFormTag)c.Tag;
+
                     c.Enter += DisplayHelp;
 
                     //Handle data source hooks
-                    switch (((JsonFormTag)c.Tag).dataSource)
+                    switch (tag.dataSource)
                     {
                         case JsonFormTag.DataSourceType.ITEMS:
                             if (!(c is TextBox))
-                                throw new InvalidCastException("Item or Book Data Source is only allowed on TextBox controls.");
+                                throw new InvalidCastException("Item Data Source is only allowed on TextBox controls.");
                             TextBox tb1 = (TextBox)c;
                             tb1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                             tb1.AutoCompleteSource = AutoCompleteSource.CustomSource;
@@ -411,7 +414,7 @@ namespace CataclysmModder
                             break;
                         case JsonFormTag.DataSourceType.BOOKS:
                             if (!(c is TextBox))
-                                throw new InvalidCastException("Item or Book Data Source is only allowed on TextBox controls.");
+                                throw new InvalidCastException("Book Data Source is only allowed on TextBox controls.");
                             TextBox tb2 = (TextBox)c;
                             tb2.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                             tb2.AutoCompleteSource = AutoCompleteSource.CustomSource;
@@ -438,6 +441,13 @@ namespace CataclysmModder
                         ((CheckedListBox)c).ItemCheck += ChecksValueChanged;
                     else if (c is CheckBox)
                         ((CheckBox)c).CheckedChanged += CheckValueChanged;
+                    else if (c is ListBox && tag.backingList != null)
+                    {
+                        ((ListBox)c).DataSource = tag.backingList;
+                        ((ListBox)c).DisplayMember = "Display";
+                        tag.backingList.ListChanged += ListChanged;
+                        listTags.Add(tag.backingList, tag);
+                    }
                     else
                         c.TextChanged += TextValueChanged;
                 }
@@ -534,6 +544,11 @@ namespace CataclysmModder
             }
         }
 
+        /// <summary>
+        /// Load data from the specified item into tagged controls in the specified control.
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="item"></param>
         public static void ControlsLoadItem(Control control, object item)
         {
             Resetting++;
@@ -570,6 +585,8 @@ namespace CataclysmModder
                             SetChecks(itemValues, tag.key, (CheckedListBox)c, id, tag.mandatory);
                         else if (c is CheckBox)
                             SetCheckBox(itemValues, tag.key, (CheckBox)c, id, tag.mandatory);
+                        else if (c is ListBox && tag.backingList != null)
+                            SetList(itemValues, tag.key, (ListBox)c, tag.backingList, id, tag.mandatory);
                         else
                             SetString(itemValues, tag.key, c, id, tag.mandatory);
                     }
@@ -581,6 +598,10 @@ namespace CataclysmModder
             }
         }
 
+        /// <summary>
+        /// Reset the values of tagged controls in the specified control.
+        /// </summary>
+        /// <param name="control"></param>
         public static void ControlsResetValues(Control control)
         {
             Resetting++;
@@ -612,6 +633,10 @@ namespace CataclysmModder
                     else if (c is CheckBox)
                     {
                         ((CheckBox)c).Checked = (bool)tag.def;
+                    }
+                    else if (tag.backingList != null)
+                    {
+                        tag.backingList.Clear();
                     }
                     else
                     {

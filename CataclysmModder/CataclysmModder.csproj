@@ -117,6 +117,7 @@
       <DependentUpon>GunValues.cs</DependentUpon>
     </Compile>
     <Compile Include="IssueTracker.cs" />
+    <Compile Include="GroupedData.cs" />
     <Compile Include="ItemGroupValues.cs">
       <SubType>UserControl</SubType>
     </Compile>

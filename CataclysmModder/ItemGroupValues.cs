@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace CataclysmModder
 {
     public partial class ItemGroupValues : UserControl
     {
-        private BindingList<ItemGroupLine> items = new BindingList<ItemGroupLine>();
+        private BindingList<GroupedData> items = new BindingList<GroupedData>();
 
         public ItemGroupValues()
         {
@@ -28,62 +24,24 @@ namespace CataclysmModder
                 null,
                 "The relative frequency of this item to spawn.");
             itemsListBox.Tag = new JsonFormTag(
-                null,
+                "items",
                 "The list of items in this group and their relative frequencies.");
+            ((JsonFormTag)itemsListBox.Tag).backingList = items;
 
             WinformsUtil.ControlsAttachHooks(this);
             WinformsUtil.TagsSetDefaults(this);
-
-            itemsListBox.DataSource = items;
-            itemsListBox.DisplayMember = "Display";
-
-            WinformsUtil.OnReset += Reset;
-            WinformsUtil.OnLoadItem += LoadItem;
-        }
-
-        private void Reset()
-        {
-            WinformsUtil.Resetting++;
-            itemidTextBox.Text = "";
-            freqNumeric.Value = 0;
-            items.Clear();
-            WinformsUtil.Resetting--;
-        }
-
-        private void LoadItem(object item)
-        {
-            if (!Visible)
-                return;
-
-            //Wrap items into the list
-            items.Clear();
-
-            Dictionary<string, object> dict = (Dictionary<string, object>)item;
-            if (dict.ContainsKey("items"))
-                foreach (object[] data in (object[])dict["items"])
-                    items.Add(new ItemGroupLine(data));
-
-            if (items.Count > 0)
-            {
-                itemsListBox.SelectedIndex = 0;
-                itemsListBox_SelectedIndexChanged(null, null);
-            }
         }
 
         private void newButton_Click(object sender, EventArgs e)
         {
-            items.Add(new ItemGroupLine());
-            SaveItemlistToStorage();
+            items.Add(new GroupedData(new object[] { "null", 0 }));
             itemsListBox.SelectedIndex = itemsListBox.Items.Count - 1;
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
             if (itemsListBox.SelectedIndex >= 0)
-            {
-                items.Remove((ItemGroupLine)itemsListBox.SelectedItem);
-                SaveItemlistToStorage();
-            }
+                items.Remove((GroupedData)itemsListBox.SelectedItem);
         }
 
         private void itemsListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -92,10 +50,12 @@ namespace CataclysmModder
             if (itemsListBox.SelectedItem != null)
             {
                 //Fill fields
-                itemidTextBox.Text = ((ItemGroupLine)itemsListBox.SelectedItem).Id;
+                itemidTextBox.Text = ((GroupedData)itemsListBox.SelectedItem).Id;
                 itemidTextBox.Enabled = true;
-                freqNumeric.Value = ((ItemGroupLine)itemsListBox.SelectedItem).Value;
+                freqNumeric.Value = ((GroupedData)itemsListBox.SelectedItem).Value;
                 freqNumeric.Enabled = true;
+
+                deleteButton.Enabled = true;
             }
             else if (!changing)
             {
@@ -103,6 +63,8 @@ namespace CataclysmModder
                 itemidTextBox.Enabled = false;
                 freqNumeric.Value = 0;
                 freqNumeric.Enabled = false;
+
+                deleteButton.Enabled = false;
             }
             WinformsUtil.Resetting--;
         }
@@ -114,9 +76,8 @@ namespace CataclysmModder
             if (WinformsUtil.Resetting > 0) return;
 
             changing = true;
-            ((ItemGroupLine)itemsListBox.SelectedItem).Id = itemidTextBox.Text;
+            ((GroupedData)itemsListBox.SelectedItem).Id = itemidTextBox.Text;
             changing = false;
-            SaveItemlistToStorage();
         }
 
         private void freqNumeric_ValueChanged(object sender, EventArgs e)
@@ -124,14 +85,8 @@ namespace CataclysmModder
             if (WinformsUtil.Resetting > 0) return;
 
             changing = true;
-            ((ItemGroupLine)itemsListBox.SelectedItem).Value = (int)freqNumeric.Value;
+            ((GroupedData)itemsListBox.SelectedItem).Value = (int)freqNumeric.Value;
             changing = false;
-            SaveItemlistToStorage();
-        }
-
-        private void SaveItemlistToStorage()
-        {
-            WinformsUtil.ApplyItemGroupLines("items", items, true);
         }
     }
 }
