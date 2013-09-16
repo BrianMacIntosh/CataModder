@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ico32.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
@@ -233,6 +236,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="schemas\professions.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ico32.ico" />
+    <Content Include="icons\ico16.ico" />
+    <Content Include="icons\ico32.ico" />
+    <Content Include="icons\ico48.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

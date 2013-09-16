@@ -68,7 +68,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(238, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = " ver 0.1 rev 21.  For Cataclysm ver 0.7 (Lindqvist)";
+            this.label2.Text = " ver 0.1 rev 26.  For Cataclysm ver 0.7 (Lindqvist)";
             // 
             // label3
             // 
@@ -135,6 +135,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "About";
