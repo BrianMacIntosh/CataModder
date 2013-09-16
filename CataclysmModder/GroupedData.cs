@@ -1,5 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace CataclysmModder
 {
@@ -19,6 +20,16 @@ namespace CataclysmModder
             {
                 if (data is object[])
                     return (string)((object[])data)[0];
+                else if (data is Dictionary<string, object>)
+                {
+                    Dictionary<string, object> dict = (Dictionary<string, object>)data;
+                    if (dict.ContainsKey("name"))
+                        return (string)dict["name"];
+                    else if (dict.ContainsKey("type"))
+                        return (string)dict["type"];
+                    else
+                        throw new NotImplementedException();
+                }
                 else
                     return data.ToString();
             }
@@ -26,6 +37,16 @@ namespace CataclysmModder
             {
                 if (data is object[])
                     ((object[])data)[0] = value;
+                else if (data is Dictionary<string, object>)
+                {
+                    Dictionary<string, object> dict = (Dictionary<string, object>)data;
+                    if (dict.ContainsKey("name"))
+                        dict["name"] = value;
+                    else if (dict.ContainsKey("type"))
+                        dict["type"] = value;
+                    else
+                        throw new NotImplementedException();
+                }
                 else
                     data = value;
 
@@ -39,6 +60,16 @@ namespace CataclysmModder
             {
                 if (data is object[])
                     return (int)((object[])data)[1];
+                else if (data is Dictionary<string, object>)
+                {
+                    Dictionary<string, object> dict = (Dictionary<string, object>)data;
+                    if (dict.ContainsKey("level"))
+                        return (int)dict["level"];
+                    else if (dict.ContainsKey("intensity"))
+                        return (int)dict["intensity"];
+                    else
+                        throw new NotImplementedException();
+                }
                 else
                     return (int)data; //TODO: bad bad bad
             }
@@ -46,6 +77,16 @@ namespace CataclysmModder
             {
                 if (data is object[])
                     ((object[])data)[1] = value;
+                else if (data is Dictionary<string, object>)
+                {
+                    Dictionary<string, object> dict = (Dictionary<string, object>)data;
+                    if (dict.ContainsKey("level"))
+                        dict["level"] = value;
+                    else if (dict.ContainsKey("intensity"))
+                        dict["intensity"] = value;
+                    else
+                        throw new NotImplementedException();
+                }
                 else
                     data = value;
                 
@@ -58,8 +99,7 @@ namespace CataclysmModder
         {
             get
             {
-                if (data is object[]
-                    || (data is Dictionary<string, object> && ((Dictionary<string, object>)data).Keys.Count > 1))
+                if (data is object[] || data is Dictionary<string, object>)
                     return Id + " (" + Value + ")";
                 else
                     return Id;

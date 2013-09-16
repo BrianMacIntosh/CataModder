@@ -35,8 +35,8 @@
             this.addictionTypeComboBox = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.addictionsListBox = new System.Windows.Forms.ListBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.deleteAddiction = new System.Windows.Forms.Button();
+            this.newAddiction = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.skillLevelNumeric = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
@@ -95,8 +95,8 @@
             this.groupBox4.Controls.Add(this.addictionTypeComboBox);
             this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Controls.Add(this.addictionsListBox);
-            this.groupBox4.Controls.Add(this.button1);
-            this.groupBox4.Controls.Add(this.button2);
+            this.groupBox4.Controls.Add(this.deleteAddiction);
+            this.groupBox4.Controls.Add(this.newAddiction);
             this.groupBox4.Location = new System.Drawing.Point(364, 99);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(171, 193);
@@ -115,6 +115,7 @@
             this.addictionStrengthNumeric.Name = "addictionStrengthNumeric";
             this.addictionStrengthNumeric.Size = new System.Drawing.Size(68, 20);
             this.addictionStrengthNumeric.TabIndex = 6;
+            this.addictionStrengthNumeric.ValueChanged += new System.EventHandler(this.addictionStrengthNumeric_ValueChanged);
             // 
             // label8
             // 
@@ -132,6 +133,7 @@
             this.addictionTypeComboBox.Name = "addictionTypeComboBox";
             this.addictionTypeComboBox.Size = new System.Drawing.Size(111, 21);
             this.addictionTypeComboBox.TabIndex = 4;
+            this.addictionTypeComboBox.TextChanged += new System.EventHandler(this.addictionTypeComboBox_TextChanged);
             // 
             // label9
             // 
@@ -149,24 +151,27 @@
             this.addictionsListBox.Name = "addictionsListBox";
             this.addictionsListBox.Size = new System.Drawing.Size(157, 82);
             this.addictionsListBox.TabIndex = 2;
+            this.addictionsListBox.SelectedIndexChanged += new System.EventHandler(this.addictionsListBox_SelectedIndexChanged);
             // 
-            // button1
+            // deleteAddiction
             // 
-            this.button1.Location = new System.Drawing.Point(89, 20);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Delete";
-            this.button1.UseVisualStyleBackColor = true;
+            this.deleteAddiction.Location = new System.Drawing.Point(89, 20);
+            this.deleteAddiction.Name = "deleteAddiction";
+            this.deleteAddiction.Size = new System.Drawing.Size(75, 23);
+            this.deleteAddiction.TabIndex = 1;
+            this.deleteAddiction.Text = "Delete";
+            this.deleteAddiction.UseVisualStyleBackColor = true;
+            this.deleteAddiction.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button2
+            // newAddiction
             // 
-            this.button2.Location = new System.Drawing.Point(7, 20);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 0;
-            this.button2.Text = "New";
-            this.button2.UseVisualStyleBackColor = true;
+            this.newAddiction.Location = new System.Drawing.Point(7, 20);
+            this.newAddiction.Name = "newAddiction";
+            this.newAddiction.Size = new System.Drawing.Size(75, 23);
+            this.newAddiction.TabIndex = 0;
+            this.newAddiction.Text = "New";
+            this.newAddiction.UseVisualStyleBackColor = true;
+            this.newAddiction.Click += new System.EventHandler(this.button2_Click);
             // 
             // groupBox3
             // 
@@ -195,6 +200,7 @@
             this.skillLevelNumeric.Name = "skillLevelNumeric";
             this.skillLevelNumeric.Size = new System.Drawing.Size(68, 20);
             this.skillLevelNumeric.TabIndex = 6;
+            this.skillLevelNumeric.ValueChanged += new System.EventHandler(this.skillLevelNumeric_ValueChanged);
             // 
             // label7
             // 
@@ -212,6 +218,7 @@
             this.skillComboBox.Name = "skillComboBox";
             this.skillComboBox.Size = new System.Drawing.Size(111, 21);
             this.skillComboBox.TabIndex = 4;
+            this.skillComboBox.TextChanged += new System.EventHandler(this.skillComboBox_TextChanged);
             // 
             // label6
             // 
@@ -229,6 +236,7 @@
             this.skillsListBox.Name = "skillsListBox";
             this.skillsListBox.Size = new System.Drawing.Size(157, 82);
             this.skillsListBox.TabIndex = 2;
+            this.skillsListBox.SelectedIndexChanged += new System.EventHandler(this.skillsListBox_SelectedIndexChanged);
             // 
             // deleteSkillButton
             // 
@@ -238,6 +246,7 @@
             this.deleteSkillButton.TabIndex = 1;
             this.deleteSkillButton.Text = "Delete";
             this.deleteSkillButton.UseVisualStyleBackColor = true;
+            this.deleteSkillButton.Click += new System.EventHandler(this.deleteSkillButton_Click);
             // 
             // newSkillButton
             // 
@@ -247,6 +256,7 @@
             this.newSkillButton.TabIndex = 0;
             this.newSkillButton.Text = "New";
             this.newSkillButton.UseVisualStyleBackColor = true;
+            this.newSkillButton.Click += new System.EventHandler(this.newSkillButton_Click);
             // 
             // groupBox2
             // 
@@ -425,8 +435,8 @@
         private System.Windows.Forms.ComboBox addictionTypeComboBox;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ListBox addictionsListBox;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button deleteAddiction;
+        private System.Windows.Forms.Button newAddiction;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.NumericUpDown skillLevelNumeric;
         private System.Windows.Forms.Label label7;

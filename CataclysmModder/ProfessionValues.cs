@@ -43,6 +43,7 @@ namespace CataclysmModder
             skillComboBox.Tag = new JsonFormTag(
                 null,
                 "The string identifier for the skill used.");
+            ((JsonFormTag)skillComboBox.Tag).dataSource = JsonFormTag.DataSourceType.SKILLS;
             skillLevelNumeric.Tag = new JsonFormTag(
                 null,
                 "The number of levels given to the specified skill.");
@@ -53,6 +54,7 @@ namespace CataclysmModder
             addictionTypeComboBox.Tag = new JsonFormTag(
                 null,
                 "The string identifier for this addiction.");
+            ((JsonFormTag)addictionTypeComboBox.Tag).dataSource = JsonFormTag.DataSourceType.ADDICTION_TYPES;
             addictionStrengthNumeric.Tag = new JsonFormTag(
                 null,
                 "The initial strength of the addiction.");
@@ -102,6 +104,122 @@ namespace CataclysmModder
 
             changing = true;
             ((GroupedData)itemListBox.SelectedItem).Id = itemIdTextBox.Text;
+            changing = false;
+        }
+
+        private void newSkillButton_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, object> newitem = new Dictionary<string, object>();
+            newitem.Add("name", "null");
+            newitem.Add("level", 0);
+            skills.Add(new GroupedData(newitem));
+            skillsListBox.SelectedIndex = skillsListBox.Items.Count - 1;
+        }
+
+        private void deleteSkillButton_Click(object sender, EventArgs e)
+        {
+            if (skillsListBox.SelectedIndex >= 0)
+                skills.Remove((GroupedData)skillsListBox.SelectedItem);
+        }
+
+        private void skillsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            WinformsUtil.Resetting++;
+            if (skillsListBox.SelectedItem != null)
+            {
+                //Fill fields
+                skillComboBox.Text = ((GroupedData)skillsListBox.SelectedItem).Id;
+                skillComboBox.Enabled = true;
+                skillLevelNumeric.Value = ((GroupedData)skillsListBox.SelectedItem).Value;
+                skillLevelNumeric.Enabled = true;
+
+                deleteSkillButton.Enabled = true;
+            }
+            else if (!changing)
+            {
+                skillComboBox.Text = "";
+                skillComboBox.Enabled = false;
+                skillLevelNumeric.Value = 0;
+                skillLevelNumeric.Enabled = false;
+
+                deleteSkillButton.Enabled = false;
+            }
+            WinformsUtil.Resetting--;
+        }
+
+        private void skillComboBox_TextChanged(object sender, EventArgs e)
+        {
+            if (WinformsUtil.Resetting > 0) return;
+
+            changing = true;
+            ((GroupedData)skillsListBox.SelectedItem).Id = skillComboBox.Text;
+            changing = false;
+        }
+
+        private void skillLevelNumeric_ValueChanged(object sender, EventArgs e)
+        {
+            if (WinformsUtil.Resetting > 0) return;
+
+            changing = true;
+            ((GroupedData)skillsListBox.SelectedItem).Value = (int)skillLevelNumeric.Value;
+            changing = false;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, object> newitem = new Dictionary<string, object>();
+            newitem.Add("type", "null");
+            newitem.Add("intensity", 0);
+            addictions.Add(new GroupedData(newitem));
+            addictionsListBox.SelectedIndex = addictionsListBox.Items.Count - 1;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (addictionsListBox.SelectedIndex >= 0)
+                addictions.Remove((GroupedData)addictionsListBox.SelectedItem);
+        }
+
+        private void addictionsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            WinformsUtil.Resetting++;
+            if (addictionsListBox.SelectedItem != null)
+            {
+                //Fill fields
+                addictionTypeComboBox.Text = ((GroupedData)addictionsListBox.SelectedItem).Id;
+                addictionTypeComboBox.Enabled = true;
+                addictionStrengthNumeric.Value = ((GroupedData)addictionsListBox.SelectedItem).Value;
+                addictionStrengthNumeric.Enabled = true;
+
+                deleteAddiction.Enabled = true;
+            }
+            else if (!changing)
+            {
+                addictionTypeComboBox.Text = "";
+                addictionTypeComboBox.Enabled = false;
+                addictionStrengthNumeric.Value = 0;
+                addictionStrengthNumeric.Enabled = false;
+
+                deleteAddiction.Enabled = false;
+            }
+            WinformsUtil.Resetting--;
+        }
+
+        private void addictionTypeComboBox_TextChanged(object sender, EventArgs e)
+        {
+            if (WinformsUtil.Resetting > 0) return;
+
+            changing = true;
+            ((GroupedData)addictionsListBox.SelectedItem).Id = addictionTypeComboBox.Text;
+            changing = false;
+        }
+
+        private void addictionStrengthNumeric_ValueChanged(object sender, EventArgs e)
+        {
+            if (WinformsUtil.Resetting > 0) return;
+
+            changing = true;
+            ((GroupedData)addictionsListBox.SelectedItem).Value = (int)addictionStrengthNumeric.Value;
             changing = false;
         }
     }
