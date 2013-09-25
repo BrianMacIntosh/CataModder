@@ -222,7 +222,20 @@ namespace CataclysmModder
                 return FileType.SKILLS;
             else if (filename.Equals("snippets.json"))
                 return FileType.SNIPPETS;
-            return FileType.NONE;
+            else if (filename.Equals("dreams.json"))
+                return FileType.DREAMS;
+            else if (filename.Equals("mutations.json"))
+                return FileType.MUTATIONS;
+            else if (filename.Equals("martialarts.json"))
+                return FileType.MARTIAL_ARTS;
+            else if (filename.Equals("techniques.json"))
+                return FileType.TECHNIQUES;
+            else if (filename.Equals("vehicle_parts.json"))
+                return FileType.VEHICLE_PARTS;
+            else if (filename.Equals("vehicles.json"))
+                return FileType.VEHICLES;
+            else
+                return FileType.NONE;
         }
 
         /// <summary>
@@ -249,7 +262,8 @@ namespace CataclysmModder
         public static bool FilesLoaded { get { return !string.IsNullOrEmpty(workspacePath); } }
         public static bool ItemsLoaded { get { return currentFileIndex >= 0; } }
 
-        public static object[] CraftCategories;
+        public static object[] CraftCategories = new object[0];
+        private static List<object> RecipeUnknown = new List<object>();
 
         public static AutoCompleteStringCollection AutocompleteItemSource = new AutoCompleteStringCollection();
         public static AutoCompleteStringCollection AutocompleteBookSource = new AutoCompleteStringCollection();
@@ -267,6 +281,12 @@ namespace CataclysmModder
             RECIPES,
             SKILLS,
             SNIPPETS,
+            DREAMS,
+            MUTATIONS,
+            MARTIAL_ARTS,
+            TECHNIQUES,
+            VEHICLE_PARTS,
+            VEHICLES,
             NONE,
 
             COUNT
@@ -312,9 +332,15 @@ namespace CataclysmModder
                 "result",
                 "id_suffix",
                 new JsonSchema("CataclysmModder.schemas.recipes.txt"));
-            fileDef[(int)FileType.SKILLS] = null;
+            fileDef[(int)FileType.SKILLS] = new CataFile("ident");
             fileDef[(int)FileType.SNIPPETS] = null;
             fileDef[(int)FileType.NONE] = null;
+            fileDef[(int)FileType.DREAMS] = null;
+            fileDef[(int)FileType.MUTATIONS] = new CataFile("id");
+            fileDef[(int)FileType.MARTIAL_ARTS] = new CataFile("id");
+            fileDef[(int)FileType.TECHNIQUES] = new CataFile("id");
+            fileDef[(int)FileType.VEHICLE_PARTS] = new CataFile("id");
+            fileDef[(int)FileType.VEHICLES] = new CataFile("id");
         }
 
         public static void FileDefSetControl(FileType type, Control control)
@@ -384,11 +410,18 @@ namespace CataclysmModder
             openItems.Clear();
 
             //Load all JSON files in directory and subs
-            openFiles = Directory.GetFiles(path, "*.json", SearchOption.AllDirectories);
-            for (int c = 0; c < openFiles.Length; c++)
+            try
             {
-                openFiles[c] = openFiles[c].Substring(workspacePath.Length + 1);
-                LoadFile(c);
+                openFiles = Directory.GetFiles(path, "*.json", SearchOption.AllDirectories);
+                for (int c = 0; c < openFiles.Length; c++)
+                {
+                    openFiles[c] = openFiles[c].Substring(workspacePath.Length + 1);
+                    LoadFile(c);
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                openFiles = new string[0];
             }
         }
 
@@ -412,16 +445,7 @@ namespace CataclysmModder
                 return;
 
             FileType ftype = GetFileType(path);
-            if (ftype == FileType.RECIPES)
-            {
-                //Recipes parsed specially
-                foreach (Dictionary<string, object> recipe in (object[])((Dictionary<string, object>)json)["recipes"])
-                    newItems.Add(new ItemDataWrapper(recipe, index));
-
-                //Also load cats
-                CraftCategories = (object[])((Dictionary<string, object>)json)["categories"];
-            }
-            else if (fileDef[(int)ftype] == null)
+            if (fileDef[(int)ftype] == null)
             {
                 //Not supported
 
@@ -431,6 +455,27 @@ namespace CataclysmModder
                 //Default parsing
                 foreach (Dictionary<string, object> item in (object[])json)
                     newItems.Add(new ItemDataWrapper(item, index));
+            }
+
+            if (ftype == FileType.RECIPES)
+            {
+                //Remove categories
+                List<string> craftcats = new List<string>();
+                foreach (ItemDataWrapper c in newItems)
+                {
+                    if (c.data["type"].Equals("recipe_category"))
+                        craftcats.Add((string)c.data["type"]);
+                }
+                CraftCategories = craftcats.ToArray();
+
+                //Remove items with unknown type
+                RecipeUnknown.Clear();
+                for (int c = newItems.Count - 1; c >= 0; c--)
+                    if (!newItems[c].data["type"].Equals("recipe"))
+                    {
+                        RecipeUnknown.Add(newItems[c]);
+                        newItems.RemoveAt(c);
+                    }
             }
 
             //Subscribe to events
@@ -513,13 +558,13 @@ namespace CataclysmModder
             {
                 StringBuilder sb = new StringBuilder("{\"categories\":[");
 
-                //Categories
-                foreach (string cat in CraftCategories)
-                    sb.Append('"' + cat + "\",");
-                //Remove last comma
-                sb.Remove(sb.Length - 1, 1);
-
-                sb.Append("],\"recipes\":[");
+                //Unknown stuff
+                foreach (Dictionary<string, object> item in RecipeUnknown)
+                {
+                    string type = (item.ContainsKey(pivotKey) ? (string)item[pivotKey] : "");
+                    sb.Append(schema.Serialize(item, type));
+                    sb.Append(",");
+                }
 
                 //Recipes
                 foreach (Dictionary<string, object> item in (object[])obj)
@@ -618,6 +663,20 @@ namespace CataclysmModder
                 }
             }
             return newjson.ToString();
+        }
+
+        public static void TestAllItems()
+        {
+            for (int c = 0; c < openFiles.Length; c++)
+            {
+                CataFile fileDef = GetFileDefForOpenFile(c);
+                if (fileDef != null && fileDef.control != null)
+                {
+                    for (int d = 0; d < openItems[c].Count; d++)
+                        WinformsUtil.ControlsLoadItem(fileDef.control, openItems[c][d].data);
+                }
+            }
+            MessageBox.Show("Done");
         }
 
         /// <summary>
@@ -722,6 +781,10 @@ namespace CataclysmModder
             {
                 SaveJsonItem(file, serialData, fileDef[(int)ftype].schema, "type");
             }
+            else if (ftype == FileType.ITEM_GROUPS)
+            {
+                SaveJsonItem(file, serialData, fileDef[(int)ftype].schema, "", 2);
+            }
             else if (ftype != FileType.NONE
                 && fileDef[(int)ftype] != null && fileDef[(int)ftype].schema != null)
             {
@@ -762,7 +825,7 @@ namespace CataclysmModder
         {
             for (int c = 0; c < openFiles.Length; c++)
             {
-                if (Path.GetFileName(openFiles[c]).Equals("materials.json"))
+                if (GetFileType(Path.GetFileName(openFiles[c])) == FileType.MATERIALS)
                 {
                     string[] ret = new string[openItems[c].Count];
                     for (int d = 0; d < openItems[c].Count; d++)
@@ -773,19 +836,31 @@ namespace CataclysmModder
             return new string[0];
         }
 
+        public static string[] GetTechniques()
+        {
+            for (int c = 0; c < openFiles.Length; c++)
+            {
+                if (GetFileType(Path.GetFileName(openFiles[c])) == FileType.TECHNIQUES)
+                {
+                    string[] ret = new string[openItems[c].Count];
+                    for (int d = 0; d < openItems[c].Count; d++)
+                        ret[d] = (string)openItems[c][d].data["id"];
+                    return ret;
+                }
+            }
+            return new string[0];
+        }
+
         public static string[] GetSkills()
         {
-            foreach (string s in openFiles)
+            for (int c = 0; c < openFiles.Length; c++)
             {
-                if (Path.GetFileName(s).Equals("skills.json"))
+                if (GetFileType(Path.GetFileName(openFiles[c])) == FileType.SKILLS)
                 {
-                    object[] json = LoadJson(s) as object[];
-                    if (json == null) break;
-
-                    string[] ret = new string[json.Length + 1];
+                    string[] ret = new string[openItems[c].Count + 1];
                     ret[0] = "none";
-                    for (int c = 0; c < json.Length; c++)
-                        ret[c + 1] = (string)((object[])json[c])[0];
+                    for (int d = 0; d < openItems[c].Count; d++)
+                        ret[d + 1] = (string)openItems[c][d].data["ident"];
                     return ret;
                 }
             }
@@ -794,23 +869,23 @@ namespace CataclysmModder
 
         public static string[] GetGunSkills()
         {
-            foreach (string s in openFiles)
+            for (int c = 0; c < openFiles.Length; c++)
             {
-                if (Path.GetFileName(s).Equals("skills.json"))
+                if (GetFileType(Path.GetFileName(openFiles[c])) == FileType.SKILLS)
                 {
-                    object[] json = LoadJson(s) as object[];
-                    if (json == null) break;
-
                     List<string> ret = new List<string>();
                     ret.Add("none");
-                    foreach (object[] arr in json)
+                    foreach (ItemDataWrapper skill in openItems[c])
                     {
-                        foreach (string f in (object[])arr[3])
+                        if (skill.data.ContainsKey("tags"))
                         {
-                            if (f.Equals("gun_type"))
+                            foreach (string f in (object[])skill.data["tags"])
                             {
-                                ret.Add((string)arr[0]);
-                                break;
+                                if (f.Equals("gun_type"))
+                                {
+                                    ret.Add((string)skill.data["ident"]);
+                                    break;
+                                }
                             }
                         }
                     }

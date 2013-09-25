@@ -142,11 +142,14 @@ namespace CataclysmModder
 
             //Populate list
             filesComboBox.Items.Clear();
-            filesComboBox.Items.AddRange(Storage.OpenFiles);
+            if (Storage.OpenFiles != null)
+            {
+                filesComboBox.Items.AddRange(Storage.OpenFiles);
 
-            //Select first
-            if (Storage.OpenFiles.Length > 0)
-                filesComboBox.SelectedItem = Storage.OpenFiles[0];
+                //Select first
+                if (Storage.OpenFiles.Length > 0)
+                    filesComboBox.SelectedItem = Storage.OpenFiles[0];
+            }
 
             WinformsUtil.RefreshDataSources();
         }
@@ -373,6 +376,11 @@ namespace CataclysmModder
         private void exportItemsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new ExportItemsForm().ShowDialog();
+        }
+
+        private void testAllItemsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Storage.TestAllItems();
         }
     }
 

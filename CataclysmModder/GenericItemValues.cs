@@ -54,29 +54,6 @@ namespace CataclysmModder
             flagsCheckedListBox.DataSource = flagsHelp;
             flagsCheckedListBox.DisplayMember = "Display";
 
-            techniquesHelp = new BindingList<JsonFormTag.HelpItem>();
-            techniquesHelp.Add(new JsonFormTag.HelpItem("SWEEP", "This attack downs enemies."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("PRECISE", "This attack inflicts a stun and extra pain."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("BRUTAL", "This attack causes a stun and has knockback."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("GRAB", ""));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("WIDE", "This attack hits all adjacent enemies."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("RAPID", "This attack is fast."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("FEINT", ""));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("THROW", "This attack has knockback and downs enemies."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("DISARM", "This attack causes the opponent to drop their weapon."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("FLAMING", "This attack lights enemies on fire."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("BLOCK", "Reduces bash damage of attacks."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("BLOCK_LEGS", ""));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("WBLOCK_1", "Weapon grants a small chance to block attacks."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("WBLOCK_2", "Weapon grants a chance to block attacks."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("WBLOCK_3", "Weapon grants a good chance to block attacks."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("COUNTER", ""));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("BREAK", "This attack breaks grabs."));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("DEF_THROW", ""));
-            techniquesHelp.Add(new JsonFormTag.HelpItem("DEF_DISARM", ""));
-            techniquesCheckedListBox.DataSource = techniquesHelp;
-            techniquesCheckedListBox.DisplayMember = "Display";
-
             idTextBox.Tag = new JsonFormTag(
                 "id",
                 "A unique string ID for the object, used in recipes and the code.");
@@ -134,6 +111,7 @@ namespace CataclysmModder
                 "techniques",
                 "Technique flags for this item when used as a weapon.",
                 false);
+            ((JsonFormTag)techniquesCheckedListBox.Tag).dataSource = JsonFormTag.DataSourceType.TECHNIQUES;
             flagsCheckedListBox.Tag = new JsonFormTag(
                 "flags",
                 "Special flags giving specific functionality to the object.",
@@ -204,8 +182,7 @@ namespace CataclysmModder
 
         private void techniquesCheckedListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Post flag-specific help
-            Form1.Instance.SetHelpText(((JsonFormTag.HelpItem)techniquesCheckedListBox.SelectedItem).help);
+            //TODO: post flag-specific help
         }
     }
 }

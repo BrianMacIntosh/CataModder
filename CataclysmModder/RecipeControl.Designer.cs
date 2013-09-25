@@ -29,15 +29,23 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label7 = new System.Windows.Forms.Label();
+            this.reqSkillLevelNumeric = new System.Windows.Forms.NumericUpDown();
+            this.label14 = new System.Windows.Forms.Label();
+            this.deleteSkillButton = new System.Windows.Forms.Button();
+            this.skillsListBox = new System.Windows.Forms.ListBox();
+            this.newSkillButton = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label15 = new System.Windows.Forms.Label();
             this.bookReqLevelNumeric = new System.Windows.Forms.NumericUpDown();
             this.bookIdTextBox = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
             this.deleteBook = new System.Windows.Forms.Button();
-            this.newBook = new System.Windows.Forms.Button();
             this.booksListBox = new System.Windows.Forms.ListBox();
-            this.label14 = new System.Windows.Forms.Label();
+            this.newBook = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label12 = new System.Windows.Forms.Label();
             this.quantityNumeric = new System.Windows.Forms.NumericUpDown();
@@ -57,8 +65,6 @@
             this.label9 = new System.Windows.Forms.Label();
             this.disLearnNumeric = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.skill2ComboBox = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.skill1ComboBox = new System.Windows.Forms.ComboBox();
             this.reversibleCheckBox = new System.Windows.Forms.CheckBox();
@@ -73,7 +79,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.resultTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.reqSkillComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.reqSkillLevelNumeric)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bookReqLevelNumeric)).BeginInit();
             this.panel1.SuspendLayout();
@@ -85,11 +96,8 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.panel2);
-            this.groupBox1.Controls.Add(this.deleteBook);
-            this.groupBox1.Controls.Add(this.newBook);
-            this.groupBox1.Controls.Add(this.booksListBox);
-            this.groupBox1.Controls.Add(this.label14);
+            this.groupBox1.Controls.Add(this.groupBox3);
+            this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.panel1);
             this.groupBox1.Controls.Add(this.deleteItemButton);
             this.groupBox1.Controls.Add(this.newItemButton);
@@ -105,8 +113,6 @@
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.disLearnNumeric);
             this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.skill2ComboBox);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.skill1ComboBox);
             this.groupBox1.Controls.Add(this.reversibleCheckBox);
@@ -123,10 +129,104 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(620, 280);
+            this.groupBox1.Size = new System.Drawing.Size(620, 437);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Recipe Properties";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.panel3);
+            this.groupBox3.Controls.Add(this.deleteSkillButton);
+            this.groupBox3.Controls.Add(this.skillsListBox);
+            this.groupBox3.Controls.Add(this.newSkillButton);
+            this.groupBox3.Location = new System.Drawing.Point(6, 280);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(246, 151);
+            this.groupBox3.TabIndex = 40;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Require Skills";
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.reqSkillComboBox);
+            this.panel3.Controls.Add(this.label7);
+            this.panel3.Controls.Add(this.reqSkillLevelNumeric);
+            this.panel3.Controls.Add(this.label14);
+            this.panel3.Location = new System.Drawing.Point(120, 19);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(120, 87);
+            this.panel3.TabIndex = 35;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(3, 2);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(29, 13);
+            this.label7.TabIndex = 30;
+            this.label7.Text = "Skill:";
+            // 
+            // reqSkillLevelNumeric
+            // 
+            this.reqSkillLevelNumeric.Enabled = false;
+            this.reqSkillLevelNumeric.Location = new System.Drawing.Point(6, 58);
+            this.reqSkillLevelNumeric.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.reqSkillLevelNumeric.Name = "reqSkillLevelNumeric";
+            this.reqSkillLevelNumeric.Size = new System.Drawing.Size(111, 20);
+            this.reqSkillLevelNumeric.TabIndex = 33;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(3, 42);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(82, 13);
+            this.label14.TabIndex = 32;
+            this.label14.Text = "Required Level:";
+            // 
+            // deleteSkillButton
+            // 
+            this.deleteSkillButton.Location = new System.Drawing.Point(64, 120);
+            this.deleteSkillButton.Name = "deleteSkillButton";
+            this.deleteSkillButton.Size = new System.Drawing.Size(62, 23);
+            this.deleteSkillButton.TabIndex = 38;
+            this.deleteSkillButton.Text = "Delete";
+            this.deleteSkillButton.UseVisualStyleBackColor = true;
+            // 
+            // skillsListBox
+            // 
+            this.skillsListBox.FormattingEnabled = true;
+            this.skillsListBox.Location = new System.Drawing.Point(6, 19);
+            this.skillsListBox.Name = "skillsListBox";
+            this.skillsListBox.Size = new System.Drawing.Size(108, 95);
+            this.skillsListBox.TabIndex = 36;
+            // 
+            // newSkillButton
+            // 
+            this.newSkillButton.Location = new System.Drawing.Point(6, 120);
+            this.newSkillButton.Name = "newSkillButton";
+            this.newSkillButton.Size = new System.Drawing.Size(52, 23);
+            this.newSkillButton.TabIndex = 37;
+            this.newSkillButton.Text = "New";
+            this.newSkillButton.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.panel2);
+            this.groupBox2.Controls.Add(this.deleteBook);
+            this.groupBox2.Controls.Add(this.booksListBox);
+            this.groupBox2.Controls.Add(this.newBook);
+            this.groupBox2.Location = new System.Drawing.Point(258, 280);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(246, 151);
+            this.groupBox2.TabIndex = 39;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Learn from Books";
             // 
             // panel2
             // 
@@ -134,7 +234,7 @@
             this.panel2.Controls.Add(this.bookReqLevelNumeric);
             this.panel2.Controls.Add(this.bookIdTextBox);
             this.panel2.Controls.Add(this.label16);
-            this.panel2.Location = new System.Drawing.Point(494, 175);
+            this.panel2.Location = new System.Drawing.Point(120, 19);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(120, 87);
             this.panel2.TabIndex = 35;
@@ -160,7 +260,6 @@
             this.bookReqLevelNumeric.Name = "bookReqLevelNumeric";
             this.bookReqLevelNumeric.Size = new System.Drawing.Size(111, 20);
             this.bookReqLevelNumeric.TabIndex = 33;
-            this.bookReqLevelNumeric.ValueChanged += new System.EventHandler(this.bookReqLevelNumeric_ValueChanged);
             // 
             // bookIdTextBox
             // 
@@ -169,7 +268,6 @@
             this.bookIdTextBox.Name = "bookIdTextBox";
             this.bookIdTextBox.Size = new System.Drawing.Size(111, 20);
             this.bookIdTextBox.TabIndex = 31;
-            this.bookIdTextBox.TextChanged += new System.EventHandler(this.bookIdTextBox_TextChanged);
             // 
             // label16
             // 
@@ -182,41 +280,29 @@
             // 
             // deleteBook
             // 
-            this.deleteBook.Location = new System.Drawing.Point(552, 147);
+            this.deleteBook.Location = new System.Drawing.Point(64, 120);
             this.deleteBook.Name = "deleteBook";
             this.deleteBook.Size = new System.Drawing.Size(62, 23);
             this.deleteBook.TabIndex = 38;
             this.deleteBook.Text = "Delete";
             this.deleteBook.UseVisualStyleBackColor = true;
-            this.deleteBook.Click += new System.EventHandler(this.deleteBook_Click);
+            // 
+            // booksListBox
+            // 
+            this.booksListBox.FormattingEnabled = true;
+            this.booksListBox.Location = new System.Drawing.Point(6, 19);
+            this.booksListBox.Name = "booksListBox";
+            this.booksListBox.Size = new System.Drawing.Size(108, 95);
+            this.booksListBox.TabIndex = 36;
             // 
             // newBook
             // 
-            this.newBook.Location = new System.Drawing.Point(494, 147);
+            this.newBook.Location = new System.Drawing.Point(6, 120);
             this.newBook.Name = "newBook";
             this.newBook.Size = new System.Drawing.Size(52, 23);
             this.newBook.TabIndex = 37;
             this.newBook.Text = "New";
             this.newBook.UseVisualStyleBackColor = true;
-            this.newBook.Click += new System.EventHandler(this.newBook_Click);
-            // 
-            // booksListBox
-            // 
-            this.booksListBox.FormattingEnabled = true;
-            this.booksListBox.Location = new System.Drawing.Point(494, 33);
-            this.booksListBox.Name = "booksListBox";
-            this.booksListBox.Size = new System.Drawing.Size(120, 108);
-            this.booksListBox.TabIndex = 36;
-            this.booksListBox.SelectedIndexChanged += new System.EventHandler(this.booksListBox_SelectedIndexChanged);
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(491, 17);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(92, 13);
-            this.label14.TabIndex = 35;
-            this.label14.Text = "Learn from books:";
             // 
             // panel1
             // 
@@ -391,7 +477,7 @@
             // 
             // disLearnNumeric
             // 
-            this.disLearnNumeric.Location = new System.Drawing.Point(132, 239);
+            this.disLearnNumeric.Location = new System.Drawing.Point(132, 212);
             this.disLearnNumeric.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -409,37 +495,20 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(13, 239);
+            this.label8.Location = new System.Drawing.Point(13, 212);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(112, 13);
             this.label8.TabIndex = 16;
             this.label8.Text = "Learn by Disassembly:";
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(5, 99);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(71, 13);
-            this.label7.TabIndex = 15;
-            this.label7.Text = "Secndry Skill:";
-            // 
-            // skill2ComboBox
-            // 
-            this.skill2ComboBox.FormattingEnabled = true;
-            this.skill2ComboBox.Location = new System.Drawing.Point(82, 99);
-            this.skill2ComboBox.Name = "skill2ComboBox";
-            this.skill2ComboBox.Size = new System.Drawing.Size(121, 21);
-            this.skill2ComboBox.TabIndex = 14;
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(10, 72);
+            this.label6.Location = new System.Drawing.Point(19, 72);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(66, 13);
+            this.label6.Size = new System.Drawing.Size(57, 13);
             this.label6.TabIndex = 13;
-            this.label6.Text = "Primary Skill:";
+            this.label6.Text = "Skill Used:";
             // 
             // skill1ComboBox
             // 
@@ -452,7 +521,7 @@
             // reversibleCheckBox
             // 
             this.reversibleCheckBox.AutoSize = true;
-            this.reversibleCheckBox.Location = new System.Drawing.Point(109, 207);
+            this.reversibleCheckBox.Location = new System.Drawing.Point(109, 180);
             this.reversibleCheckBox.Name = "reversibleCheckBox";
             this.reversibleCheckBox.Size = new System.Drawing.Size(76, 17);
             this.reversibleCheckBox.TabIndex = 11;
@@ -462,7 +531,7 @@
             // autolearnCheckBox
             // 
             this.autolearnCheckBox.AutoSize = true;
-            this.autolearnCheckBox.Location = new System.Drawing.Point(23, 207);
+            this.autolearnCheckBox.Location = new System.Drawing.Point(23, 180);
             this.autolearnCheckBox.Name = "autolearnCheckBox";
             this.autolearnCheckBox.Size = new System.Drawing.Size(74, 17);
             this.autolearnCheckBox.TabIndex = 10;
@@ -472,7 +541,7 @@
             // categoryComboBox
             // 
             this.categoryComboBox.FormattingEnabled = true;
-            this.categoryComboBox.Location = new System.Drawing.Point(82, 180);
+            this.categoryComboBox.Location = new System.Drawing.Point(82, 153);
             this.categoryComboBox.Name = "categoryComboBox";
             this.categoryComboBox.Size = new System.Drawing.Size(121, 21);
             this.categoryComboBox.TabIndex = 9;
@@ -480,7 +549,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(24, 180);
+            this.label5.Location = new System.Drawing.Point(24, 153);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(52, 13);
             this.label5.TabIndex = 8;
@@ -489,7 +558,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(43, 153);
+            this.label4.Location = new System.Drawing.Point(43, 126);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(33, 13);
             this.label4.TabIndex = 7;
@@ -502,7 +571,7 @@
             0,
             0,
             0});
-            this.timeNumeric.Location = new System.Drawing.Point(82, 153);
+            this.timeNumeric.Location = new System.Drawing.Point(82, 126);
             this.timeNumeric.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -515,7 +584,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(26, 126);
+            this.label3.Location = new System.Drawing.Point(26, 99);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(50, 13);
             this.label3.TabIndex = 5;
@@ -523,7 +592,7 @@
             // 
             // diffNumeric
             // 
-            this.diffNumeric.Location = new System.Drawing.Point(82, 126);
+            this.diffNumeric.Location = new System.Drawing.Point(82, 99);
             this.diffNumeric.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -565,15 +634,28 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Result:";
             // 
+            // reqSkillComboBox
+            // 
+            this.reqSkillComboBox.FormattingEnabled = true;
+            this.reqSkillComboBox.Location = new System.Drawing.Point(6, 19);
+            this.reqSkillComboBox.Name = "reqSkillComboBox";
+            this.reqSkillComboBox.Size = new System.Drawing.Size(111, 21);
+            this.reqSkillComboBox.TabIndex = 34;
+            // 
             // RecipeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox1);
             this.Name = "RecipeControl";
-            this.Size = new System.Drawing.Size(626, 286);
+            this.Size = new System.Drawing.Size(626, 443);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.reqSkillLevelNumeric)).EndInit();
+            this.groupBox2.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bookReqLevelNumeric)).EndInit();
@@ -600,8 +682,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown disLearnNumeric;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ComboBox skill2ComboBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox skill1ComboBox;
         private System.Windows.Forms.CheckBox reversibleCheckBox;
@@ -633,6 +713,15 @@
         private System.Windows.Forms.Button deleteBook;
         private System.Windows.Forms.Button newBook;
         private System.Windows.Forms.ListBox booksListBox;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.NumericUpDown reqSkillLevelNumeric;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button deleteSkillButton;
+        private System.Windows.Forms.ListBox skillsListBox;
+        private System.Windows.Forms.Button newSkillButton;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ComboBox reqSkillComboBox;
     }
 }

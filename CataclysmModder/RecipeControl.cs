@@ -72,6 +72,7 @@ namespace CataclysmModder
         private BindingList<ComponentGroup> componentGroups = new BindingList<ComponentGroup>();
 
         private BindingList<GroupedData> bookGroup = new BindingList<GroupedData>();
+        private BindingList<GroupedData> requireSkills = new BindingList<GroupedData>();
 
         public RecipeControl()
         {
@@ -86,15 +87,10 @@ namespace CataclysmModder
                 "You need to set this to a unique value if multiple recipes produce the same item.",
                 false);
             skill1ComboBox.Tag = new JsonFormTag(
-                "skill_pri",
+                "skill_used",
                 "The main skill used in crafting this recipe.",
                 false);
             ((JsonFormTag)skill1ComboBox.Tag).dataSource = JsonFormTag.DataSourceType.SKILLS;
-            skill2ComboBox.Tag = new JsonFormTag(
-                "skill_sec",
-                "A secondary skill used in crafting this recipe.",
-                false);
-            ((JsonFormTag)skill2ComboBox.Tag).dataSource = JsonFormTag.DataSourceType.SKILLS;
             diffNumeric.Tag = new JsonFormTag(
                 "difficulty",
                 "The skill level required to craft this recipe.");
@@ -138,10 +134,7 @@ namespace CataclysmModder
             quantityNumeric.Tag = new JsonFormTag(
                 null,
                 "For components, the quantity used. For tools, the number of charges used (-1 for no charges).");
-            booksListBox.Tag = new JsonFormTag(
-                "book_learn",
-                "A list of books that this recipe might be learned from.");
-            ((JsonFormTag)booksListBox.Tag).backingList = bookGroup;
+
             bookIdTextBox.Tag = new JsonFormTag(
                 null,
                 "The string id of the book.");
@@ -149,6 +142,36 @@ namespace CataclysmModder
             bookReqLevelNumeric.Tag = new JsonFormTag(
                 null,
                 "The level required before this recipe can be learned from this book.");
+            booksListBox.Tag = new JsonFormTag(
+                "book_learn",
+                "A list of books that this recipe might be learned from.");
+            ListBoxTagData listBoxData = new ListBoxTagData();
+            listBoxData.backingList = bookGroup;
+            listBoxData.defaultValue = new object[] { "null", 0 };
+            listBoxData.deleteButton = deleteBook;
+            listBoxData.newButton = newBook;
+            listBoxData.keyControl = bookIdTextBox;
+            listBoxData.valueControl = bookReqLevelNumeric;
+            ((JsonFormTag)booksListBox.Tag).listBoxData = listBoxData;
+
+            reqSkillComboBox.Tag = new JsonFormTag(
+                null,
+                "The identifier of the skill required.");
+            ((JsonFormTag)reqSkillComboBox.Tag).dataSource = JsonFormTag.DataSourceType.SKILLS;
+            reqSkillLevelNumeric.Tag = new JsonFormTag(
+                null,
+                "The required level in the specified skill.");
+            skillsListBox.Tag = new JsonFormTag(
+                "requires_skills",
+                "A list of skill levels required to craft this item.");
+            listBoxData = new ListBoxTagData();
+            listBoxData.backingList = requireSkills;
+            listBoxData.defaultValue = new object[] { "null", 0 };
+            listBoxData.deleteButton = deleteSkillButton;
+            listBoxData.newButton = newSkillButton;
+            listBoxData.keyControl = reqSkillComboBox;
+            listBoxData.valueControl = reqSkillLevelNumeric;
+            ((JsonFormTag)skillsListBox.Tag).listBoxData = listBoxData;
 
             WinformsUtil.ControlsAttachHooks(this);
             WinformsUtil.TagsSetDefaults(this);
@@ -399,60 +422,6 @@ namespace CataclysmModder
                 componentsListBox_SelectedIndexChanged(null, null);
                 SaveComponentListToStorage();
             }
-        }
-
-        private void booksListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            WinformsUtil.Resetting++;
-            if (booksListBox.SelectedItem != null)
-            {
-                bookIdTextBox.Enabled = true;
-                bookReqLevelNumeric.Enabled = true;
-                bookIdTextBox.Text = ((GroupedData)booksListBox.SelectedItem).Id;
-                bookReqLevelNumeric.Value = ((GroupedData)booksListBox.SelectedItem).Value;
-
-                deleteBook.Enabled = true;
-            }
-            else if (!changing)
-            {
-                bookIdTextBox.Enabled = false;
-                bookReqLevelNumeric.Enabled = false;
-                bookIdTextBox.Text = "";
-                bookReqLevelNumeric.Value = 0;
-
-                deleteBook.Enabled = false;
-            }
-            WinformsUtil.Resetting--;
-        }
-
-        private void newBook_Click(object sender, EventArgs e)
-        {
-            bookGroup.Add(new GroupedData(new object[] { "null", 0 }));
-            booksListBox.SelectedIndex = booksListBox.Items.Count - 1;
-        }
-
-        private void deleteBook_Click(object sender, EventArgs e)
-        {
-            if (booksListBox.SelectedItem != null)
-                bookGroup.Remove((GroupedData)booksListBox.SelectedItem);
-        }
-
-        private void bookIdTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (WinformsUtil.Resetting > 0) return;
-
-            changing = true;
-            ((GroupedData)booksListBox.SelectedItem).Id = bookIdTextBox.Text;
-            changing = false;
-        }
-
-        private void bookReqLevelNumeric_ValueChanged(object sender, EventArgs e)
-        {
-            if (WinformsUtil.Resetting > 0) return;
-
-            changing = true;
-            ((GroupedData)booksListBox.SelectedItem).Value = (int)bookReqLevelNumeric.Value;
-            changing = false;
         }
     }
 }

@@ -53,7 +53,8 @@ namespace CataclysmModder
             CRAFT_CATEGORIES,
             ADDICTION_TYPES,
             ITEMS,
-            BOOKS
+            BOOKS,
+            TECHNIQUES
         }
 
         /// <summary>
@@ -79,9 +80,11 @@ namespace CataclysmModder
         public DataSourceType dataSource = DataSourceType.NONE;
 
         /// <summary>
-        /// For listbox controls, the backing list of data items.
+        /// Additional information for basic listbox controls.
         /// </summary>
-        public BindingList<GroupedData> backingList = null;
+        public ListBoxTagData listBoxData = null;
+
+        public ListBox ownerListBox;
 
 
         public JsonFormTag(string key, string help)
@@ -103,6 +106,23 @@ namespace CataclysmModder
             this.mandatory = mandatory;
             this.def = def;
         }
+    }
+
+
+    class ListBoxTagData
+    {
+        /// <summary>
+        /// A list storing the actual data for the listbox.
+        /// </summary>
+        public BindingList<GroupedData> backingList = null;
+
+        public Button newButton;
+        public Button deleteButton;
+
+        public Control keyControl;
+        public NumericUpDown valueControl;
+
+        public object defaultValue;
     }
 
 
@@ -272,19 +292,30 @@ namespace CataclysmModder
         {
             if (itemValues.ContainsKey(key))
             {
-                try
+                if (itemValues[key] is object[])
                 {
-                    foreach (object obj in (object[])itemValues[key])
-                        field.Add(new GroupedData(obj));
+                    object[] objarr = (object[])itemValues[key];
+                    if (objarr.Length > 0)
+                    {
+                        object subobject = objarr[0];
+                        if (((JsonFormTag)box.Tag).listBoxData.defaultValue.GetType().IsAssignableFrom(subobject.GetType()))
+                        {
+                            foreach (object obj in objarr)
+                                field.Add(new GroupedData(obj));
+                        }
+                        else
+                        {
+                            field.Add(new GroupedData(itemValues[key]));
+                        }
+                    }
+                }
+                else
+                {
+                    field.Add(new GroupedData(itemValues[key]));
+                }
 
-                    if (box.Items.Count > 0)
-                        box.SelectedIndex = 0; //TODO: THIS MIGHT NOT CALLBACK
-                }
-                catch (InvalidCastException)
-                {
-                    MessageBox.Show("Expected 'object[]' for key '" + key + "' but got '" + itemValues[key].GetType().ToString() + "'",
-                        "Data Error", MessageBoxButtons.OK);
-                }
+                if (box.Items.Count > 0)
+                    box.SelectedIndex = 0; //TODO: THIS MIGHT NOT CALLBACK
             }
             else if (mandatory)
             {
@@ -391,8 +422,40 @@ namespace CataclysmModder
         private static Dictionary<BindingList<GroupedData>, JsonFormTag> listTags =
             new Dictionary<BindingList<GroupedData>, JsonFormTag>();
 
+        private static void ControlsFillTags(Control control)
+        {
+            foreach (Control c in control.Controls)
+            {
+                if (c.Tag is JsonFormTag)
+                {
+                    //Fill in list component owner fields
+                    ListBoxTagData listBoxData = ((JsonFormTag)c.Tag).listBoxData;
+                    if (listBoxData != null)
+                    {
+                        //TODO: better error checking
+                        listBoxData.newButton.Tag = new JsonFormTag(null, null);
+                        ((JsonFormTag)listBoxData.newButton.Tag).ownerListBox = (ListBox)c;
+
+                        listBoxData.deleteButton.Tag = new JsonFormTag(null, null);
+                        ((JsonFormTag)listBoxData.deleteButton.Tag).ownerListBox = (ListBox)c;
+
+                        ((JsonFormTag)listBoxData.keyControl.Tag).ownerListBox = (ListBox)c;
+
+                        if (listBoxData.valueControl != null)
+                            ((JsonFormTag)listBoxData.valueControl.Tag).ownerListBox = (ListBox)c;
+                    }
+                }
+                if (c.Controls.Count > 0)
+                {
+                    ControlsFillTags(c);
+                }
+            }
+        }
+
         public static void ControlsAttachHooks(Control control)
         {
+            ControlsFillTags(control);
+
             foreach (Control c in control.Controls)
             {
                 if (c.Tag is JsonFormTag)
@@ -441,12 +504,28 @@ namespace CataclysmModder
                         ((CheckedListBox)c).ItemCheck += ChecksValueChanged;
                     else if (c is CheckBox)
                         ((CheckBox)c).CheckedChanged += CheckValueChanged;
-                    else if (c is ListBox && tag.backingList != null)
+                    else if (c is ListBox && tag.listBoxData != null)
                     {
-                        ((ListBox)c).DataSource = tag.backingList;
+                        //Set up data
+                        ((ListBox)c).DataSource = tag.listBoxData.backingList;
                         ((ListBox)c).DisplayMember = "Display";
-                        tag.backingList.ListChanged += ListChanged;
-                        listTags.Add(tag.backingList, tag);
+                        listTags.Add(tag.listBoxData.backingList, tag);
+
+                        tag.listBoxData.backingList.ListChanged += ListChanged;
+
+                        //Attach other hooks
+                        ((ListBox)c).SelectedIndexChanged += ListSelectedIndexChanged;
+                        tag.listBoxData.newButton.Click += ListBoxNewClicked;
+                        tag.listBoxData.deleteButton.Click += ListBoxDeleteClicked;
+                        tag.listBoxData.keyControl.TextChanged += ListBoxKeyChanged;
+                        if (tag.listBoxData.valueControl != null)
+                            tag.listBoxData.valueControl.ValueChanged += ListBoxValueChanged;
+
+                        //Disable
+                        tag.listBoxData.deleteButton.Enabled = false;
+                        tag.listBoxData.keyControl.Enabled = false;
+                        if (tag.listBoxData.valueControl != null)
+                            tag.listBoxData.valueControl.Enabled = false;
                     }
                     else
                         c.TextChanged += TextValueChanged;
@@ -457,6 +536,107 @@ namespace CataclysmModder
                 }
             }
         }
+
+        #region List Box Callbacks
+
+        private static bool changingListValues = false;
+
+        static void ListSelectedIndexChanged(object sender, EventArgs e)
+        {
+            ListBox listBox = (ListBox)sender;
+            ListBoxTagData tagData = ((JsonFormTag)listBox.Tag).listBoxData;
+            WinformsUtil.Resetting++;
+            if (listBox.SelectedItem != null)
+            {
+                tagData.keyControl.Enabled = true;
+                tagData.keyControl.Text = ((GroupedData)listBox.SelectedItem).Id;
+                if (tagData.valueControl != null)
+                {
+                    tagData.valueControl.Enabled = true;
+                    tagData.valueControl.Value = ((GroupedData)listBox.SelectedItem).Value;
+                }
+
+                tagData.deleteButton.Enabled = true;
+            }
+            else if (!changingListValues)
+            {
+                tagData.keyControl.Enabled = false;
+                tagData.keyControl.Text = "";
+                if (tagData.valueControl != null)
+                {
+                    tagData.valueControl.Enabled = false;
+                    tagData.valueControl.Value = 0;
+                }
+
+                tagData.deleteButton.Enabled = false;
+            }
+            WinformsUtil.Resetting--;
+        }
+
+        static void ListBoxNewClicked(object sender, EventArgs e)
+        {
+            ListBox owner = ((JsonFormTag)((Control)sender).Tag).ownerListBox;
+            ListBoxTagData listBoxData = ((JsonFormTag)owner.Tag).listBoxData;
+
+            //Add a new entry with the default data
+            if (listBoxData.defaultValue is object[])
+            {
+                object[] defArr = ((object[])listBoxData.defaultValue);
+                object[] data = new object[defArr.Length];
+                defArr.CopyTo(data, 0);
+                listBoxData.backingList.Add(new GroupedData(data));
+            }
+            else if (listBoxData.defaultValue is Dictionary<string, object>)
+            {
+                Dictionary<string, object> defDict = ((Dictionary<string, object>)listBoxData.defaultValue);
+                Dictionary<string, object> data = new Dictionary<string, object>();
+                foreach (KeyValuePair<string, object> kv in defDict)
+                    data.Add(kv.Key, kv.Value);
+                listBoxData.backingList.Add(new GroupedData(data));
+            }
+            else
+            {
+                listBoxData.backingList.Add(new GroupedData(listBoxData.defaultValue));
+            }
+
+            owner.SelectedIndex = owner.Items.Count - 1;
+        }
+
+        static void ListBoxDeleteClicked(object sender, EventArgs e)
+        {
+            ListBox owner = ((JsonFormTag)((Control)sender).Tag).ownerListBox;
+            ListBoxTagData listBoxData = ((JsonFormTag)owner.Tag).listBoxData;
+            if (owner.SelectedItem != null)
+                listBoxData.backingList.Remove((GroupedData)owner.SelectedItem);
+        }
+
+        static void ListBoxKeyChanged(object sender, EventArgs e)
+        {
+            if (WinformsUtil.Resetting > 0) return;
+
+            ListBox owner = ((JsonFormTag)((Control)sender).Tag).ownerListBox;
+
+            if (owner.SelectedItem == null) return;
+
+            changingListValues = true;
+            ((GroupedData)owner.SelectedItem).Id = ((Control)sender).Text;
+            changingListValues = false;
+        }
+
+        static void ListBoxValueChanged(object sender, EventArgs e)
+        {
+            if (WinformsUtil.Resetting > 0) return;
+
+            ListBox owner = ((JsonFormTag)((Control)sender).Tag).ownerListBox;
+
+            if (owner.SelectedItem == null) return;
+
+            changingListValues = true;
+            ((GroupedData)owner.SelectedItem).Value = (int)((NumericUpDown)sender).Value;
+            changingListValues = false;
+        }
+
+        #endregion
 
         /// <summary>
         /// Set up the default...defaults, for controls.
@@ -523,6 +703,9 @@ namespace CataclysmModder
                     case JsonFormTag.DataSourceType.SKILLS:
                         dataSource = Storage.GetSkills();
                         break;
+                    case JsonFormTag.DataSourceType.TECHNIQUES:
+                        dataSource = Storage.GetTechniques();
+                        break;
                 }
 
                 if (dataSource == null || dataSource.Length <= 0)
@@ -585,8 +768,8 @@ namespace CataclysmModder
                             SetChecks(itemValues, tag.key, (CheckedListBox)c, id, tag.mandatory);
                         else if (c is CheckBox)
                             SetCheckBox(itemValues, tag.key, (CheckBox)c, id, tag.mandatory);
-                        else if (c is ListBox && tag.backingList != null)
-                            SetList(itemValues, tag.key, (ListBox)c, tag.backingList, id, tag.mandatory);
+                        else if (c is ListBox && tag.listBoxData != null)
+                            SetList(itemValues, tag.key, (ListBox)c, tag.listBoxData.backingList, id, tag.mandatory);
                         else
                             SetString(itemValues, tag.key, c, id, tag.mandatory);
                     }
@@ -634,11 +817,11 @@ namespace CataclysmModder
                     {
                         ((CheckBox)c).Checked = (bool)tag.def;
                     }
-                    else if (tag.backingList != null)
+                    else if (tag.listBoxData != null)
                     {
-                        tag.backingList.Clear();
+                        tag.listBoxData.backingList.Clear();
                     }
-                    else
+                    else if (!(c is Button))
                     {
                         if (tag.def != null)
                             c.Text = (string)tag.def;

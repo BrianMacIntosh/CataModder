@@ -83,7 +83,6 @@
             this.itemsListBox.Name = "itemsListBox";
             this.itemsListBox.Size = new System.Drawing.Size(157, 316);
             this.itemsListBox.TabIndex = 2;
-            this.itemsListBox.SelectedIndexChanged += new System.EventHandler(this.itemsListBox_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -101,7 +100,6 @@
             this.itemidTextBox.Name = "itemidTextBox";
             this.itemidTextBox.Size = new System.Drawing.Size(75, 20);
             this.itemidTextBox.TabIndex = 4;
-            this.itemidTextBox.TextChanged += new System.EventHandler(this.itemidTextBox_TextChanged);
             // 
             // label3
             // 
@@ -124,7 +122,6 @@
             this.freqNumeric.Name = "freqNumeric";
             this.freqNumeric.Size = new System.Drawing.Size(57, 20);
             this.freqNumeric.TabIndex = 6;
-            this.freqNumeric.ValueChanged += new System.EventHandler(this.freqNumeric_ValueChanged);
             // 
             // newButton
             // 
@@ -134,7 +131,6 @@
             this.newButton.TabIndex = 7;
             this.newButton.Text = "New";
             this.newButton.UseVisualStyleBackColor = true;
-            this.newButton.Click += new System.EventHandler(this.newButton_Click);
             // 
             // deleteButton
             // 
@@ -144,7 +140,6 @@
             this.deleteButton.TabIndex = 8;
             this.deleteButton.Text = "Delete";
             this.deleteButton.UseVisualStyleBackColor = true;
-            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
             // 
             // ItemGroupValues
             // 

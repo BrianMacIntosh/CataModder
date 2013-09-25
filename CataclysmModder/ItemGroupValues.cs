@@ -26,67 +26,17 @@ namespace CataclysmModder
             itemsListBox.Tag = new JsonFormTag(
                 "items",
                 "The list of items in this group and their relative frequencies.");
-            ((JsonFormTag)itemsListBox.Tag).backingList = items;
+            ListBoxTagData listBoxData = new ListBoxTagData();
+            listBoxData.backingList = items;
+            listBoxData.defaultValue = new object[] { "null", 0 };
+            listBoxData.deleteButton = deleteButton;
+            listBoxData.newButton = newButton;
+            listBoxData.keyControl = itemidTextBox;
+            listBoxData.valueControl = freqNumeric;
+            ((JsonFormTag)itemsListBox.Tag).listBoxData = listBoxData;
 
             WinformsUtil.ControlsAttachHooks(this);
             WinformsUtil.TagsSetDefaults(this);
-        }
-
-        private void newButton_Click(object sender, EventArgs e)
-        {
-            items.Add(new GroupedData(new object[] { "null", 0 }));
-            itemsListBox.SelectedIndex = itemsListBox.Items.Count - 1;
-        }
-
-        private void deleteButton_Click(object sender, EventArgs e)
-        {
-            if (itemsListBox.SelectedIndex >= 0)
-                items.Remove((GroupedData)itemsListBox.SelectedItem);
-        }
-
-        private void itemsListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            WinformsUtil.Resetting++;
-            if (itemsListBox.SelectedItem != null)
-            {
-                //Fill fields
-                itemidTextBox.Text = ((GroupedData)itemsListBox.SelectedItem).Id;
-                itemidTextBox.Enabled = true;
-                freqNumeric.Value = ((GroupedData)itemsListBox.SelectedItem).Value;
-                freqNumeric.Enabled = true;
-
-                deleteButton.Enabled = true;
-            }
-            else if (!changing)
-            {
-                itemidTextBox.Text = "";
-                itemidTextBox.Enabled = false;
-                freqNumeric.Value = 0;
-                freqNumeric.Enabled = false;
-
-                deleteButton.Enabled = false;
-            }
-            WinformsUtil.Resetting--;
-        }
-
-        private bool changing = false;
-
-        private void itemidTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (WinformsUtil.Resetting > 0) return;
-
-            changing = true;
-            ((GroupedData)itemsListBox.SelectedItem).Id = itemidTextBox.Text;
-            changing = false;
-        }
-
-        private void freqNumeric_ValueChanged(object sender, EventArgs e)
-        {
-            if (WinformsUtil.Resetting > 0) return;
-
-            changing = true;
-            ((GroupedData)itemsListBox.SelectedItem).Value = (int)freqNumeric.Value;
-            changing = false;
         }
     }
 }

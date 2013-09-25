@@ -115,7 +115,6 @@
             this.addictionStrengthNumeric.Name = "addictionStrengthNumeric";
             this.addictionStrengthNumeric.Size = new System.Drawing.Size(68, 20);
             this.addictionStrengthNumeric.TabIndex = 6;
-            this.addictionStrengthNumeric.ValueChanged += new System.EventHandler(this.addictionStrengthNumeric_ValueChanged);
             // 
             // label8
             // 
@@ -133,7 +132,6 @@
             this.addictionTypeComboBox.Name = "addictionTypeComboBox";
             this.addictionTypeComboBox.Size = new System.Drawing.Size(111, 21);
             this.addictionTypeComboBox.TabIndex = 4;
-            this.addictionTypeComboBox.TextChanged += new System.EventHandler(this.addictionTypeComboBox_TextChanged);
             // 
             // label9
             // 
@@ -151,7 +149,6 @@
             this.addictionsListBox.Name = "addictionsListBox";
             this.addictionsListBox.Size = new System.Drawing.Size(157, 82);
             this.addictionsListBox.TabIndex = 2;
-            this.addictionsListBox.SelectedIndexChanged += new System.EventHandler(this.addictionsListBox_SelectedIndexChanged);
             // 
             // deleteAddiction
             // 
@@ -161,7 +158,6 @@
             this.deleteAddiction.TabIndex = 1;
             this.deleteAddiction.Text = "Delete";
             this.deleteAddiction.UseVisualStyleBackColor = true;
-            this.deleteAddiction.Click += new System.EventHandler(this.button1_Click);
             // 
             // newAddiction
             // 
@@ -171,7 +167,6 @@
             this.newAddiction.TabIndex = 0;
             this.newAddiction.Text = "New";
             this.newAddiction.UseVisualStyleBackColor = true;
-            this.newAddiction.Click += new System.EventHandler(this.button2_Click);
             // 
             // groupBox3
             // 
@@ -200,7 +195,6 @@
             this.skillLevelNumeric.Name = "skillLevelNumeric";
             this.skillLevelNumeric.Size = new System.Drawing.Size(68, 20);
             this.skillLevelNumeric.TabIndex = 6;
-            this.skillLevelNumeric.ValueChanged += new System.EventHandler(this.skillLevelNumeric_ValueChanged);
             // 
             // label7
             // 
@@ -218,7 +212,6 @@
             this.skillComboBox.Name = "skillComboBox";
             this.skillComboBox.Size = new System.Drawing.Size(111, 21);
             this.skillComboBox.TabIndex = 4;
-            this.skillComboBox.TextChanged += new System.EventHandler(this.skillComboBox_TextChanged);
             // 
             // label6
             // 
@@ -236,7 +229,6 @@
             this.skillsListBox.Name = "skillsListBox";
             this.skillsListBox.Size = new System.Drawing.Size(157, 82);
             this.skillsListBox.TabIndex = 2;
-            this.skillsListBox.SelectedIndexChanged += new System.EventHandler(this.skillsListBox_SelectedIndexChanged);
             // 
             // deleteSkillButton
             // 
@@ -246,7 +238,6 @@
             this.deleteSkillButton.TabIndex = 1;
             this.deleteSkillButton.Text = "Delete";
             this.deleteSkillButton.UseVisualStyleBackColor = true;
-            this.deleteSkillButton.Click += new System.EventHandler(this.deleteSkillButton_Click);
             // 
             // newSkillButton
             // 
@@ -256,7 +247,6 @@
             this.newSkillButton.TabIndex = 0;
             this.newSkillButton.Text = "New";
             this.newSkillButton.UseVisualStyleBackColor = true;
-            this.newSkillButton.Click += new System.EventHandler(this.newSkillButton_Click);
             // 
             // groupBox2
             // 
@@ -278,7 +268,6 @@
             this.itemIdTextBox.Name = "itemIdTextBox";
             this.itemIdTextBox.Size = new System.Drawing.Size(100, 20);
             this.itemIdTextBox.TabIndex = 4;
-            this.itemIdTextBox.TextChanged += new System.EventHandler(this.itemIdTextBox_TextChanged);
             // 
             // label5
             // 
@@ -296,7 +285,6 @@
             this.itemListBox.Name = "itemListBox";
             this.itemListBox.Size = new System.Drawing.Size(157, 82);
             this.itemListBox.TabIndex = 2;
-            this.itemListBox.SelectedIndexChanged += new System.EventHandler(this.itemListBox_SelectedIndexChanged);
             // 
             // deleteItemButton
             // 
@@ -306,7 +294,6 @@
             this.deleteItemButton.TabIndex = 1;
             this.deleteItemButton.Text = "Delete";
             this.deleteItemButton.UseVisualStyleBackColor = true;
-            this.deleteItemButton.Click += new System.EventHandler(this.deleteItemButton_Click);
             // 
             // newItemButton
             // 
@@ -316,7 +303,6 @@
             this.newItemButton.TabIndex = 0;
             this.newItemButton.Text = "New";
             this.newItemButton.UseVisualStyleBackColor = true;
-            this.newItemButton.Click += new System.EventHandler(this.newItemButton_Click);
             // 
             // descTextBox
             // 
