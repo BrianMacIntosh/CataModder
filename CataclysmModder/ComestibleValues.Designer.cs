@@ -53,6 +53,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.comesttypeComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.stackSizeNumeric = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.funNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.healNumeric)).BeginInit();
@@ -62,10 +64,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.spoilsNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.quenchNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nutritionNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stackSizeNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.stackSizeNumeric);
+            this.groupBox1.Controls.Add(this.label13);
             this.groupBox1.Controls.Add(this.addictionTypeComboBox);
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.funNumeric);
@@ -126,7 +131,7 @@
             // 
             // funNumeric
             // 
-            this.funNumeric.Location = new System.Drawing.Point(389, 98);
+            this.funNumeric.Location = new System.Drawing.Point(394, 71);
             this.funNumeric.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -145,7 +150,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(333, 98);
+            this.label8.Location = new System.Drawing.Point(338, 71);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(42, 13);
             this.label8.TabIndex = 20;
@@ -153,7 +158,7 @@
             // 
             // healNumeric
             // 
-            this.healNumeric.Location = new System.Drawing.Point(389, 72);
+            this.healNumeric.Location = new System.Drawing.Point(394, 45);
             this.healNumeric.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -172,7 +177,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(333, 72);
+            this.label9.Location = new System.Drawing.Point(338, 45);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(41, 13);
             this.label9.TabIndex = 18;
@@ -180,7 +185,7 @@
             // 
             // stimNumeric
             // 
-            this.stimNumeric.Location = new System.Drawing.Point(389, 46);
+            this.stimNumeric.Location = new System.Drawing.Point(394, 19);
             this.stimNumeric.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -199,7 +204,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(333, 46);
+            this.label10.Location = new System.Drawing.Point(338, 19);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(30, 13);
             this.label10.TabIndex = 16;
@@ -207,17 +212,12 @@
             // 
             // chargesNumeric
             // 
-            this.chargesNumeric.Location = new System.Drawing.Point(389, 20);
+            this.chargesNumeric.Location = new System.Drawing.Point(532, 61);
             this.chargesNumeric.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
-            this.chargesNumeric.Minimum = new decimal(new int[] {
-            -2147483648,
-            0,
-            0,
-            -2147483648});
             this.chargesNumeric.Name = "chargesNumeric";
             this.chargesNumeric.Size = new System.Drawing.Size(59, 20);
             this.chargesNumeric.TabIndex = 15;
@@ -226,7 +226,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(333, 20);
+            this.label11.Location = new System.Drawing.Point(476, 61);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(49, 13);
             this.label11.TabIndex = 14;
@@ -393,6 +393,28 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Comest. Type:";
             // 
+            // stackSizeNumeric
+            // 
+            this.stackSizeNumeric.Location = new System.Drawing.Point(532, 87);
+            this.stackSizeNumeric.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.stackSizeNumeric.Name = "stackSizeNumeric";
+            this.stackSizeNumeric.Size = new System.Drawing.Size(59, 20);
+            this.stackSizeNumeric.TabIndex = 25;
+            this.stackSizeNumeric.Tag = "";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(487, 87);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(38, 13);
+            this.label13.TabIndex = 24;
+            this.label13.Text = "Stack:";
+            // 
             // ComestibleValues
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -410,6 +432,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.spoilsNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.quenchNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nutritionNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stackSizeNumeric)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -441,5 +464,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox addictionTypeComboBox;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.NumericUpDown stackSizeNumeric;
+        private System.Windows.Forms.Label label13;
     }
 }

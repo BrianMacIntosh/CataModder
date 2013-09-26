@@ -42,6 +42,10 @@ namespace CataclysmModder
                 "The number of uses in one instance of this item.",
                 true,
                 1);
+            stackSizeNumeric.Tag = new JsonFormTag(
+                "stack_size",
+                "The maximum stack size for a stack of this item.",
+                false);
             stimNumeric.Tag = new JsonFormTag(
                 "stim",
                 "The amount applied to the player's stimulus level when this comestible is taken.");

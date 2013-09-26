@@ -17,7 +17,9 @@ namespace CataclysmModder
 
             coversCheckedListBox.Tag = new JsonFormTag(
                 "covers",
-                "A list of body parts the armor protects.");
+                "A list of body parts the armor protects.",
+                false);
+            ((JsonFormTag)coversCheckedListBox.Tag).dataSource = JsonFormTag.DataSourceType.BODY_PARTS;
             encumberanceNumeric.Tag = new JsonFormTag(
                 "encumberance",
                 "The encumberance this armor inflicts on covered body parts.");

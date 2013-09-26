@@ -33,6 +33,16 @@ namespace CataclysmModder
                 "effects",
                 "Special effects of this ammo.",
                 false);
+            ((JsonFormTag)effectsCheckedListBox.Tag).dataSource = JsonFormTag.DataSourceType.AMMO_EFFECTS;
+            stackSizeNumeric.Tag = new JsonFormTag(
+                "stack_size",
+                "The maximum stack size for this item.",
+                false);
+            casingTextBox.Tag = new JsonFormTag(
+                "casing",
+                "Item ID of the 'casing' item this ammo drops when it's fired.",
+                false);
+            ((JsonFormTag)casingTextBox.Tag).dataSource = JsonFormTag.DataSourceType.ITEMS;
 
             WinformsUtil.ControlsAttachHooks(this);
             WinformsUtil.TagsSetDefaults(this);

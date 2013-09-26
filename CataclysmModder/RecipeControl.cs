@@ -144,7 +144,8 @@ namespace CataclysmModder
                 "The level required before this recipe can be learned from this book.");
             booksListBox.Tag = new JsonFormTag(
                 "book_learn",
-                "A list of books that this recipe might be learned from.");
+                "A list of books that this recipe might be learned from.",
+                false);
             ListBoxTagData listBoxData = new ListBoxTagData();
             listBoxData.backingList = bookGroup;
             listBoxData.defaultValue = new object[] { "null", 0 };
@@ -163,7 +164,8 @@ namespace CataclysmModder
                 "The required level in the specified skill.");
             skillsListBox.Tag = new JsonFormTag(
                 "requires_skills",
-                "A list of skill levels required to craft this item.");
+                "A list of skill levels required to craft this item.",
+                false);
             listBoxData = new ListBoxTagData();
             listBoxData.backingList = requireSkills;
             listBoxData.defaultValue = new object[] { "null", 0 };

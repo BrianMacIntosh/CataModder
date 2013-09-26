@@ -39,6 +39,15 @@ namespace CataclysmModder
             reloadTimeNumeric.Tag = new JsonFormTag(
                 "reload",
                 "Time it takes to reload the weapon.");
+            pierceNumeric.Tag = new JsonFormTag(
+                "pierce",
+                "Armor pierce value of the weapon.",
+                false);
+            ammoEffectsListBox.Tag = new JsonFormTag(
+                "ammo_effects",
+                "Additional ammo effects this weapon grants to its ammo when fired.",
+                false);
+            ((JsonFormTag)ammoEffectsListBox.Tag).dataSource = JsonFormTag.DataSourceType.AMMO_EFFECTS;
 
             WinformsUtil.ControlsAttachHooks(this);
             WinformsUtil.TagsSetDefaults(this);

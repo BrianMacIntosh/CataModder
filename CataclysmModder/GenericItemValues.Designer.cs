@@ -59,8 +59,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.priceNumeric = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
-            this.rarityNumeric = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
             this.idTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.typeComboBox = new System.Windows.Forms.ComboBox();
@@ -72,7 +70,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.weightNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.volumeNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.priceNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rarityNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -107,8 +104,6 @@
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.priceNumeric);
             this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.rarityNumeric);
-            this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.idTextBox);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.typeComboBox);
@@ -570,7 +565,7 @@
             0,
             0,
             0});
-            this.priceNumeric.Location = new System.Drawing.Point(166, 43);
+            this.priceNumeric.Location = new System.Drawing.Point(48, 41);
             this.priceNumeric.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -583,37 +578,11 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(122, 42);
+            this.label4.Location = new System.Drawing.Point(4, 40);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(34, 13);
             this.label4.TabIndex = 42;
             this.label4.Text = "Price:";
-            // 
-            // rarityNumeric
-            // 
-            this.rarityNumeric.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.rarityNumeric.Location = new System.Drawing.Point(49, 43);
-            this.rarityNumeric.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.rarityNumeric.Name = "rarityNumeric";
-            this.rarityNumeric.Size = new System.Drawing.Size(67, 20);
-            this.rarityNumeric.TabIndex = 41;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(5, 42);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(37, 13);
-            this.label3.TabIndex = 40;
-            this.label3.Text = "Rarity:";
             // 
             // idTextBox
             // 
@@ -673,7 +642,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.weightNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.volumeNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.priceNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rarityNumeric)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -711,8 +679,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown priceNumeric;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown rarityNumeric;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox idTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox typeComboBox;

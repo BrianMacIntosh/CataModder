@@ -29,28 +29,28 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.coversCheckedListBox = new System.Windows.Forms.CheckedListBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.encumberanceNumeric = new System.Windows.Forms.NumericUpDown();
-            this.coverageNumeric = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.thicknessNumeric = new System.Windows.Forms.NumericUpDown();
-            this.label4 = new System.Windows.Forms.Label();
+            this.powerArmorCheckBox = new System.Windows.Forms.CheckBox();
             this.storageNumeric = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.warmthNumeric = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.enviProtectNumeric = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
-            this.powerArmorCheckBox = new System.Windows.Forms.CheckBox();
+            this.thicknessNumeric = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
+            this.coverageNumeric = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.encumberanceNumeric = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.coversCheckedListBox = new System.Windows.Forms.CheckedListBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.encumberanceNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.coverageNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.thicknessNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.storageNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.warmthNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.enviProtectNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.thicknessNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.coverageNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.encumberanceNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -77,99 +77,15 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Armor Properties";
             // 
-            // label1
+            // powerArmorCheckBox
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(43, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Covers:";
-            // 
-            // coversCheckedListBox
-            // 
-            this.coversCheckedListBox.FormattingEnabled = true;
-            this.coversCheckedListBox.Items.AddRange(new object[] {
-            "TORSO",
-            "HEAD",
-            "EYES",
-            "MOUTH",
-            "ARMS",
-            "HANDS",
-            "LEGS",
-            "FEET"});
-            this.coversCheckedListBox.Location = new System.Drawing.Point(10, 37);
-            this.coversCheckedListBox.Name = "coversCheckedListBox";
-            this.coversCheckedListBox.Size = new System.Drawing.Size(120, 94);
-            this.coversCheckedListBox.TabIndex = 1;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(147, 20);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(82, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Encumberance:";
-            // 
-            // encumberanceNumeric
-            // 
-            this.encumberanceNumeric.Location = new System.Drawing.Point(236, 20);
-            this.encumberanceNumeric.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.encumberanceNumeric.Minimum = new decimal(new int[] {
-            -2147483648,
-            0,
-            0,
-            -2147483648});
-            this.encumberanceNumeric.Name = "encumberanceNumeric";
-            this.encumberanceNumeric.Size = new System.Drawing.Size(63, 20);
-            this.encumberanceNumeric.TabIndex = 3;
-            // 
-            // coverageNumeric
-            // 
-            this.coverageNumeric.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.coverageNumeric.Location = new System.Drawing.Point(236, 46);
-            this.coverageNumeric.Name = "coverageNumeric";
-            this.coverageNumeric.Size = new System.Drawing.Size(63, 20);
-            this.coverageNumeric.TabIndex = 5;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(173, 46);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(56, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Coverage:";
-            // 
-            // thicknessNumeric
-            // 
-            this.thicknessNumeric.Location = new System.Drawing.Point(236, 72);
-            this.thicknessNumeric.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.thicknessNumeric.Name = "thicknessNumeric";
-            this.thicknessNumeric.Size = new System.Drawing.Size(63, 20);
-            this.thicknessNumeric.TabIndex = 7;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(170, 72);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(59, 13);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Thickness:";
+            this.powerArmorCheckBox.AutoSize = true;
+            this.powerArmorCheckBox.Location = new System.Drawing.Point(150, 114);
+            this.powerArmorCheckBox.Name = "powerArmorCheckBox";
+            this.powerArmorCheckBox.Size = new System.Drawing.Size(97, 17);
+            this.powerArmorCheckBox.TabIndex = 14;
+            this.powerArmorCheckBox.Text = "Is Power Armor";
+            this.powerArmorCheckBox.UseVisualStyleBackColor = true;
             // 
             // storageNumeric
             // 
@@ -239,15 +155,90 @@
             this.label7.TabIndex = 8;
             this.label7.Text = "Envi. Protection:";
             // 
-            // powerArmorCheckBox
+            // thicknessNumeric
             // 
-            this.powerArmorCheckBox.AutoSize = true;
-            this.powerArmorCheckBox.Location = new System.Drawing.Point(257, 113);
-            this.powerArmorCheckBox.Name = "powerArmorCheckBox";
-            this.powerArmorCheckBox.Size = new System.Drawing.Size(97, 17);
-            this.powerArmorCheckBox.TabIndex = 14;
-            this.powerArmorCheckBox.Text = "Is Power Armor";
-            this.powerArmorCheckBox.UseVisualStyleBackColor = true;
+            this.thicknessNumeric.Location = new System.Drawing.Point(236, 72);
+            this.thicknessNumeric.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.thicknessNumeric.Name = "thicknessNumeric";
+            this.thicknessNumeric.Size = new System.Drawing.Size(63, 20);
+            this.thicknessNumeric.TabIndex = 7;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(170, 72);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(59, 13);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "Thickness:";
+            // 
+            // coverageNumeric
+            // 
+            this.coverageNumeric.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.coverageNumeric.Location = new System.Drawing.Point(236, 46);
+            this.coverageNumeric.Name = "coverageNumeric";
+            this.coverageNumeric.Size = new System.Drawing.Size(63, 20);
+            this.coverageNumeric.TabIndex = 5;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(173, 46);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(56, 13);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Coverage:";
+            // 
+            // encumberanceNumeric
+            // 
+            this.encumberanceNumeric.Location = new System.Drawing.Point(236, 20);
+            this.encumberanceNumeric.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.encumberanceNumeric.Minimum = new decimal(new int[] {
+            -2147483648,
+            0,
+            0,
+            -2147483648});
+            this.encumberanceNumeric.Name = "encumberanceNumeric";
+            this.encumberanceNumeric.Size = new System.Drawing.Size(63, 20);
+            this.encumberanceNumeric.TabIndex = 3;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(147, 20);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(82, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Encumberance:";
+            // 
+            // coversCheckedListBox
+            // 
+            this.coversCheckedListBox.FormattingEnabled = true;
+            this.coversCheckedListBox.Location = new System.Drawing.Point(10, 37);
+            this.coversCheckedListBox.Name = "coversCheckedListBox";
+            this.coversCheckedListBox.Size = new System.Drawing.Size(120, 94);
+            this.coversCheckedListBox.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(43, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Covers:";
             // 
             // ArmorValues
             // 
@@ -258,12 +249,12 @@
             this.Size = new System.Drawing.Size(626, 150);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.encumberanceNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.coverageNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.thicknessNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.storageNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.warmthNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.enviProtectNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.thicknessNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.coverageNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.encumberanceNumeric)).EndInit();
             this.ResumeLayout(false);
 
         }

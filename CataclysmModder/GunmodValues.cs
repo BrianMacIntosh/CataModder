@@ -34,7 +34,7 @@ namespace CataclysmModder
                 "If set, this mod can only be applied to guns using one of the specified ammo types.");
             typesCheckedListBox.Tag = new JsonFormTag(
                 "mod_targets",
-                "This mod can only be equipped to weapon types specified here.");
+                "This mod can only be attached to weapon types specified here.");
 
             WinformsUtil.ControlsAttachHooks(this);
             WinformsUtil.TagsSetDefaults(this);

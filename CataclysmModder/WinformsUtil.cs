@@ -46,15 +46,24 @@ namespace CataclysmModder
 
         public enum DataSourceType
         {
-            NONE,
+            //Preset values (these can be modified if files have new ones)
+            ADDICTION_TYPES,
+            AMMO_EFFECTS,
+            BODY_PARTS,
+            TECHNIQUES, //TODO: actually loaded in dev version
+            FLAGS,
+            PRESET_COUNT,
+
+            //Loaded values (loaded from the game data)
             MATERIALS,
             SKILLS,
             GUN_SKILLS,
             CRAFT_CATEGORIES,
-            ADDICTION_TYPES,
+
+            //Other values
+            NONE,
             ITEMS,
-            BOOKS,
-            TECHNIQUES
+            BOOKS
         }
 
         /// <summary>
@@ -249,19 +258,25 @@ namespace CataclysmModder
 
         public static void SetCheck(string id, string item, CheckedListBox field)
         {
-            if (field.Items.Contains(item))
+            if (!field.Items.Contains(item))
             {
-                field.SetItemChecked(field.Items.IndexOf(item), true);
-            }
-            else
-            {
+                if (((JsonFormTag)field.Tag).dataSource > JsonFormTag.DataSourceType.PRESET_COUNT)
+                {
+                    IssueTracker.PostIssue(
+                        "Item '" + id + "': tag \"" + item + "\" doesn't exist and cannot add.",
+                        IssueTracker.IssueLevel.ERROR);
+                    return;
+                }
+
                 IssueTracker.PostIssue(
-                    "Item '" + id + "': tag \"" + item + "\" doesn't exist. Will create...",
+                    "Item '" + id + "': tag \"" + item + "\" doesn't exist. Will add...",
                     IssueTracker.IssueLevel.WARNING);
 
                 //Create tag/mat
-                //TODO:
+                Storage.UpdateDataSource(((JsonFormTag)field.Tag).dataSource, item);
             }
+
+            field.SetItemChecked(field.Items.IndexOf(item), true);
         }
 
         public static void SetCheckBox(Dictionary<string, object> itemValues, string key, CheckBox field,
@@ -681,32 +696,11 @@ namespace CataclysmModder
                 else if (c is ComboBox)
                     ((ComboBox)c).Items.Clear();
                 else
-                    throw new InvalidCastException("Data Sources that load lists are only permitted " +
+                    throw new ArgumentException("Data Sources that load lists are only permitted " +
                         "on ListBox and ComboBox controls");
 
                 //Load new data
-                string[] dataSource = null;
-                switch (((JsonFormTag)c.Tag).dataSource)
-                {
-                    case JsonFormTag.DataSourceType.ADDICTION_TYPES:
-                        dataSource = Storage.GetAddictions();
-                        break;
-                    case JsonFormTag.DataSourceType.CRAFT_CATEGORIES:
-                        dataSource = Storage.GetCraftCategories();
-                        break;
-                    case JsonFormTag.DataSourceType.GUN_SKILLS:
-                        dataSource = Storage.GetGunSkills();
-                        break;
-                    case JsonFormTag.DataSourceType.MATERIALS:
-                        dataSource = Storage.GetMaterialNames();
-                        break;
-                    case JsonFormTag.DataSourceType.SKILLS:
-                        dataSource = Storage.GetSkills();
-                        break;
-                    case JsonFormTag.DataSourceType.TECHNIQUES:
-                        dataSource = Storage.GetTechniques();
-                        break;
-                }
+                string[] dataSource = Storage.GetDataSource(((JsonFormTag)c.Tag).dataSource);
 
                 if (dataSource == null || dataSource.Length <= 0)
                     continue;

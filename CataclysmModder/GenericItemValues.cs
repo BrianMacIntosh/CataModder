@@ -7,52 +7,9 @@ namespace CataclysmModder
 {
     public partial class GenericItemValues : UserControl
     {
-        private BindingList<JsonFormTag.HelpItem> flagsHelp;
-        private BindingList<JsonFormTag.HelpItem> techniquesHelp;
-
         public GenericItemValues()
         {
             InitializeComponent();
-
-            flagsHelp = new BindingList<JsonFormTag.HelpItem>();
-            //flagsHelp.Add(new JsonFormTag.HelpItem("FIT", "This piece of clothing fits the player, reducing its encumberance."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("VARSIZE", "This clothing can have its size adjusted by the player."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("OVERSIZE", "This clothing goes over other clothing, ignoring some restrictions."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("HOOD", "This clothing gives head warmth if head is cold and player isn't wearing a helmet (not implemented)."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("POCKETS", "This clothing gives hand warmth if hands are cold and player isn't wielding anything."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("WATCH", "This clothing allows the player to know the current time."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("ALARM", "This item has an alarm clock feature (not implemented)."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("MALE_TYPICAL", "This clothing is typically worn only by males."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("FEMALE_TYPICAL", "This clothing is typically worn only by females."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("USE_EAT_VERB", "Use the 'eat' verb for this comestible, even if it's a liquid (e.g. soup)."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("SEALS", "This container can safely contain liquids."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("RIGID", "This container has hard walls (not implemented)."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("WATERTIGHT", "This container can hold liquids."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("HOT", "This item is hot."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("EATEN_HOT", "This item is hot when crafted."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("MODE_AUX", "This weapon mod grants an alternate fire mode."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("MODE_BURST", "This weapon or mod has a burst fire mode"));
-            flagsHelp.Add(new JsonFormTag.HelpItem("STR_RELOAD", "This weapon's reload time is reduced with a high strength stat."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("STAB", "This weapon mod grants a stabbing attack."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("NO_UNLOAD", "Ammo and items loaded into this item can't be unloaded."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("UNARMED_WEAPON", "This is an unarmed style."));
-            //flagsHelp.Add(new JsonFormTag.HelpItem("DOUBLE_AMMO", "This tool has doubled battery capacity."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("GRENADE", ""));
-            flagsHelp.Add(new JsonFormTag.HelpItem("RELOAD_AND_SHOOT", "This gun reloads and shoots in one action (i.e. bows)."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("RELOAD_ONE", "This gun reloads rounds one at a time."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("CHARGE", "This gun needs to charge from a UPS before firing."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("FIRE_100", "This gun requires 100 charges to fire."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("BACKBLAST", "This gun has rocket-launcher backblast."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("USE_UPS", "This gun requires 5 charges from a UPS to fire."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("STR8_DRAW", "This gun requires strength 8 to fire."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("STR10_DRAW", "This gun requires strength 10 to fire."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("STR12_DRAW", "This gun requires strength 12 to fire."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("LIGHT_1", "This item emits light."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("LIGHT_2", "This item emits light."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("LIGHT_8", "This item emits light."));
-            flagsHelp.Add(new JsonFormTag.HelpItem("LIGHT_20", "This item emits light."));
-            flagsCheckedListBox.DataSource = flagsHelp;
-            flagsCheckedListBox.DisplayMember = "Display";
 
             idTextBox.Tag = new JsonFormTag(
                 "id",
@@ -86,9 +43,6 @@ namespace CataclysmModder
                 "phase",
                 "The default phase of matter of the object. The only effect is that liquids are drinkable and require containers.",
                 false);
-            rarityNumeric.Tag = new JsonFormTag(
-                "rarity",
-                "The rarity of the object.  This value is not currently used.");
             priceNumeric.Tag = new JsonFormTag(
                 "price",
                 "The monetary value of the object.");
@@ -116,6 +70,7 @@ namespace CataclysmModder
                 "flags",
                 "Special flags giving specific functionality to the object.",
                 false);
+            ((JsonFormTag)flagsCheckedListBox.Tag).dataSource = JsonFormTag.DataSourceType.FLAGS;
             functionComboBox.Tag = new JsonFormTag(
                 "use_action",
                 "A game function to call when the item is applied or used.",

@@ -263,10 +263,13 @@ namespace CataclysmModder
         public static bool ItemsLoaded { get { return currentFileIndex >= 0; } }
 
         public static object[] CraftCategories = new object[0];
-        private static List<object> RecipeUnknown = new List<object>();
+        private static List<ItemDataWrapper> RecipeUnknown = new List<ItemDataWrapper>();
 
         public static AutoCompleteStringCollection AutocompleteItemSource = new AutoCompleteStringCollection();
         public static AutoCompleteStringCollection AutocompleteBookSource = new AutoCompleteStringCollection();
+
+
+        private static List<string>[] PresetDataSources = new List<string>[(int)JsonFormTag.DataSourceType.PRESET_COUNT];
 
 
         public enum FileType
@@ -313,6 +316,8 @@ namespace CataclysmModder
         /// </summary>
         public static void InitializeFileDefs()
         {
+            InitializeDataSources();
+
             //Editing control needs to be set in Form1 ctor using FileDefSetControl
 
             fileDef[(int)FileType.ITEMS] = new CataFile(
@@ -450,7 +455,52 @@ namespace CataclysmModder
                 //Not supported
 
             }
+            else if (ftype == FileType.RECIPES)
+            {
+                //Default parsing
+                foreach (Dictionary<string, object> item in (object[])((Dictionary<string, object>)json)["recipes"])
+                    newItems.Add(new ItemDataWrapper(item, index));
+
+                //Remove categories
+                CraftCategories = (object[])((Dictionary<string, object>)json)["categories"];
+                /*List<string> craftcats = new List<string>();
+                foreach (ItemDataWrapper c in newItems)
+                {
+                    if (c.data["type"].Equals("recipe_category"))
+                        craftcats.Add((string)c.data["type"]);
+                }
+                CraftCategories = craftcats.ToArray();
+
+                //Remove items with unknown type
+                RecipeUnknown.Clear();
+                for (int c = newItems.Count - 1; c >= 0; c--)
+                    if (!newItems[c].data["type"].Equals("recipe"))
+                    {
+                        RecipeUnknown.Add(newItems[c]);
+                        newItems.RemoveAt(c);
+                    }*/
+            }
+            else if (ftype == FileType.SKILLS)
+            {
+                foreach (object[] item in (object[])json)
+                {
+                    Dictionary<string, object> dict = new Dictionary<string, object>();
+                    dict.Add("ident", item[0]);
+                    dict.Add("name", item[1]);
+                    dict.Add("description", item[2]);
+                    if (item.Length > 3)
+                        dict.Add("tags", item[3]);
+                    newItems.Add(new ItemDataWrapper(dict, index));
+                }
+            }
             else if (ftype != FileType.NONE)
+            {
+                //Default parsing
+                foreach (Dictionary<string, object> item in (object[])json)
+                    newItems.Add(new ItemDataWrapper(item, index));
+            }
+
+            /*else if (ftype != FileType.NONE)
             {
                 //Default parsing
                 foreach (Dictionary<string, object> item in (object[])json)
@@ -476,7 +526,7 @@ namespace CataclysmModder
                         RecipeUnknown.Add(newItems[c]);
                         newItems.RemoveAt(c);
                     }
-            }
+            }*/
 
             //Subscribe to events
             if (GetFileTypeForOpenFile(index) == FileType.ITEMS
@@ -520,6 +570,10 @@ namespace CataclysmModder
 
         public static void SaveJsonItem(string file, object obj, JsonSchema schema, string pivotKey, int bracketBlockLevel = 1)
         {
+            //TODO: remove in next version
+            if (GetFileType(file) == FileType.SKILLS)
+                return;
+
             StreamWriter write = new StreamWriter(new FileStream(Path.Combine(workspacePath, file), FileMode.Create));
             try
             {
@@ -559,12 +613,16 @@ namespace CataclysmModder
                 StringBuilder sb = new StringBuilder("{\"categories\":[");
 
                 //Unknown stuff
-                foreach (Dictionary<string, object> item in RecipeUnknown)
+                /*for (int c = 0; c < RecipeUnknown.Count; c++)
                 {
+                    Dictionary<string, object> item = RecipeUnknown[c].data;
                     string type = (item.ContainsKey(pivotKey) ? (string)item[pivotKey] : "");
                     sb.Append(schema.Serialize(item, type));
                     sb.Append(",");
-                }
+                }*/
+                sb.Append("\"" + string.Join("\",\"", CraftCategories) + "\"");
+
+                sb.Append("],\"recipes\":[");
 
                 //Recipes
                 foreach (Dictionary<string, object> item in (object[])obj)
@@ -902,19 +960,131 @@ namespace CataclysmModder
             return ret;
         }
 
-        public static string[] GetAddictions()
+        private static void InitializeDataSources()
         {
-            //TODO: load from game data
-            string[] ret = new string[8];
-            ret[0] = "nicotine";
-            ret[1] = "caffeine";
-            ret[2] = "alcohol";
-            ret[3] = "sleeping pill";
-            ret[4] = "opiate";
-            ret[5] = "amphetamine";
-            ret[6] = "cocaine";
-            ret[7] = "crack";
-            return ret;
+            List<string> buffer = new List<string>();
+            buffer.Add("nicotine");
+            buffer.Add("caffeine");
+            buffer.Add("alcohol");
+            buffer.Add("sleeping pill");
+            buffer.Add("opiate");
+            buffer.Add("amphetamine");
+            buffer.Add("cocaine");
+            buffer.Add("crack");
+            PresetDataSources[(int)JsonFormTag.DataSourceType.ADDICTION_TYPES] = buffer;
+
+            buffer = new List<string>();
+            buffer.Add("EXPLOSIVE");
+            buffer.Add("EXPLOSIVE_BIG");
+            buffer.Add("EXPLOSIVE_HUGE");
+            buffer.Add("FLAME");
+            buffer.Add("INCENDIARY");
+            buffer.Add("IGNITE");
+            buffer.Add("BOUNCE");
+            buffer.Add("FRAG");
+            buffer.Add("NAPALM");
+            buffer.Add("NAPALM_BIG");
+            buffer.Add("ACIDBOMB");
+            buffer.Add("TEARGAS");
+            buffer.Add("SMOKE");
+            buffer.Add("SMOKE_BIG");
+            buffer.Add("FLASHBANG");
+            buffer.Add("LIGHTNING");
+            buffer.Add("LASER");
+            buffer.Add("PLASMA");
+            buffer.Add("NOGIB");
+            PresetDataSources[(int)JsonFormTag.DataSourceType.AMMO_EFFECTS] = buffer;
+
+            buffer = new List<string>();
+            buffer.Add("TORSO");
+            buffer.Add("HEAD");
+            buffer.Add("EYES");
+            buffer.Add("MOUTH");
+            buffer.Add("ARMS");
+            buffer.Add("HANDS");
+            buffer.Add("LEGS");
+            buffer.Add("FEET");
+            PresetDataSources[(int)JsonFormTag.DataSourceType.BODY_PARTS] = buffer;
+
+            buffer = new List<string>();
+            buffer.Add("FIT");
+            buffer.Add("VARSIZE");
+            buffer.Add("OVERSIZE");
+            buffer.Add("HOOD");
+            buffer.Add("POCKETS");
+            buffer.Add("WATCH");
+            buffer.Add("ALARMCLOCK");
+            buffer.Add("USE_EAT_VERB");
+            buffer.Add("FANCY");
+            buffer.Add("SUPER_FANCY");
+            buffer.Add("WATER_FRIENDLY");
+            buffer.Add("WATERPROOF");
+            buffer.Add("LIGHT_1");
+            buffer.Add("LIGHT_2");
+            buffer.Add("LIGHT_8");
+            buffer.Add("LIGHT_20"); //TODO: setable light level
+            buffer.Add("SEALS");
+            buffer.Add("RIGID");
+            buffer.Add("WATERTIGHT");
+            buffer.Add("EATEN_HOT");
+            buffer.Add("MODE_AUX");
+            buffer.Add("MODE_BURST");
+            buffer.Add("STR_RELOAD");
+            buffer.Add("STAB");
+            buffer.Add("NO_UNLOAD");
+            buffer.Add("UNARMED_WEAPON");
+            buffer.Add("GRENADE");
+            buffer.Add("RELOAD_AND_SHOOT");
+            buffer.Add("ALWAY_TWOHAND");
+            buffer.Add("RELOAD_ONE");
+            buffer.Add("CHARGE");
+            buffer.Add("FIRE_100");
+            buffer.Add("BACKBLAST");
+            buffer.Add("USE_UPS");
+            buffer.Add("STR8_DRAW");
+            buffer.Add("STR10_DRAW");
+            buffer.Add("STR12_DRAW");
+            PresetDataSources[(int)JsonFormTag.DataSourceType.FLAGS] = buffer;
+
+            PresetDataSources[(int)JsonFormTag.DataSourceType.TECHNIQUES] = new List<string>();
+        }
+
+        public static string[] GetDataSource(JsonFormTag.DataSourceType source)
+        {
+            if (source < JsonFormTag.DataSourceType.PRESET_COUNT)
+            {
+                return PresetDataSources[(int)source].ToArray();
+            }
+            else
+            {
+                switch (source)
+                {
+                    case JsonFormTag.DataSourceType.TECHNIQUES:
+                        return GetTechniques();
+                    case JsonFormTag.DataSourceType.MATERIALS:
+                        return GetMaterialNames();
+                    case JsonFormTag.DataSourceType.SKILLS:
+                        return GetSkills();
+                    case JsonFormTag.DataSourceType.GUN_SKILLS:
+                        return GetGunSkills();
+                    case JsonFormTag.DataSourceType.CRAFT_CATEGORIES:
+                        return GetCraftCategories();
+                }
+            }
+
+            return null;
+        }
+
+        public static void UpdateDataSource(JsonFormTag.DataSourceType source, string newEntry)
+        {
+            if (source < JsonFormTag.DataSourceType.PRESET_COUNT)
+            {
+                if (!PresetDataSources[(int)source].Contains(newEntry))
+                {
+                    PresetDataSources[(int)source].Add(newEntry);
+                    WinformsUtil.RefreshDataSources();
+                }
+            }
         }
 
         #endregion
