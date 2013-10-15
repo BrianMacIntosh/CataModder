@@ -1,8 +1,8 @@
 ﻿result
 <id_suffix>
 category
-<skill_pri>
-<skill_sec>
+<skill_used>
+<requires_skills>
 difficulty
 time
 <reversible>
