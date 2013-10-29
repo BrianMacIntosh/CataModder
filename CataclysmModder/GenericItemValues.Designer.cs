@@ -63,6 +63,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.typeComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.charDisplayLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tohitNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cutNumeric)).BeginInit();
@@ -74,6 +75,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.charDisplayLabel);
             this.groupBox1.Controls.Add(this.functionComboBox);
             this.groupBox1.Controls.Add(this.label18);
             this.groupBox1.Controls.Add(this.techniquesCheckedListBox);
@@ -476,22 +478,6 @@
             // colorComboBox
             // 
             this.colorComboBox.FormattingEnabled = true;
-            this.colorComboBox.Items.AddRange(new object[] {
-            "red",
-            "blue",
-            "green",
-            "light_cyan",
-            "brown",
-            "light_red",
-            "white",
-            "light_blue",
-            "yellow",
-            "magenta",
-            "cyan",
-            "light_gray",
-            "dark_gray",
-            "light_green",
-            "pink"});
             this.colorComboBox.Location = new System.Drawing.Point(451, 14);
             this.colorComboBox.Name = "colorComboBox";
             this.colorComboBox.Size = new System.Drawing.Size(117, 21);
@@ -627,6 +613,19 @@
             this.label1.TabIndex = 36;
             this.label1.Text = "Type:";
             // 
+            // charDisplayLabel
+            // 
+            this.charDisplayLabel.AutoSize = true;
+            this.charDisplayLabel.BackColor = System.Drawing.Color.Black;
+            this.charDisplayLabel.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.charDisplayLabel.ForeColor = System.Drawing.Color.Lime;
+            this.charDisplayLabel.Location = new System.Drawing.Point(584, 15);
+            this.charDisplayLabel.Name = "charDisplayLabel";
+            this.charDisplayLabel.Size = new System.Drawing.Size(18, 19);
+            this.charDisplayLabel.TabIndex = 72;
+            this.charDisplayLabel.Text = "Z";
+            this.charDisplayLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // GenericItemValues
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -683,6 +682,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox typeComboBox;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label charDisplayLabel;
 
     }
 }

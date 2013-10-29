@@ -1046,7 +1046,36 @@ namespace CataclysmModder
             buffer.Add("STR12_DRAW");
             PresetDataSources[(int)JsonFormTag.DataSourceType.FLAGS] = buffer;
 
+            buffer = new List<string>();
+            PresetDataSources[(int)JsonFormTag.DataSourceType.VEHICLEPART_FLAGS] = buffer;
+
             PresetDataSources[(int)JsonFormTag.DataSourceType.TECHNIQUES] = new List<string>();
+
+            buffer = new List<string>();
+            buffer.Add("red");
+            buffer.Add("blue");
+            buffer.Add("green");
+            buffer.Add("light_cyan");
+            buffer.Add("brown");
+            buffer.Add("light_red");
+            buffer.Add("white");
+            buffer.Add("light_blue");
+            buffer.Add("yellow");
+            buffer.Add("magenta");
+            buffer.Add("cyan");
+            buffer.Add("light_gray");
+            buffer.Add("dark_gray");
+            buffer.Add("light_green");
+            buffer.Add("pink");
+            PresetDataSources[(int)JsonFormTag.DataSourceType.COLOR] = buffer;
+
+            buffer = new List<string>();
+            buffer.Add("gasoline");
+            buffer.Add("battery");
+            buffer.Add("plutonium");
+            buffer.Add("plasma");
+            buffer.Add("water");
+            PresetDataSources[(int)JsonFormTag.DataSourceType.FUEL] = buffer;
         }
 
         public static string[] GetDataSource(JsonFormTag.DataSourceType source)
@@ -1077,7 +1106,7 @@ namespace CataclysmModder
 
         public static void UpdateDataSource(JsonFormTag.DataSourceType source, string newEntry)
         {
-            if (source < JsonFormTag.DataSourceType.PRESET_COUNT)
+            if (source < JsonFormTag.DataSourceType.PRESET_MOD_COUNT)
             {
                 if (!PresetDataSources[(int)source].Contains(newEntry))
                 {

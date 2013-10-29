@@ -76,6 +76,7 @@
     <Compile Include="BookValues.Designer.cs">
       <DependentUpon>BookValues.cs</DependentUpon>
     </Compile>
+    <Compile Include="CataColor.cs" />
     <Compile Include="CataFile.cs" />
     <Compile Include="ComestibleValues.cs">
       <SubType>UserControl</SubType>
@@ -155,6 +156,12 @@
     <Compile Include="ToolValues.Designer.cs">
       <DependentUpon>ToolValues.cs</DependentUpon>
     </Compile>
+    <Compile Include="VehiclePartValues.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VehiclePartValues.Designer.cs">
+      <DependentUpon>VehiclePartValues.cs</DependentUpon>
+    </Compile>
     <Compile Include="WinformsUtil.cs" />
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>
@@ -213,6 +220,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ToolValues.resx">
       <DependentUpon>ToolValues.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VehiclePartValues.resx">
+      <DependentUpon>VehiclePartValues.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">

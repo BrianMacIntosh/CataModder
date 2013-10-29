@@ -104,6 +104,13 @@ namespace CataclysmModder
             Controls.Add(professionControl);
             Storage.FileDefSetControl(Storage.FileType.PROFESSIONS, professionControl);
 
+            Control vehiclePartControl = new VehiclePartValues();
+            vehiclePartControl.Tag = new DataFormTag();
+            vehiclePartControl.Location = mainPanelLocation;
+            vehiclePartControl.Visible = false;
+            Controls.Add(vehiclePartControl);
+            Storage.FileDefSetControl(Storage.FileType.VEHICLE_PARTS, vehiclePartControl);
+
             //Load previous workspace
             if (File.Exists(".conf"))
             {

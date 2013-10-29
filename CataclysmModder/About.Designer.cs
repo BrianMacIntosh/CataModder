@@ -68,7 +68,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(233, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = " ver 0.1 rev 29.  For Cataclysm ver 0.8 (Romero)";
+            this.label2.Text = " ver 0.1 rev 30.  For Cataclysm ver 0.8 (Romero)";
             // 
             // label3
             // 

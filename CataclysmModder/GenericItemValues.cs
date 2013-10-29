@@ -28,6 +28,7 @@ namespace CataclysmModder
                  "The color used to display this item on the map.",
                  true,
                  "light_gray");
+            ((JsonFormTag)colorComboBox.Tag).dataSource = JsonFormTag.DataSourceType.COLOR;
             nameTextBox.Tag = new JsonFormTag(
                 "name",
                 "The displayed name of the object. Should be all lowercase except in special cases (like proper nouns and acronyms).");
@@ -75,6 +76,8 @@ namespace CataclysmModder
                 "use_action",
                 "A game function to call when the item is applied or used.",
                 false);
+
+            WinformsUtil.SetupCharDisplayLabel(charDisplayLabel, symbolTextBox, colorComboBox);
 
             WinformsUtil.ControlsAttachHooks(this);
             WinformsUtil.TagsSetDefaults(this);

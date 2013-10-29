@@ -52,6 +52,12 @@ namespace CataclysmModder
             BODY_PARTS,
             TECHNIQUES, //TODO: actually loaded in dev version
             FLAGS,
+            VEHICLEPART_FLAGS,
+            FUEL,
+            PRESET_MOD_COUNT,
+
+            //Non
+            COLOR,
             PRESET_COUNT,
 
             //Loaded values (loaded from the game data)
@@ -828,6 +834,15 @@ namespace CataclysmModder
                     ControlResetValues(c);
                 }
             }
+        }
+
+        /// <summary>
+        /// Configure a label to display a colored in-game character.
+        /// </summary>
+        public static void SetupCharDisplayLabel(Label label, TextBox character, ComboBox color)
+        {
+            character.TextChanged += (s, e) => label.Text = ((TextBox)s).Text;
+            color.TextChanged += (s, e) => label.ForeColor = CataColor.GetColorFgByName(((ComboBox)s).Text);
         }
     }
 }
