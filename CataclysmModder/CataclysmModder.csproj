@@ -252,6 +252,7 @@
     <Content Include="icons\ico16.ico" />
     <Content Include="icons\ico32.ico" />
     <Content Include="icons\ico48.ico" />
+    <Content Include="schemas\vehicle_parts.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
